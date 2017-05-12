@@ -38,13 +38,13 @@ set -u
 # Default umask value
 umask 022
 
-# LFS mount point
-LFS=/mnt/gokstad
-export LFS
-
 # LFS custom PATH
-PATH=/tools/bin:/bin:/usr/bin
+PATH=@@LFS_ENV_PATH_VALUE@@
 export PATH
+
+# LFS mount point
+LFS=@@LFS_BASE_DIRECTORY@@
+export LFS
 
 # LFS target kernel name
 LFS_TGT=$(uname -m)-lfs-linux-gnu
@@ -76,8 +76,12 @@ export TERM
         # Write file
         tools.write_file(filename, text)
 
-        # Add @@LFS_ parameters to setenv.sh file and do substitutions
-        # tools.substitute_multiple_in_file(...)
+        # Substitute parameters
+        substitution_list = ["@@LFS_ENV_PATH_VALUE@@", self.env_PATH_value,
+                             "@@LFS_BASE_DIRECTORY@@", config.BASE_DIRECTORY]
+
+        tools.substitute_multiple_in_file(filename, substitution_list)
+
 
 #     def stripBinaries(self):
 #         printer.info("Stripping generated binaries")
@@ -148,7 +152,7 @@ class ToolchainBuilder(ComponentsBuilder):
         self.env_PATH_value = "/tools/bin:/bin:/usr/bin"
         self.components_to_build = ["binutils", "gcc", "linuxapiheaders", "glibc", "libstdcplusplus", "binutils2", "gcc2", "tclcore", "expect", "dejagnu", "check", "ncurses", "bash", "bzip2", "coreutils", "diffutils", "file", "findutils", "gawk", "gettext", "grep", "gzip", "m4", "make", "patch", "perl", "sed", "tar", "texinfo", "utillinux", "xz", "stripping"]
 
-        # self.components_to_build = ["stripping"]
+        self.components_to_build = ["binutils"]
 
     # def build(self):
     #     # self.checkMountPoint()

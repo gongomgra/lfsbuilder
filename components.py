@@ -10,30 +10,14 @@ class BaseComponent(object):
     def __init__(self, build_action, components_data_dict):
         self.sources_directory = os.path.join(config.BASE_DIRECTORY, "sources")
         self.tools_directory = os.path.join(config.BASE_DIRECTORY, "tools")
-        self.build_directory = "build"
-        self.buildscript_name = "compile.sh"
-        self.buildscript_path = ""
-        # self.setenv_script = os.path.join(config.BASE_DIRECTORY, "setenv.sh")
-        # self.chrootSetenvScript = os.path.join("/", "setenv.sh")
-        self.extracted_directory = ""
         self.build_action = build_action
-
-
-
         self.name = ""
         self.show_name = ""
         self.key_name = ""
         # self.patchlist = []
-
         self.components_data_dict = components_data_dict
 
-        self.require_build_directory = 1
-        self.exclude_build = False
-        self.configure_options = ""
-        self.make_options = ""
-        self.install_options = ""
-        self.include_tests = 0
-        self.test_options = ""
+        self.build_directory = ""
 
 
     # def __del__(self):
@@ -44,26 +28,9 @@ class BaseComponent(object):
             self.key_name = self.name
 
 #        tools.pretty_print(self.components_data_dict)
-        self.require_build_directory = self.components_data_dict[self.key_name + "_buildDir"]
-
-        if self.require_build_directory == '0':
-            self.build_directory = self.extracted_directory
-
-        if self.exclude_build is True:
-            # We do not need to unpack anything, so we ran commands from the config.BASE_DIRECTORY
-            self.build_directory = config.BASE_DIRECTORY
-            self.extracted_directory = config.BASE_DIRECTORY
 
     def build(self):
-        if self.exclude_build is False:
-                self.extract_source_code()
-                self.apply_source_code_patches()
-                self.generate_buildscript()
-                self.runBuildScript()
-
-        # Always run '_post' steps
-        self.run_post_steps()
-
+        pass
 
     def get_command_to_run_script(self, filename):
         if self.build_action == "toolchain":
@@ -73,40 +40,6 @@ class BaseComponent(object):
 
         cmd = cmd + " " + filename
         return cmd
-
-    def extract_source_code(self):
-        # We look for a tar file
-        pattern = self.name + "*.tar.*"
-        sourceCodeFilename = tools.find_file(self.sources_directory, pattern)
-        if sourceCodeFilename == "":
-            printer.error("Can't find source code file for \'" + self.name + "\' with pattern: " + pattern)
-        tools.extract(sourceCodeFilename)
-        # We get the name of the extracted directory
-        pattern = self.name + "*"
-        self.extracted_directory = os.path.abspath(tools.find_directory(self.sources_directory, pattern))
-        if self.extracted_directory == "":
-            printer.error("Can't find extracted directory for \'" + self.name + "\' with pattern: " + pattern)
-        # Set directory owner if we are building the 'toolchain'
-        if self.build_action == "toolchain":
-            tools.set_recursive_owner_and_group(self.extracted_directory, config.nonPrivilegedUsername)
-
-
-    def apply_source_code_patches(self):
-        os.chdir(self.extracted_directory)
-
-        # Run previous steps if any
-        key = self.key_name + "_previous"
-        if self.components_data_dict[key] is not None:
-            self.run_extra_steps(stepname="previous", run_directory=self.extracted_directory)
-
-        # Search a .patch file
-        pattern = self.name + "*.patch"
-        patch_filename = tools.find_file(self.sources_directory, pattern)
-
-        if len(patch_filename) != 0:
-            tools.apply_patch(patch_filename)
-            os.chdir(self.sources_directory)
-
 
     def substitute_script_placeholders(self, file_path=None):
         # Substitute in buildscript by default
@@ -143,40 +76,6 @@ class BaseComponent(object):
         tools.write_file(filename, text)
         self.substitute_script_placeholders(filename)
 
-    def add_configure_to_buildscript(self):
-#        text = os.path.join(self.extracted_directory, "configure") + " " + self.configure_options
-        key = self.key_name + "_configure"
-        text = self.components_data_dict[key]
-        if text is not None:
-            text = text + " " + self.configure_options
-            tools.add_text_to_file(self.buildscript_path, text)
-
-    def add_make_to_buildscript(self):
-#        text = "make " + self.make_options
-        key = self.key_name + "_make"
-        text = self.components_data_dict[key]
-        if text is not None:
-            text = text + " " + self.make_options
-            tools.add_text_to_file(self.buildscript_path, text)
-            # if self.make_options != "":
-            #     tools.substituteInFile(self.buildscript_path, "make", "make " + self.make_options + " ")
-
-    def add_tests_to_buildscript(self):
-        if self.include_tests == 1:
-            key = self.key_name + "_test"
-            text = self.components_data_dict[key]
-            if text is not None:
-                text = text + " " + self.test_options
-                tools.add_text_to_file(self.buildscript_path, text)
-
-    def add_install_to_buildscript(self):
-#        text = "make install " + self.install_options
-        key = self.key_name + "_install"
-        text = self.components_data_dict[key]
-        if text is not None:
-            text = text + " " + self.install_options
-            tools.add_text_to_file(self.buildscript_path, text)
-
     def run_post_steps(self):
         os.chdir(self.extracted_directory)
 
@@ -193,52 +92,158 @@ class BaseComponent(object):
         key = self.key_name + "_" + stepname
         tools.add_text_to_file(filename, self.components_data_dict[key])
 
-        # Substitute known placeholders
-        # self.substitute_script_placeholders(filePath=filename)
+        self.run_script(filename)
 
-        # Run script
-        printer.substepInfo("Running \'" + stepname + ".sh\'")
+
+    def run_script(self, filename):
+        os.chdir(self.build_directory)
+
+        printer.substepInfo("Running file \'" + os.path.basename(filename) + "\'")
 
         cmd =  self.get_command_to_run_script(filename)
 
         if self.build_action == "toolchain":
-
-            # cmd = "su gokstad -c \"env -i bash -x" + " " + filename + "\""
-            # tools.run_program_with_output(cmd)
-            tools.run_program_without_output(cmd)
+            tools.run_program_without_output(cmd, username=config.NON_PRIVILEGED_USERNAME)
         else:
-#            cmd = "/tools/bin/env -i /tools/bin/bash" + " " + filename
             tools.run_program_into_chroot(cmd, config.BASE_DIRECTORY)
 
+        # Back to the sources directory
+        os.chdir(self.sources_directory)
 
-    def check_compiling_and_linking_functions(self):
-        key = self.key_name + "_post"
-        value = """
-echo 'int main(){}' > dummy.c
-$LFS_TGT-gcc dummy.c
-# Check if output contains /tools/lib64/ld-linux-x86-64.so.2
-readelf -l a.out | grep ': /tools'
-result=$?
-if [ $result -eq 0 ]; then
-   echo -e '\e[92m--- Glibc check was OK ---\e[0m'
-else
-   echo -e '\e[91m--- Glibc check was FAILED ---\e[0m'
-   exit 1
-fi
-rm -v dummy.c a.out
-"""
-        tools.add_to_dictionary(self.components_data_dict, key, value, concat=False)
-        # Run parent function
-        BaseComponent.run_post_steps(self)
+
+#     def check_compiling_and_linking_functions(self):
+#         key = self.key_name + "_post"
+#         value = """
+# echo 'int main(){}' > dummy.c
+# $LFS_TGT-gcc dummy.c
+# # Check if output contains /tools/lib64/ld-linux-x86-64.so.2
+# readelf -l a.out | grep ': /tools'
+# result=$?
+# if [ $result -eq 0 ]; then
+#    echo -e '\e[92m--- Glibc check was OK ---\e[0m'
+# else
+#    echo -e '\e[91m--- Glibc check was FAILED ---\e[0m'
+#    exit 1
+# fi
+# rm -v dummy.c a.out
+# """
+#         tools.add_to_dictionary(self.components_data_dict, key, value, concat=False)
+#         # Run parent function
+#         BaseComponent.run_post_steps(self)
+
+
+    def clean_workspace(self):
+        if self.show_name == "":
+            self.show_name = self.name
+
+        os.chdir(self.sources_directory)
+        printer.substepInfo("Finished building \'" + self.show_name + "\'.")
+
+class CompilableComponent(BaseComponent):
+
+    def __init__(self, build_action, components_data_dict):
+        BaseComponent.__init__(self, build_action, components_data_dict)
+        self.extracted_directory = ""
+        self.build_directory_name = "build"
+        self.build_directory = ""
+        self.buildscript_name = "compile.sh"
+        self.buildscript_path = ""
+        self.require_build_directory = ""
+        # self.setenv_script = os.path.join(config.BASE_DIRECTORY, "setenv.sh")
+        # self.chrootSetenvScript = os.path.join("/", "setenv.sh")
+        self.configure_options = ""
+        self.make_options = ""
+        self.install_options = ""
+        self.include_tests = 0
+        self.test_options = ""
+
+
+    def set_attributes(self):
+        BaseComponent.set_attributes(self)
+
+        # Check if component will need to create a build directory or not
+        self.require_build_directory = self.components_data_dict[self.key_name + "_buildDir"]
+
+    def build(self):
+        self.extract_source_code()
+        self.run_previous_steps()
+        self.generate_buildscript()
+        self.run_script(self.buildscript_path)
+        self.run_post_steps()
+
+    def extract_source_code(self):
+        # We look for a tar file
+        pattern = self.name + "*.tar.*"
+        sourceCodeFilename = tools.find_file(self.sources_directory, pattern)
+        if sourceCodeFilename == "":
+            printer.error("Can't find source code file for \'" + self.name + "\' with pattern: " + pattern)
+        tools.extract(sourceCodeFilename)
+        # We get the name of the extracted directory
+        pattern = self.name + "*"
+        self.extracted_directory = os.path.abspath(tools.find_directory(self.sources_directory, pattern))
+        if self.extracted_directory == "":
+            printer.error("Can't find extracted directory for \'" + self.name + "\' with pattern: " + pattern)
+
+        # Generate extractedDir/build/ if necessary.
+        if self.require_build_directory == '1':
+            self.build_directory = os.path.join(self.extracted_directory, self.build_directory_name)
+            tools.create_directory(self.build_directory)
+        else:
+            # If not, build component into the extracted directory
+            self.build_directory = self.extracted_directory
+
+        # Set directory owner if we are building the 'toolchain'
+        if self.build_action == "toolchain":
+            tools.set_recursive_owner_and_group(self.extracted_directory, config.NON_PRIVILEGED_USERNAME)
+
+
+    def run_previous_steps(self):
+        os.chdir(self.extracted_directory)
+
+        # Run previous steps if any
+        key = self.key_name + "_previous"
+        if self.components_data_dict[key] is not None:
+            self.run_extra_steps(stepname="previous", run_directory=self.extracted_directory)
+
+        # Search a .patch file and apply it
+        pattern = self.name + "*.patch"
+        patch_filename = tools.find_file(self.sources_directory, pattern)
+
+        if len(patch_filename) != 0:
+            tools.apply_patch(patch_filename)
+            os.chdir(self.sources_directory)
+
+    def add_configure_to_buildscript(self):
+        key = self.key_name + "_configure"
+        text = self.components_data_dict[key]
+        if text is not None:
+            text = text + " " + self.configure_options
+            tools.add_text_to_file(self.buildscript_path, text)
+
+    def add_make_to_buildscript(self):
+        key = self.key_name + "_make"
+        text = self.components_data_dict[key]
+        if text is not None:
+            text = text + " " + self.make_options
+            tools.add_text_to_file(self.buildscript_path, text)
+
+    def add_tests_to_buildscript(self):
+        if self.include_tests == 1:
+            key = self.key_name + "_test"
+            text = self.components_data_dict[key]
+            if text is not None:
+                text = text + " " + self.test_options
+                tools.add_text_to_file(self.buildscript_path, text)
+
+    def add_install_to_buildscript(self):
+        key = self.key_name + "_install"
+        text = self.components_data_dict[key]
+        if text is not None:
+            text = text + " " + self.install_options
+            tools.add_text_to_file(self.buildscript_path, text)
 
     def generate_buildscript(self, customBuildDir=""):
-        # File to generate extractedDir/build/compile.sh
-        self.build_directory = os.path.join(self.extracted_directory, self.build_directory)
         self.buildscript_path = os.path.join(self.build_directory, self.buildscript_name)
-
-        # Generate 'build' directory if necessary
-        if os.path.exists(self.build_directory) == False and self.require_build_directory == '1':
-            os.mkdir(self.build_directory)
 
         self.write_script_header(self.buildscript_path)
         self.add_configure_to_buildscript()
@@ -247,50 +252,37 @@ rm -v dummy.c a.out
         self.add_install_to_buildscript()
 
         # Set owner if running as non privileged user
-        # tools.setOwnerAndGroup()
-
-
-
-    def runBuildScript(self):
-        os.chdir(self.build_directory)
-
-        # Run buildScript with a clean environment
-        printer.substepInfo("Running file \'" + self.buildscript_name + "\'")
-        cmd =  self.get_command_to_run_script(self.buildscript_path)
-
         if self.build_action == "toolchain":
-            # cmd = "env -i bash -x" + " " + self.buildscript_path
-            # cmd = "su gokstad -c \"env -i bash -x" + " " + self.buildscript_path + "\""
-            # tools.run_program_with_output(cmd)
-            tools.run_program_without_output(cmd)
-        else:
-            # cmd = "/tools/bin/env -i /tools/bin/bash" + " " + self.buildscript_path
-            sys.exit(0)
-            tools.run_program_into_chroot(cmd, config.BASE_DIRECTORY)
-
-        os.chdir(self.sources_directory)
-
+            tools.set_owner_and_group(self.buildscript_path, config.NON_PRIVILEGED_USERNAME)
 
     def clean_workspace(self):
-        if self.show_name == "":
-            self.show_name = self.name
-
-        os.chdir(self.sources_directory)
-        printer.substepInfo("Finished building \'" + self.show_name + "\'. Cleaning workspace")
-        if self.exclude_build is False:
-            shutil.rmtree(self.extracted_directory)
+        BaseComponent.clean_workspace(self)
+        # Remove extracted directory
+        shutil.rmtree(self.extracted_directory)
 
 
-class Binutils(BaseComponent):
+class SystemConfigurationComponent(BaseComponent):
+    def set_attributes(self):
+        BaseComponent.set_attributes(self)
+
+        # We do not need to unpack anything, so we ran commands from the config.BASE_DIRECTORY
+        self.build_directory = config.BASE_DIRECTORY
+        self.extracted_directory = config.BASE_DIRECTORY
+
+    def build(self):
+        self.run_post_steps()
+
+
+class Binutils(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "binutils"
 
-class Gcc(BaseComponent):
+class Gcc(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "gcc"
 
         # Required patch for glibc to compile properly. Add it to gcc previous steps
@@ -301,6 +293,10 @@ class Gcc(BaseComponent):
         tools.add_to_dictionary(self.components_data_dict,
                                "gcc_previous",
                                "sed -i 's/if \((code.*))\)/if (\&1; \&\& \!DEBUG_INSN_P (insn))/' gcc/sched-deps.c")
+
+    def run_previous_steps(self):
+        CompilableComponent.run_previous_steps(self)
+        tools.set_recursive_owner_and_group(self.extrated_directory, config.NON_PRIVILEGED_USERNAME)
 
     # def extract_source_code(self):
     #     # First run parent method and then extract mpfr, gmp and mpc
@@ -342,9 +338,9 @@ class Gcc(BaseComponent):
 #         tools.run_program_with_output(cmd)
 #         os.chdir(self.sources_directory)
 
-class Linuxapiheaders(BaseComponent):
+class Linuxapiheaders(CompilableComponent):
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "linux"
         self.key_name = "linux-headers"
         self.show_name = "linuxApiHeaders"
@@ -366,9 +362,9 @@ class Linuxapiheaders(BaseComponent):
     #     BaseComponent.runBuildScript(self)
 
 
-class Glibc(BaseComponent):
+class Glibc(CompilableComponent):
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "glibc"
         self.make_options = "--jobs=1"
         # self.confi_oure_options = self.configure_options + "--host=$LFS_TGT --build=$(../scripts/config.guess) --enable-kernel=2.6.32 --with-headers=/tools/include libc_cv_forced_unwind=yes libc_cv_c_cleanup=yes"
@@ -377,10 +373,10 @@ class Glibc(BaseComponent):
         self.check_compiling_and_linking_functions()
 
 
-class Libstdcplusplus(BaseComponent):
+class Libstdcplusplus(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "gcc"
         # Libstdc++ source files are gcc, but we have to use libstdc++ compile options
         self.key_name = "libstdcpp"
@@ -392,19 +388,19 @@ class Libstdcplusplus(BaseComponent):
     #     new = "libstdc++-v3/configure"
     #     tools.substituteInFile(self.buildscript_path, old, new)
 
-    def extract_source_code(self):
-        # First run parent method and then extract mpfr, gmp and mpc
-        BaseComponent.extract_source_code(self)
+    # def extract_source_code(self):
+    #     # First run parent method and then extract mpfr, gmp and mpc
+    #     CompilableComponent.extract_source_code(self)
 
-        for moduleName in ["mpfr", "gmp", "mpc"]:
-            # We look for a tar file
-            pattern = moduleName + "*.tar.*"
-            sourceCodeFilename = tools.find_file(self.sources_directory, pattern)
-            tools.extract(sourceCodeFilename, self.extracted_directory)
-            # We get the name of the extracted directory inside of the gcc directory
-            pattern = moduleName + "*"
-            temporalExtractedDir = tools.find_directory(self.extracted_directory, pattern)
-            os.rename(temporalExtractedDir, os.path.join(self.extracted_directory, moduleName))
+    #     for moduleName in ["mpfr", "gmp", "mpc"]:
+    #         # We look for a tar file
+    #         pattern = moduleName + "*.tar.*"
+    #         sourceCodeFilename = tools.find_file(self.sources_directory, pattern)
+    #         tools.extract(sourceCodeFilename, self.extracted_directory)
+    #         # We get the name of the extracted directory inside of the gcc directory
+    #         pattern = moduleName + "*"
+    #         temporalExtractedDir = tools.find_directory(self.extracted_directory, pattern)
+    #         os.rename(temporalExtractedDir, os.path.join(self.extracted_directory, moduleName))
 
     # def extract_source_code(self):
     #     Gcc.extract_source_code(self)
@@ -412,10 +408,10 @@ class Libstdcplusplus(BaseComponent):
     # def apply_source_code_patches(self):
     #     BaseComponent.apply_source_code_patches(self)
 
-class Binutils2(BaseComponent):
+class Binutils2(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "binutils"
         self.key_name ="binutils2"
         self.make_options="--jobs=1"
@@ -485,10 +481,10 @@ class Gcc2(Gcc):
 #         Gcc.addExtraSteps_poBuildScript(self)
 
 
-class Tclcore(BaseComponent):
+class Tclcore(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "tcl"
 #        self.configure_options = "--prefix=/tools"
 #        self.require_build_directory = 0
@@ -516,14 +512,14 @@ class Tclcore(BaseComponent):
 # """
 #         tools.a_odTextToFile (self.buildscript_path, text)
 
-    def runBuildScript(self):
-        self.build_directory = self.extracted_directory
-        BaseComponent.runBuildScript(self)
+    # def runBuildScript(self):
+    #     self.build_directory = self.extracted_directory
+    #     CompilableComponent.runBuildScript(self)
 
-class Expect(BaseComponent):
+class Expect(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "expect"
         self.include_tests = 1
 
@@ -557,10 +553,10 @@ class Expect(BaseComponent):
 #         tools.a_odTextToFile(self.buildscript_path, text)
 
 
-class Dejagnu(BaseComponent):
+class Dejagnu(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "dejagnu"
         self.show_name = "DejaGNU"
 #        self.configure_options = "--prefix=/tools"
@@ -573,10 +569,10 @@ class Dejagnu(BaseComponent):
     #     text = "make check"
     #     tools.a_odTextToFile(self.buildscript_path, text)
 
-class Check(BaseComponent):
+class Check(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "check"
         # self.confi_oure_options = "PKG_CONFIG= --prefix=/tools"
 
@@ -586,10 +582,10 @@ class Check(BaseComponent):
     #     tools.a_odTextToFile(self.buildscript_path, text)
 
 
-class Ncurses(BaseComponent):
+class Ncurses(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "ncurses"
 #         self.configure_options = self.configure_options + "--with-shared --without-debug --without-ada --enable-widec --enable-overwrite"
 
@@ -615,10 +611,10 @@ class Ncurses(BaseComponent):
 #         BaseComponent.apply_source_code_patches(self)
 
 
-class Bash(BaseComponent):
+class Bash(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "bash"
         self.include_tests = 1
         # self.confi_oure_options = self.configure_options + "--without-bash-malloc"
@@ -631,10 +627,10 @@ class Bash(BaseComponent):
 #         tools.a_odTextToFile(self.buildscript_path, text)
 
 
-class Bzip2(BaseComponent):
+class Bzip2(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "bzip2"
 #         self.install_options = "PREFIX=/tools"
 #         self.require_build_directory = 0
@@ -655,10 +651,10 @@ class Bzip2(BaseComponent):
 #         BaseComponent.runBuildScript(self)
 
 
-class Coreutils(BaseComponent):
+class Coreutils(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "coreutils"
         # self.confi_oure_options = self.configure_options + "--enable-install-program=hostname"
         # self.test_options = "RUN_EXPENSIVE_TESTS=yes"
@@ -686,10 +682,10 @@ class Coreutils(BaseComponent):
     #     BaseComponent.runBuildScript(self)
 
 
-class Diffutils(BaseComponent):
+class Diffutils(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "diffutils"
         # Have issues with 'colors' test (2 != 141) from Python but works properly
         # when running the 'compile.sh' script from terminal
@@ -697,37 +693,37 @@ class Diffutils(BaseComponent):
         # Diffutils 3.5
         self.include_tests = 0
 
-class File(BaseComponent):
+class File(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "file"
         self.include_tests = 1
 
-class Findutils(BaseComponent):
+class Findutils(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "findutils"
         self.include_tests = 1
         # Tests never end when running in parallel
         self.test_options = "--jobs=1"
 
 
-class Gawk(BaseComponent):
+class Gawk(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "gawk"
         # Found errors running tests for toolchain in version 4.1.4. According to the link below,
         # it is ok to keep going if both gcc and binutils sanity checks were ok
         # http://www.linuxquestions.org/questions/linux-from-scratch-13/error-while-running-test-suite-of-gawk-4-1-1-lfsv7-6-a-4175524586/
         self.include_tests = 0
 
-class Gettext(BaseComponent):
+class Gettext(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "gettext"
         # self.require_build_directory = 0
 
@@ -752,46 +748,46 @@ class Gettext(BaseComponent):
 #         self.build_directory = self.extracted_directory
 #         BaseComponent.runBuildScript(self)
 
-class Grep(BaseComponent):
+class Grep(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "grep"
         self.include_tests = 1
 
-class Gzip(BaseComponent):
+class Gzip(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "gzip"
         self.include_tests = 1
 
-class M4(BaseComponent):
+class M4(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "m4"
         self.include_tests = 1
 
-class Make(BaseComponent):
+class Make(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "make"
         # self.confi_oure_options = self.configure_options + "--without-guile"
         self.include_tests = 1
 
-class Patch(BaseComponent):
+class Patch(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "patch"
         self.include_tests = 1
 
-class Perl(BaseComponent):
+class Perl(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "perl"
         # self.require_build_directory = 0
 
@@ -813,48 +809,47 @@ class Perl(BaseComponent):
 #         self.build_directory = self.extracted_directory
 #         BaseComponent.runBuildScript(self)
 
-class Sed(BaseComponent):
+class Sed(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "sed"
         self.include_tests = 1
 
-class Tar(BaseComponent):
+class Tar(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "tar"
         self.include_tests = 1
 
-class Texinfo(BaseComponent):
+class Texinfo(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "texinfo"
         self.include_tests = 1
 
-class Utillinux(BaseComponent):
+class Utillinux(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "util-linux"
         self.show_name = "UtilLinux"
 
-class Xz(BaseComponent):
+class Xz(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "xz"
         self.include_tests = 1
 
 
-class Stripping(BaseComponent):
+class Stripping(SystemConfigurationComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        SystemConfigurationComponent.__init__(self, build_action, components_data_dict)
         self.name = "stripping"
-        self.exclude_build = True
         if self.build_action == "system":
             self.key_name = "strippingagain"
 
@@ -866,284 +861,281 @@ class Stripping(BaseComponent):
         tools.add_to_dictionary(self.components_data_dict, key, newValue, concat=False)
 
         # run parent method
-        BaseComponent.run_post_steps(self)
+        SystemConfigurationComponent.run_post_steps(self)
 
     def get_command_to_run_script(self, filename):
         # According to the link below, not all files can be stripped, so we ignore those errors
         # http://archives.linuxfromscratch.org/mail-archives/lfs-support/2002-July/008317.html
-        cmd = BaseComponent.get_command_to_run_script(self, filename) + " || true"
+        cmd = SystemConfigurationComponent.get_command_to_run_script(self, filename) + " || true"
         return cmd
 
 
-class Kernfs(BaseComponent):
+class Kernfs(SystemConfigurationComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        SystemConfigurationComponent.__init__(self, build_action, components_data_dict)
         self.name = "kernfs"
         # 'kernfs' needs to be built like a toolchain component. That is, from outside the chroot
         self.build_action = "toolchain"
-        self.exclude_build = True
 
 
-class Creatingdirs(BaseComponent):
+class Creatingdirs(SystemConfigurationComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        SystemConfigurationComponent.__init__(self, build_action, components_data_dict)
         self.name = "creatingdirs"
-        self.exclude_build = True
 
-class Createfiles(BaseComponent):
+
+class Createfiles(SystemConfigurationComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        SystemConfigurationComponent.__init__(self, build_action, components_data_dict)
         self.name = "createfiles"
-        self.exclude_build = True
 
-class Adjusting(BaseComponent):
+class Adjusting(SystemConfigurationComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        SystemConfigurationComponent.__init__(self, build_action, components_data_dict)
         self.name = "adjusting"
-        self.exclude_build = True
 
-class Zlib(BaseComponent):
+class Zlib(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "zlib"
 
-class Gmp(BaseComponent):
+class Gmp(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "gmp"
 
-class Mpfr(BaseComponent):
+class Mpfr(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "mpfr"
 
-class Mpc(BaseComponent):
+class Mpc(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "mpc"
 
-class Pkgconfig(BaseComponent):
+class Pkgconfig(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "pkgconfig"
 
-class Attr(BaseComponent):
+class Attr(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "attr"
 
-class Acl(BaseComponent):
+class Acl(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "acl"
 
-class Libcap(BaseComponent):
+class Libcap(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "libcap"
 
-class Sed(BaseComponent):
+class Sed(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "sed"
 
-class Shadow(BaseComponent):
+class Shadow(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "shadow"
 
-class Psmisc(BaseComponent):
+class Psmisc(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "psmisc"
 
-class Ianaetc(BaseComponent):
+class Ianaetc(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "iana-etc"
 
-class Bison(BaseComponent):
+class Bison(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "bison"
 
-class Flex(BaseComponent):
+class Flex(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "flex"
 
-class Readline(BaseComponent):
+class Readline(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "readline"
 
-class Bc(BaseComponent):
+class Bc(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "bc"
 
-class Libtool(BaseComponent):
+class Libtool(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "libtool"
 
-class Gdbm(BaseComponent):
+class Gdbm(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "gdbm"
 
-class Gperf(BaseComponent):
+class Gperf(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "gperf"
 
-class Expat(BaseComponent):
+class Expat(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "expat"
 
-class Inetutils(BaseComponent):
+class Inetutils(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "inetutils"
 
-class Xmlparser(BaseComponent):
+class Xmlparser(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "xml-parser"
 
-class Intltool(BaseComponent):
+class Intltool(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "intltool"
 
-class Autoconf(BaseComponent):
+class Autoconf(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "autoconf"
 
-class Automake(BaseComponent):
+class Automake(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "automake"
 
-class Kmod(BaseComponent):
+class Kmod(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "kmod"
 
-class Procps(BaseComponent):
+class Procps(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "procps"
 
-class E2fsprogs(BaseComponent):
+class E2fsprogs(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "e2fsprogs"
 
-class Groff(BaseComponent):
+class Groff(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "groff"
 
-class Grub(BaseComponent):
+class Grub(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "grub"
 
-class Less(BaseComponent):
+class Less(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "less"
 
-class Iproute2(BaseComponent):
+class Iproute2(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "iproute2"
 
-class Kbd(BaseComponent):
+class Kbd(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "kbd"
 
-class Libpipeline(BaseComponent):
+class Libpipeline(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "libpipeline"
 
-class Make(BaseComponent):
+class Make(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "make"
 
-class Sysklogd(BaseComponent):
+class Sysklogd(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "sysklogd"
 
-class Sysvinit(BaseComponent):
+class Sysvinit(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "sysvinit"
 
-class Eudev(BaseComponent):
+class Eudev(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "eudev"
 
-class Mandb(BaseComponent):
+class Mandb(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "man-db"
 
-class Vim(BaseComponent):
+class Vim(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
-        BaseComponent.__init__(self, build_action, components_data_dict)
+        CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "vim"
 
 

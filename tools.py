@@ -88,6 +88,14 @@ def find_directory (base_directory, pattern):
     result = ''.join(result)
     return result
 
+def create_directory(directory_path):
+    # Remove directory if exists
+    if os.path.exists(directory_path):
+        shutil.rmtree(directory_path)
+
+    # Recreate it
+    os.mkdir(directory_path)
+
 # ---
 
 def demote_user(user_id, user_gid):
@@ -109,12 +117,15 @@ def run_program_as_user(program_to_run, username):
     user_gid = pw_record.pw_gid
 
     command_to_run = shlex.split(program_to_run)
-    p = subprocess.Popen(cmd, preexec_fn=demote_user(user_id, user_gid),
+    p = subprocess.Popen(command_to_run, preexec_fn=demote_user(user_id, user_gid),
                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     return p
 
-def run_program_with_output (program_to_run):
-    p = run_program(program_to_run)
+def run_program_with_output (program_to_run, username = ""):
+    if username == "":
+        p = run_program(program_to_run)
+    else:
+        p = run_program_as_user(program_to_run, username)
     for line in iter(p.stdout.readline, b''):
         if line == "":
             print "---"
@@ -125,7 +136,7 @@ def run_program_with_output (program_to_run):
     if p.returncode != 0:
         printer.error("Command \'" + program_to_run + "\' failed to run. Return code: " + str(p.returncode))
 
-def run_program_without_output (program_to_run):
+def run_program_without_output (program_to_run, username = ""):
     # new_target = open(os.devnull, "w")
     # old_target = sys.stdout
     # sys.stdout = new_target
@@ -135,7 +146,11 @@ def run_program_without_output (program_to_run):
 
     # sys.stdout = old_target
 
-    p = run_program(program_to_run)
+    if username == "":
+        p = run_program(program_to_run)
+    else:
+        p = run_program_as_user(program_to_run, username)
+
 
     # Print to /dev/null
     new_target = open(os.devnull, "w")
@@ -143,7 +158,8 @@ def run_program_without_output (program_to_run):
     sys.stdout = new_target
 
     for line in iter(p.stdout.readline, b''):
-        print line
+        # print line
+        continue
 
     # Continue printing in console
     sys.stdout = old_target
