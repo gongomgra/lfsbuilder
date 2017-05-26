@@ -126,11 +126,11 @@ def run_program_with_output (program_to_run, username = ""):
         p = run_program(program_to_run)
     else:
         p = run_program_as_user(program_to_run, username)
+
     for line in iter(p.stdout.readline, b''):
-        if line == "":
-            print "---"
-        else:
-            print line
+        # Remove any 'newline' character if present
+        print line.rstrip('\n')
+
     # Wait for the running command to finish
     p.wait()
     if p.returncode != 0:
