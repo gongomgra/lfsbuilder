@@ -46,8 +46,10 @@ class BaseComponent(object):
         if file_path is None:
             file_path = self.buildscript_path
 
-        # Generate setenv file path. Removefrom path if we are not building the 'toolchain'
+        # Generate setenv file path.
+        # Remove BASE_DIRECTORY from path if we are not building the 'toolchain'
         setenv_script_path = os.path.join(config.BASE_DIRECTORY, "setenv.sh")
+
         if self.build_action != "toolchain":
             # If we are into the chroot, setenv.sh is located at root directory (/setenv.sh)
             # so we remove that part of the 'setenv_script_path' variable

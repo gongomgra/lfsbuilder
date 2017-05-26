@@ -147,7 +147,7 @@ class ToolchainBuilder(ComponentsBuilder):
 
     def __init__(self):
         # Call inherited method first
-        ComponentsBuilder.__init__(self, "toolchain_packages.xml")
+        ComponentsBuilder.__init__(self, config.toolchain_xml_filename)
         self.build_action = "toolchain"
         self.env_PATH_value = "/tools/bin:/bin:/usr/bin"
         self.components_to_build = ["binutils", "gcc", "linuxapiheaders", "glibc", "libstdcplusplus", "binutils2", "gcc2", "tclcore", "expect", "dejagnu", "check", "ncurses", "bash", "bzip2", "coreutils", "diffutils", "file", "findutils", "gawk", "gettext", "grep", "gzip", "m4", "make", "patch", "perl", "sed", "tar", "texinfo", "utillinux", "xz", "stripping"]
@@ -214,7 +214,7 @@ class ToolchainBuilder(ComponentsBuilder):
 
 class SystemBuilder(ComponentsBuilder):
     def __init__(self):
-        ComponentsBuilder.__init__(self, "system_packages.xml")
+        ComponentsBuilder.__init__(self, config.system_xml_filename)
         self.build_action = "system"
         self.env_PATH_value = "/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin"
         self.components_to_build = ["kernfs", "creatingdirs", "createfiles", "linuxapiheaders", "man-pages", "glibc", "adjusting", "zlib", "file", "binutils", "gmp", "mpfr", "mpc", "gcc", "bzip2", "pkgconfig", "ncurses", "attr", "acl", "libcap", "sed", "shadow", "psmisc", "iana-etc", "m4", "bison", "flex", "grep", "readline", "bash", "bc", "libtool", "gdbm", "gperf", "expat", "inetutils", "perl", "xml-parser", "intltool", "autoconf", "automake", "xz", "kmod", "gettext", "procps", "e2fsprogs", "coreutils", "diffutils", "gawk", "findutils", "groff", "grub", "less", "gzip", "iproute2", "kbd", "libpipeline", "make", "patch", "sysklogd", "sysvinit", "eudev", "util-linux", "man-db", "tar", "texinfo", "vim", "stripping"]
