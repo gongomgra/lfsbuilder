@@ -87,18 +87,22 @@ class BaseComponent(object):
             self.run_extra_steps(stepname="post", run_directory=self.build_directory)
 
     def run_extra_steps(self, stepname, run_directory):
-        os.chdir(run_directory)
         filename = os.path.join(run_directory, stepname + ".sh")
         self.write_script_header(filename)
 
         key = self.key_name + "_" + stepname
         tools.add_text_to_file(filename, self.components_data_dict[key])
 
-        self.run_script(filename)
+        self.run_script(filename, run_directory)
 
 
-    def run_script(self, filename):
-        os.chdir(self.build_directory)
+    def run_script(self, filename, run_directory):
+        # 'self' not available in function parameter so we sanitize here
+        if run_directory == "":
+            run_directory = self.build_directory
+
+        os.chdir(run_directory)
+
 
         printer.substepInfo("Running file \'" + os.path.basename(filename) + "\'")
 
