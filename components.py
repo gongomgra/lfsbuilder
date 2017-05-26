@@ -174,10 +174,10 @@ class CompilableComponent(BaseComponent):
     def extract_source_code(self):
         # We look for a tar file
         pattern = self.name + "*.tar.*"
-        sourceCodeFilename = tools.find_file(self.sources_directory, pattern)
-        if sourceCodeFilename == "":
+        source_code_filename = tools.find_file(self.sources_directory, pattern)
+        if source_code_filename == "":
             printer.error("Can't find source code file for \'" + self.name + "\' with pattern: " + pattern)
-        tools.extract(sourceCodeFilename)
+        tools.extract(source_code_filename)
         # We get the name of the extracted directory
         pattern = self.name + "*"
         self.extracted_directory = os.path.abspath(tools.find_directory(self.sources_directory, pattern))
@@ -305,8 +305,8 @@ class Gcc(CompilableComponent):
     #     for moduleName in ["mpfr", "gmp", "mpc"]:
     #         # We look for a tar file
     #         pattern = moduleName + "*.tar.*"
-    #         sourceCodeFilename = tools.find_file(self.sources_directory, pattern)
-    #         tools.extract(sourceCodeFilename, self.extracted_directory)
+    #         source_code_filename = tools.find_file(self.sources_directory, pattern)
+    #         tools.extract(source_code_filename, self.extracted_directory)
     #         # We get the name of the extracted directory inside of the gcc directory
     #         pattern = moduleName + "*"
     #         temporalExtractedDir = tools.find_directory(self.extracted_directory, pattern)
@@ -395,8 +395,8 @@ class Libstdcplusplus(CompilableComponent):
     #     for moduleName in ["mpfr", "gmp", "mpc"]:
     #         # We look for a tar file
     #         pattern = moduleName + "*.tar.*"
-    #         sourceCodeFilename = tools.find_file(self.sources_directory, pattern)
-    #         tools.extract(sourceCodeFilename, self.extracted_directory)
+    #         source_code_filename = tools.find_file(self.sources_directory, pattern)
+    #         tools.extract(source_code_filename, self.extracted_directory)
     #         # We get the name of the extracted directory inside of the gcc directory
     #         pattern = moduleName + "*"
     #         temporalExtractedDir = tools.find_directory(self.extracted_directory, pattern)

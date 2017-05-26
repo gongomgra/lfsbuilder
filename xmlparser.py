@@ -302,7 +302,7 @@ class LFSXmlParser(object):
                 toolchain_data_dict = tools.join_dicts(components_data_dict, packages_data_dict)
 
                 # Write commands
-                self.write_commands_xmlfile(components_filelist, toolchain_data_dict, config.toolchainXmlFilename)
+                self.write_commands_xmlfile(components_filelist, toolchain_data_dict, config.toolchain_xml_filename)
 
         def generate_system_xmlfile(self):
                 packages_data_dict = self.generate_packages_data_dict()
@@ -314,7 +314,7 @@ class LFSXmlParser(object):
                 system_data_dict = tools.join_dicts(components_data_dict, packages_data_dict)
 
                 # Write commands
-                self.write_commands_xmlfile(components_filelist, system_data_dict, config.systemXmlFilename)
+                self.write_commands_xmlfile(components_filelist, system_data_dict, config.system_xml_filename)
 
         def generate_dict_from_xmlfile(self, filename):
                 data_dict = {}
