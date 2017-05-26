@@ -101,7 +101,7 @@ class BaseComponent(object):
         self.run_script(filename, run_directory)
 
 
-    def run_script(self, filename, run_directory):
+    def run_script(self, filename, run_directory=""):
         # 'self' not available in function parameter so we sanitize here
         if run_directory == "":
             run_directory = self.build_directory
