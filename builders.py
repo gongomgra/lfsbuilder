@@ -217,9 +217,7 @@ class SystemBuilder(ComponentsBuilder):
         ComponentsBuilder.__init__(self, config.system_xml_filename)
         self.build_action = "system"
         self.env_PATH_value = "/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin"
-        self.components_to_build = ["kernfs", "creatingdirs", "createfiles", "linuxapiheaders", "man-pages", "glibc", "adjusting", "zlib", "file", "binutils", "gmp", "mpfr", "mpc", "gcc", "bzip2", "pkgconfig", "ncurses", "attr", "acl", "libcap", "sed", "shadow", "psmisc", "iana-etc", "m4", "bison", "flex", "grep", "readline", "bash", "bc", "libtool", "gdbm", "gperf", "expat", "inetutils", "perl", "xml-parser", "intltool", "autoconf", "automake", "xz", "kmod", "gettext", "procps", "e2fsprogs", "coreutils", "diffutils", "gawk", "findutils", "groff", "grub", "less", "gzip", "iproute2", "kbd", "libpipeline", "make", "patch", "sysklogd", "sysvinit", "eudev", "util-linux", "man-db", "tar", "texinfo", "vim", "stripping"]
-
-        self.components_to_build = ["stripping"]
+        self.components_to_build = ["kernfs", "creatingdirs", "createfiles", "linuxapiheaders", "manpages", "glibc", "adjusting", "zlib", "file", "binutils", "gmp", "mpfr", "mpc", "gcc", "bzip2", "pkgconfig", "ncurses", "attr", "acl", "libcap", "sed", "shadow", "psmisc", "iana-etc", "m4", "bison", "flex", "grep", "readline", "bash", "bc", "libtool", "gdbm", "gperf", "expat", "inetutils", "perl", "xml-parser", "intltool", "autoconf", "automake", "xz", "kmod", "gettext", "procps", "e2fsprogs", "coreutils", "diffutils", "gawk", "findutils", "groff", "grub", "less", "gzip", "iproute2", "kbd", "libpipeline", "make", "patch", "sysklogd", "sysvinit", "eudev", "util-linux", "mandb", "tar", "texinfo", "vim", "stripping"]
 
     def buildSteps(self):
 

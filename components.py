@@ -1145,6 +1145,12 @@ class Mandb(CompilableComponent):
         CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "man-db"
 
+class Manpages(CompilableComponent):
+
+    def __init__(self, build_action, components_data_dict):
+        CompilableComponent.__init__(self, build_action, components_data_dict)
+        self.name = "man-pages"
+
 class Vim(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
