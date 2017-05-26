@@ -382,9 +382,6 @@ class Glibc(CompilableComponent):
         self.make_options = "--jobs=1"
         # self.confi_oure_options = self.configure_options + "--host=$LFS_TGT --build=$(../scripts/config.guess) --enable-kernel=2.6.32 --with-headers=/tools/include libc_cv_forced_unwind=yes libc_cv_c_cleanup=yes"
 
-    def run_post_steps(self):
-        self.check_compiling_and_linking_functions()
-
 
 class Libstdcplusplus(CompilableComponent):
 
@@ -455,9 +452,6 @@ class Gcc2(Gcc):
         tools.add_to_dictionary(self.components_data_dict,
                                "gcc2_previous",
                                "sed -i 's/if \((code.*))\)/if (\&1; \&\& \!DEBUG_INSN_P (insn))/' gcc/sched-deps.c")
-
-    def run_post_steps(self):
-        self.check_compiling_and_linking_functions()
 
 
         #        self.configure_options = "CC=$LFS_TGT-gcc CXX=$LFS_TGT-g++ AR=$LFS_TGT-ar RANLIB=$LFS_TGT-ranlib --prefix=/tools --with-local-prefix=/tools --with-native-system-header-dir=/tools/include --enable-languages=c,c++ --disable-libstdcxx-pch --disable-multilib --disable-bootstrap --disable-libgomp"
