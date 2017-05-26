@@ -38,6 +38,11 @@ class BaseComponent(object):
         else:
             cmd = "/tools/bin/env -i /tools/bin/bash -x"
 
+        # Remove BASE_DIRECTORY if we are inside the chroot.
+        # We are not related to BASE_DIRECTORY anymore
+        if self.build_action == "system":
+            filename = filename.replace(config.BASE_DIRECTORY, "")
+
         cmd = cmd + " " + filename
         return cmd
 
@@ -109,7 +114,8 @@ class BaseComponent(object):
         cmd =  self.get_command_to_run_script(filename)
 
         if self.build_action == "toolchain":
-            tools.run_program_without_output(cmd, username=config.NON_PRIVILEGED_USERNAME)
+            tools.set_owner_and_group(filename, config.NON_PRIVILEGED_USERNAME)
+            tools.run_program_with_output(cmd, username=config.NON_PRIVILEGED_USERNAME)
         else:
             tools.run_program_into_chroot(cmd, config.BASE_DIRECTORY)
 
