@@ -309,7 +309,7 @@ class Gcc(CompilableComponent):
 
     def run_previous_steps(self):
         CompilableComponent.run_previous_steps(self)
-        tools.set_recursive_owner_and_group(self.extrated_directory, config.NON_PRIVILEGED_USERNAME)
+        tools.set_recursive_owner_and_group(self.extracted_directory, config.NON_PRIVILEGED_USERNAME)
 
     # def extract_source_code(self):
     #     # First run parent method and then extract mpfr, gmp and mpc
