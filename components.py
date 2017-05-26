@@ -216,6 +216,7 @@ class CompilableComponent(BaseComponent):
         patch_filename = tools.find_file(self.sources_directory, pattern)
 
         if len(patch_filename) != 0:
+            os.chdir(self.extracted_directory)
             tools.apply_patch(patch_filename)
             os.chdir(self.sources_directory)
 
