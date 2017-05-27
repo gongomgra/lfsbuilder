@@ -14,6 +14,7 @@ class BaseComponent(object):
         self.name = ""
         self.show_name = ""
         self.key_name = ""
+        self.package_name = ""
         # self.patchlist = []
         self.components_data_dict = components_data_dict
 
@@ -27,6 +28,9 @@ class BaseComponent(object):
         if self.key_name == "":
             self.key_name = self.name
 
+        # Set default 'package_name' if necessary
+        if self.package_name == "":
+            self.package_name = self.name
 #        tools.pretty_print(self.components_data_dict)
 
     def build(self):
@@ -185,7 +189,7 @@ class CompilableComponent(BaseComponent):
 
     def extract_source_code(self):
         # We look for a tar file
-        pattern = self.name + "*.tar.*"
+        pattern = self.package_name + "*.tar.*"
         source_code_filename = tools.find_file(self.sources_directory, pattern)
         if source_code_filename == "":
             printer.error("Can't find source code file for \'" + self.name + "\' with pattern: " + pattern)
@@ -387,10 +391,11 @@ class Libstdcplusplus(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
         CompilableComponent.__init__(self, build_action, components_data_dict)
-        self.name = "gcc"
+        self.name = "libstdcpp"
         # Libstdc++ source files are gcc, but we have to use libstdc++ compile options
-        self.key_name = "libstdcpp"
-        self.show_name = "libstdc++"
+        self.package_name = "gcc"
+        # self.key_name = "libstdcpp"
+        # self.show_name = "libstdc++"
 #        self.configure_options = self.configure_options + "--host=$LFS_TGT --disable-multilib --disable-nls --disable-libstdcxx-threads --disable-libstdcxx-pch --with-gxx-include-dir=/tools/$LFS_TGT/include/c++/6.2.0"
 
     # def addExtraStepsToBuildScript(self):
