@@ -17,9 +17,8 @@ class BaseComponent(object):
         self.package_name = ""
         # self.patchlist = []
         self.components_data_dict = components_data_dict
-
         self.build_directory = ""
-
+        self.run_as_username = ""
 
     # def __del__(self):
     #     print "Deleted!"
@@ -32,6 +31,10 @@ class BaseComponent(object):
         if self.package_name == "":
             self.package_name = self.name
 #        tools.pretty_print(self.components_data_dict)
+
+        # Set 'run_as_username' attribute
+        if self.run_as_username == "":
+            self.run_as_username = config.NON_PRIVILEGED_USERNAME
 
     def build(self):
         pass
@@ -118,8 +121,8 @@ class BaseComponent(object):
         cmd =  self.get_command_to_run_script(filename)
 
         if self.build_action == "toolchain":
-            tools.set_owner_and_group(filename, config.NON_PRIVILEGED_USERNAME)
-            tools.run_program_with_output(cmd, username=config.NON_PRIVILEGED_USERNAME)
+            tools.set_owner_and_group(filename, self.run_as_username)
+            tools.run_program_with_output(cmd, username=self.run_as_username)
         else:
             tools.run_program_into_chroot(cmd, config.BASE_DIRECTORY)
 
@@ -211,7 +214,6 @@ class CompilableComponent(BaseComponent):
         # Set directory owner if we are building the 'toolchain'
         if self.build_action == "toolchain":
             tools.set_recursive_owner_and_group(self.extracted_directory, config.NON_PRIVILEGED_USERNAME)
-
 
     def run_previous_steps(self):
         os.chdir(self.extracted_directory)
@@ -889,7 +891,7 @@ class Kernfs(SystemConfigurationComponent):
         self.name = "kernfs"
         # 'kernfs' needs to be built like a toolchain component. That is, from outside the chroot
         self.build_action = "toolchain"
-
+        self.run_as_username = "root"
 
 class Creatingdirs(SystemConfigurationComponent):
 
