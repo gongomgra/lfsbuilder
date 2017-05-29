@@ -19,6 +19,7 @@ class BaseComponent(object):
         self.components_data_dict = components_data_dict
         self.build_directory = ""
         self.run_as_username = ""
+        self.replaceable_placeholder_value = ""
 
     # def __del__(self):
     #     print "Deleted!"
@@ -71,6 +72,7 @@ class BaseComponent(object):
         substitutionList = ["@@LFS_SETENV_FILE@@", setenv_script_path,
                             "@@LFS_COMPONENT_KEYNAME@@", self.key_name,
                             "@@LFS_BUILD_ACTION@@", self.build_action,
+                            "@@LFS_REPLACEABLE@@", self.replaceable_placeholder_value,
                             "&amp;", "&",
                             "&gt;", ">",
                             "&lt;", "<",
@@ -388,6 +390,8 @@ class Glibc(CompilableComponent):
         CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "glibc"
         self.make_options = "--jobs=1"
+        if self.build_action == "system":
+            self.replaceable_placeholder_value = config.TIMEZONE
         # self.confi_oure_options = self.configure_options + "--host=$LFS_TGT --build=$(../scripts/config.guess) --enable-kernel=2.6.32 --with-headers=/tools/include libc_cv_forced_unwind=yes libc_cv_c_cleanup=yes"
 
 
