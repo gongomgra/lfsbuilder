@@ -110,6 +110,15 @@ class LFSXmlParser(object):
                                                         "<screen role=\"nodump\"><userinput>",
                                                         "<screen role=\"nodump\"><userinput remap=\"notRequired\">")
 
+                        # 'glibc' includes commands that are not necessary in the 'system' step (chapter06)
+                        # We remap them to 'notRequired' to avoid it to be included in '_post' steps
+                        if component_filename == "glibc.xml":
+                                new_filename = componentfile_path + ".orig"
+                                tools.copy_file(componentfile_path, new_filename)
+                                tools.substitute_in_file(componentfile_path,
+                                                         "<screen role=\"nodump\"><userinput>tzselect",
+                                                         "<screen role=\"nodump\"><userinput remap=\"notRequired\">tzselect")
+
 
                         # Remove 'literal' subchild so commands waiting the EOF string get properly parsed
                         # Remove replaceable subchild. Necessary to properly set timezone
@@ -118,7 +127,6 @@ class LFSXmlParser(object):
                         # new = ["", "", "@@LFS_REPLACEABLE@@"]
                         substitution_list = ["<literal>", "",
                                             "</literal>", "",
-                                             "tzselect", "",
                                              "<replaceable>&lt;xxx&gt;</replaceable>", "@@LFS_REPLACEABLE@@"]
                         tools.substitute_multiple_in_file(componentfile_path, substitution_list)
 
