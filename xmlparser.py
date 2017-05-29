@@ -111,13 +111,15 @@ class LFSXmlParser(object):
                                                         "<screen role=\"nodump\"><userinput remap=\"notRequired\">")
 
 
-                        # Remove literal subchild so commands waiting the EOF string get properly parsed
+                        # Remove 'literal' subchild so commands waiting the EOF string get properly parsed
                         # Remove replaceable subchild. Necessary to properly set timezone
+                        # Remove 'tzselect' command as we do not want it to be run. Use config parameter
                         # old = ["<literal>", "</literal>", "<replaceable>&lt;xxx&gt;</replaceable>"]
                         # new = ["", "", "@@LFS_REPLACEABLE@@"]
                         substitution_list = ["<literal>", "",
                                             "</literal>", "",
-                                            "<replaceable>&lt;xxx&gt;</replaceable>", "@@LFS_REPLACEABLE@@"]
+                                             "tzselect", "",
+                                             "<replaceable>&lt;xxx&gt;</replaceable>", "@@LFS_REPLACEABLE@@"]
                         tools.substitute_multiple_in_file(componentfile_path, substitution_list)
 
                         # Create XML parser on every iteration
