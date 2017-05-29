@@ -172,7 +172,9 @@ def run_program_without_output (program_to_run, username = ""):
 def run_program_into_chroot (program_to_run, base_directory):
         real_root = os.open("/", os.O_RDONLY)
         os.chroot(base_directory)
-        os.chdir("/")
+        # Removed 'os.chdir' call to run commands into chroot into directory we were previously to call 'chroot'
+        # Normally 'extracted_directory'
+        # os.chdir("/")
 
         # Chrooted environment
         sys.exit(0)
