@@ -150,7 +150,7 @@ class ToolchainBuilder(ComponentsBuilder):
         ComponentsBuilder.__init__(self, config.toolchain_xml_filename)
         self.build_action = "toolchain"
         self.env_PATH_value = "/tools/bin:/bin:/usr/bin"
-        self.components_to_build = ["binutils", "gcc", "linuxapiheaders", "glibc", "libstdcplusplus", "binutils2", "gcc2", "tclcore", "expect", "dejagnu", "check", "ncurses", "bash", "bzip2", "coreutils", "diffutils", "file", "findutils", "gawk", "gettext", "grep", "gzip", "m4", "make", "patch", "perl", "sed", "tar", "texinfo", "utillinux", "xz", "stripping"]
+        self.components_to_build = ["binutils", "gcc", "linuxapiheaders", "glibc", "libstdcplusplus", "binutils2", "gcc2", "tclcore", "expect", "dejagnu", "check", "ncurses", "bash", "bison", "bzip2", "coreutils", "diffutils", "file", "findutils", "gawk", "gettext", "grep", "gzip", "m4", "make", "patch", "perl", "sed", "tar", "texinfo", "utillinux", "xz", "stripping"]
 
     # def build(self):
     #     # self.checkMountPoint()
