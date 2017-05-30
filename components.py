@@ -90,7 +90,6 @@ class BaseComponent(object):
 """
 
         tools.write_file(filename, text)
-        self.substitute_script_placeholders(filename)
 
     def run_post_steps(self):
         os.chdir(self.extracted_directory)
@@ -117,6 +116,8 @@ class BaseComponent(object):
 
         os.chdir(run_directory)
 
+        # Substitute script placeholders before running the script
+        self.substitute_script_placeholders(filename)
 
         printer.substepInfo("Running file \'" + os.path.basename(filename) + "\'")
 
