@@ -857,6 +857,9 @@ class Utillinux(CompilableComponent):
         CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "util-linux"
         self.show_name = "UtilLinux"
+        # Include tests for 'system' step to avoid issues running 'post.sh'
+        if self.build_action == "system":
+            self.include_tests = 1
 
 class Xz(CompilableComponent):
 
