@@ -1050,6 +1050,7 @@ class Xmlparser(CompilableComponent):
     def __init__(self, build_action, components_data_dict):
         CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "xml-parser"
+        self.package_name = "XML-Parser"
 
 class Intltool(CompilableComponent):
 
