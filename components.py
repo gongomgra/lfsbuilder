@@ -201,7 +201,7 @@ class CompilableComponent(BaseComponent):
             printer.error("Can't find source code file for \'" + self.name + "\' with pattern: " + pattern)
         tools.extract(source_code_filename)
         # We get the name of the extracted directory
-        pattern = self.name + "*"
+        pattern = self.package_name + "*"
         self.extracted_directory = os.path.abspath(tools.find_directory(self.sources_directory, pattern))
         if self.extracted_directory == "":
             printer.error("Can't find extracted directory for \'" + self.name + "\' with pattern: " + pattern)
