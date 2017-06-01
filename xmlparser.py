@@ -115,10 +115,18 @@ class LFSXmlParser(object):
                         if component_filename == "glibc.xml":
                                 new_filename = componentfile_path + ".orig"
                                 tools.copy_file(componentfile_path, new_filename)
-                                tools.substitute_in_file(componentfile_path,
-                                                         "<screen role=\"nodump\"><userinput>tzselect",
-                                                         "<screen role=\"nodump\"><userinput remap=\"notRequired\">tzselect")
+                                substitution_list = ["<replaceable>&lt;xxx&gt;</replaceable>",
+                                                     "@@LFS_REPLACEABLE@@"
+                                                     "<screen role=\"nodump\"><userinput>tzselect",
+                                                     "<screen role=\"nodump\"><userinput remap=\"notRequired\">tzselect")
 
+                        # 'groff' includes commands that are not necessary in the 'system' step (chapter06)
+                        # We remap them to 'notRequired' to avoid it to be included in '_post' steps
+                        if component_filename == "groff.xml":
+                                new_filename = componentfile_path + ".orig"
+                                tools.copy_file(componentfile_path, new_filename)
+                                substitution_list = ["<replaceable>&lt;paper_size&gt;</replaceable>",
+                                                     "@@LFS_REPLACEABLE@@"
 
                         # Remove 'literal' subchild so commands waiting the EOF string get properly parsed
                         # Remove replaceable subchild. Necessary to properly set timezone
@@ -126,8 +134,8 @@ class LFSXmlParser(object):
                         # old = ["<literal>", "</literal>", "<replaceable>&lt;xxx&gt;</replaceable>"]
                         # new = ["", "", "@@LFS_REPLACEABLE@@"]
                         substitution_list = ["<literal>", "",
-                                            "</literal>", "",
-                                             "<replaceable>&lt;xxx&gt;</replaceable>", "@@LFS_REPLACEABLE@@"]
+                                            "</literal>", ""]
+
                         tools.substitute_multiple_in_file(componentfile_path, substitution_list)
 
                         # Create XML parser on every iteration

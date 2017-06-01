@@ -1096,6 +1096,7 @@ class Groff(CompilableComponent):
     def __init__(self, build_action, components_data_dict):
         CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "groff"
+        self.replaceable_placeholder_value = config.PAPER_SIZE
 
 class Grub(CompilableComponent):
 
