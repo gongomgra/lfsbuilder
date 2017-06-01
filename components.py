@@ -219,13 +219,6 @@ class CompilableComponent(BaseComponent):
             tools.set_recursive_owner_and_group(self.extracted_directory, config.NON_PRIVILEGED_USERNAME)
 
     def run_previous_steps(self):
-        os.chdir(self.extracted_directory)
-
-        # Run previous steps if any
-        key = self.key_name + "_previous"
-        if self.components_data_dict[key] is not None:
-            self.run_extra_steps(stepname="previous", run_directory=self.extracted_directory)
-
         # Search a .patch file and apply it
         pattern = self.package_name + "*.patch"
         patch_filename = tools.find_file(self.sources_directory, pattern)
@@ -233,7 +226,13 @@ class CompilableComponent(BaseComponent):
         if len(patch_filename) != 0:
             os.chdir(self.extracted_directory)
             tools.apply_patch(patch_filename)
-            os.chdir(self.sources_directory)
+
+        # Run previous steps if any
+        key = self.key_name + "_previous"
+        if self.components_data_dict[key] is not None:
+            self.run_extra_steps(stepname="previous", run_directory=self.extracted_directory)
+
+        os.chdir(self.sources_directory)
 
     def add_configure_to_buildscript(self):
         key = self.key_name + "_configure"
