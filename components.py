@@ -227,7 +227,7 @@ class CompilableComponent(BaseComponent):
             self.run_extra_steps(stepname="previous", run_directory=self.extracted_directory)
 
         # Search a .patch file and apply it
-        pattern = self.name + "*.patch"
+        pattern = self.package_name + "*.patch"
         patch_filename = tools.find_file(self.sources_directory, pattern)
 
         if len(patch_filename) != 0:
