@@ -269,7 +269,7 @@ class CompilableComponent(BaseComponent):
             text = text + " " + self.install_options
             tools.add_text_to_file(self.buildscript_path, text)
 
-    def generate_buildscript(self, customBuildDir=""):
+    def generate_buildscript(self, custom_build_directory=""):
         self.buildscript_path = os.path.join(self.build_directory, self.buildscript_name)
 
         self.write_script_header(self.buildscript_path)
