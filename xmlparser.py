@@ -107,8 +107,8 @@ class LFSXmlParser(object):
                                 new_filename = componentfile_path + ".orig"
                                 tools.copy_file(componentfile_path, new_filename)
                                 tools.substitute_in_file(componentfile_path,
-                                                        "<screen role=\"nodump\"><userinput>",
-                                                        "<screen role=\"nodump\"><userinput remap=\"notRequired\">")
+                                                         "<screen role=\"nodump\"><userinput>",
+                                                         "<screen role=\"nodump\"><userinput remap=\"notRequired\">")
 
                         # 'glibc' includes commands that are not necessary in the 'system' step (chapter06)
                         # We remap them to 'notRequired' to avoid it to be included in '_post' steps
@@ -116,7 +116,7 @@ class LFSXmlParser(object):
                                 new_filename = componentfile_path + ".orig"
                                 tools.copy_file(componentfile_path, new_filename)
                                 substitution_list = ["<replaceable>&lt;xxx&gt;</replaceable>",
-                                                     "@@LFS_REPLACEABLE@@"
+                                                     "@@LFS_REPLACEABLE@@",
                                                      "<screen role=\"nodump\"><userinput>tzselect",
                                                      "<screen role=\"nodump\"><userinput remap=\"notRequired\">tzselect"]
 
@@ -126,7 +126,7 @@ class LFSXmlParser(object):
                                 new_filename = componentfile_path + ".orig"
                                 tools.copy_file(componentfile_path, new_filename)
                                 substitution_list = ["<replaceable>&lt;paper_size&gt;</replaceable>",
-                                                     "@@LFS_REPLACEABLE@@"
+                                                     "@@LFS_REPLACEABLE@@"]
 
                         # Remove 'literal' subchild so commands waiting the EOF string get properly parsed
                         # Remove replaceable subchild. Necessary to properly set timezone
