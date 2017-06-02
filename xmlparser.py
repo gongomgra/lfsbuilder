@@ -118,7 +118,7 @@ class LFSXmlParser(object):
                                 substitution_list = ["<replaceable>&lt;xxx&gt;</replaceable>",
                                                      "@@LFS_REPLACEABLE@@"
                                                      "<screen role=\"nodump\"><userinput>tzselect",
-                                                     "<screen role=\"nodump\"><userinput remap=\"notRequired\">tzselect")
+                                                     "<screen role=\"nodump\"><userinput remap=\"notRequired\">tzselect"]
 
                         # 'groff' includes commands that are not necessary in the 'system' step (chapter06)
                         # We remap them to 'notRequired' to avoid it to be included in '_post' steps
@@ -134,7 +134,7 @@ class LFSXmlParser(object):
                         # old = ["<literal>", "</literal>", "<replaceable>&lt;xxx&gt;</replaceable>"]
                         # new = ["", "", "@@LFS_REPLACEABLE@@"]
                         substitution_list = ["<literal>", "",
-                                            "</literal>", ""]
+                                             "</literal>", ""]
 
                         tools.substitute_multiple_in_file(componentfile_path, substitution_list)
 
