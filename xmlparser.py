@@ -120,6 +120,8 @@ class LFSXmlParser(object):
                                                      "<screen role=\"nodump\"><userinput>tzselect",
                                                      "<screen role=\"nodump\"><userinput remap=\"notRequired\">tzselect"]
 
+                                tools.substitute_multiple_in_file(componentfile_path, substitution_list)
+
                         # 'groff' includes commands that are not necessary in the 'system' step (chapter06)
                         # We remap them to 'notRequired' to avoid it to be included in '_post' steps
                         if component_filename == "groff.xml":
@@ -127,6 +129,7 @@ class LFSXmlParser(object):
                                 tools.copy_file(componentfile_path, new_filename)
                                 substitution_list = ["<replaceable>&lt;paper_size&gt;</replaceable>",
                                                      "@@LFS_REPLACEABLE@@"]
+                                tools.substitute_multiple_in_file(componentfile_path, substitution_list)
 
                         # Remove 'literal' subchild so commands waiting the EOF string get properly parsed
                         # Remove replaceable subchild. Necessary to properly set timezone
