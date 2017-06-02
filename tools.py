@@ -230,15 +230,15 @@ def extract (filename, destination=""):
         printer.error("Archive \'" + filename + "\' extension not recognized")
 
 
-def apply_patch (filename):
-    printer.substepInfo("Applying patchfile \'" + os.path.basename(filename) + "\'")
-    cmd = "patch -N -p1 < " + filename
-    text = """#!/bin/bash
-""" + cmd
-    write_file("patch.sh", text)
-    cmd_aux = "bash patch.sh"
-    # run_program_with_output (cmd_aux)
-    run_program_without_output (cmd_aux)
+# def apply_patch (filename):
+#     printer.substepInfo("Applying patchfile \'" + os.path.basename(filename) + "\'")
+#     cmd = "patch -N -p1 < " + filename
+#     text = """#!/bin/bash
+# """ + cmd
+#     write_file("patch.sh", text)
+#     cmd_aux = "bash patch.sh"
+#     # run_program_with_output (cmd_aux)
+#     run_program_without_output (cmd_aux)
 
 # ---
 

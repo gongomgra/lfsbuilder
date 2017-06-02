@@ -188,6 +188,7 @@ class CompilableComponent(BaseComponent):
 
     def build(self):
         self.extract_source_code()
+        self.apply_patches()
         self.run_previous_steps()
         self.generate_buildscript()
         self.run_script(self.buildscript_path)
@@ -218,15 +219,20 @@ class CompilableComponent(BaseComponent):
         if self.build_action == "toolchain":
             tools.set_recursive_owner_and_group(self.extracted_directory, config.NON_PRIVILEGED_USERNAME)
 
-    def run_previous_steps(self):
+    def apply_patches(self):
         # Search a .patch file and apply it
         pattern = self.package_name + "*.patch"
         patch_filename = tools.find_file(self.sources_directory, pattern)
 
         if len(patch_filename) != 0:
-            os.chdir(self.extracted_directory)
-            tools.apply_patch(patch_filename)
+            script_filename = os.path.join(self.extracted_directory, "patch.sh")
+            self.write_script_header(script_filename)
+            cmd = "patch -N -p1 --verbose < " + patch_filename
+            tools.add_text_to_file(script_filename, cmd)
+            self.run_script(script_filename, run_directory = self.extracted_directory)
 
+
+    def run_previous_steps(self):
         # Run previous steps if any
         key = self.key_name + "_previous"
         if self.components_data_dict[key] is not None:
