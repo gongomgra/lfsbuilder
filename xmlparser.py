@@ -122,7 +122,7 @@ class LFSXmlParser(object):
 
                                 tools.substitute_multiple_in_file(componentfile_path, substitution_list)
 
-                        # 'groff' includes commands that are not necessary in the 'system' step (chapter06)
+                        # 'groff' includes commands that are not necessary in the 'system' step chapter06
                         # We remap them to 'notRequired' to avoid it to be included in '_post' steps
                         if component_filename == "groff.xml":
                                 new_filename = componentfile_path + ".orig"
@@ -138,6 +138,21 @@ class LFSXmlParser(object):
                         # new = ["", "", "@@LFS_REPLACEABLE@@"]
                         substitution_list = ["<literal>", "",
                                              "</literal>", ""]
+
+                        # Remove commands that try to run a bash console interactively
+                        # 'chroot.xml' and 'revisedchroot.xml' are excluded
+                        bash_removes = ["<screen role=\"nodump\"><userinput>exec /bin/bash --login +h</userinput></screen>", "<screen role=\"nodump\"><userinput remap=\"notRequired\">exec /bin/bash --login +h</userinput></screen>",
+                                        "<screen role=\"nodump\"><userinput>exec /tools/bin/bash --login +h</userinput></screen>", "<screen role=\"nodump\"><userinput remap=\"notRequired\">exec /tools/bin/bash --login +h</userinput></screen>",
+                                        "<screen role=\"nodump\"><userinput>chroot $LFS /tools/bin/env -i            \
+    HOME=/root TERM=$TERM PS1='\u:\w\$ ' \
+    PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
+    /tools/bin/bash --login</userinput></screen>", "<screen role=\"nodump\"><userinput remap=\"notRequired\">chroot $LFS /tools/bin/env -i            \
+    HOME=/root TERM=$TERM PS1='\u:\w\$ ' \
+    PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
+    /tools/bin/bash --login</userinput></screen>"]
+
+                        # Join substitution lists
+                        substitution_list.extend(bash_removes)
 
                         tools.substitute_multiple_in_file(componentfile_path, substitution_list)
 
@@ -328,7 +343,7 @@ class LFSXmlParser(object):
         def generate_system_xmlfile(self):
                 packages_data_dict = self.generate_packages_data_dict()
                 system_index_path = os.path.abspath(os.path.join("book/chapter06", self.system_index_file))
-                exclude = ["introduction", "pkgmgt", "chroot", "systemd", "dbus", "aboutdebug"]
+                exclude = ["introduction", "pkgmgt", "chroot", "systemd", "dbus", "aboutdebug", "revisedchroot"]
                 components_filelist = self.generate_components_filelist_from_index(system_index_path,
                                                                          exclude)
                 components_data_dict = self.generate_components_dict(components_filelist, system_index_path)
