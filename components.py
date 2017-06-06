@@ -337,7 +337,7 @@ class Gcc(CompilableComponent):
             self.check_grep_command = """readelf -l a.out | grep ': /lib'
 grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log
 grep -B1 '^ /usr/include' dummy.log
-grep 'SEARCH.*/usr/lib' dummy.log |sed 's|; |\n|g'
+grep 'SEARCH.*/usr/lib' dummy.log |sed 's|; |\\n|g'
 grep &quot;/lib.*/libc.so.6 &quot; dummy.log
 grep -B4 '^ /usr/include' dummy.log
 grep found dummy.log
