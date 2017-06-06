@@ -961,6 +961,7 @@ class Pkgconfig(CompilableComponent):
     def __init__(self, build_action, components_data_dict):
         CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "pkgconfig"
+        self.package_name = "pkg-config"
 
 class Attr(CompilableComponent):
 
