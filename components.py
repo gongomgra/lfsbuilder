@@ -69,7 +69,7 @@ class BaseComponent(object):
             setenv_script_path = setenv_script_path.replace(config.BASE_DIRECTORY, "")
 
         # Placeholders to substitute
-        substitutionList = ["@@LFS_SETENV_FILE@@", setenv_script_path,
+        substitution_list = ["@@LFS_SETENV_FILE@@", setenv_script_path,
                             "@@LFS_COMPONENT_KEYNAME@@", self.key_name,
                             "@@LFS_BUILD_ACTION@@", self.build_action,
                             "@@LFS_REPLACEABLE@@", self.replaceable_placeholder_value,
@@ -77,7 +77,12 @@ class BaseComponent(object):
                             "&gt;", ">",
                             "&lt;", "<",
                             "&quot;", "\""]
-        tools.substitute_multiple_in_file(file_path, substitutionList)
+
+        # Remove BASE_DIRECTORY if not building 'toolchain'
+        if self.build_action != "toolchain":
+            substitution_list.extend([config.BASE_DIRECTORY, ""])
+
+        tools.substitute_multiple_in_file(file_path, substitution_list)
 
     def write_script_header(self, filename):
         printer.substepInfo("Generating script \'" + filename + "\'")
