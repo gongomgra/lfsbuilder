@@ -332,7 +332,7 @@ class Gcc(CompilableComponent):
         self.name = "gcc"
 
         # Check compilation and linking function for 'system' build
-        if self.build_action = "system":
+        if self.build_action == "system":
             self.check_cc_command = "cc dummy.c -v -Wl,--verbose &amp;&gt; dummy.log"
             self.check_grep_command = """readelf -l a.out | grep ': /lib'
 grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log
@@ -363,7 +363,7 @@ grep found dummy.log
     def run_post_steps(self):
         if self.build_action == "system":
             # Don't call parent function as the only check it includes in 'post' is already here
-            self.check_compilation_and_linking_functions()
+            self.check_compiling_and_linking_functions()
         else:
             # Call parent function
             BaseComponent.run_post_steps(self)
@@ -442,14 +442,14 @@ class Glibc(CompilableComponent):
         # self.confi_oure_options = self.configure_options + "--host=$LFS_TGT --build=$(../scripts/config.guess) --enable-kernel=2.6.32 --with-headers=/tools/include libc_cv_forced_unwind=yes libc_cv_c_cleanup=yes"
 
         # Compilation check
-        if self.build_action = "toolchain":
+        if self.build_action == "toolchain":
             self.check_cc_command = "$LFS_TGT-gcc dummy.c"
             self.check_grep_command = "readelf -l a.out | grep ': /tools'"
             self.check_rm_command = "rm -v dummy.c a.out"
 
     def run_post_steps(self):
         if self.build_action == "toolchain":
-            self.check_compilation_and_linking_functions()
+            self.check_compiling_and_linking_functions()
 
         # Call parent function
         BaseComponent.run_post_steps(self)
@@ -528,14 +528,14 @@ class Gcc2(Gcc):
 
 
         # Compilation check
-        if self.build_action = "toolchain":
+        if self.build_action == "toolchain":
             self.check_cc_command = "cc dummy.c"
             self.check_grep_command = "readelf -l a.out | grep ': /tools'"
             self.check_rm_command = "rm -v dummy.c a.out"
 
     def run_post_steps(self):
         if self.build_action == "toolchain":
-            self.check_compilation_and_linking_functions()
+            self.check_compiling_and_linking_functions()
 
         # Call parent function
         BaseComponent.run_post_steps(self)
