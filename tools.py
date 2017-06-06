@@ -177,7 +177,6 @@ def run_program_into_chroot (program_to_run, base_directory):
         # os.chdir("/")
 
         # Chrooted environment
-        sys.exit(0)
         run_program_with_output(program_to_run)
 
         # Back to old root
