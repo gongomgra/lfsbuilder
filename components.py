@@ -138,13 +138,23 @@ class BaseComponent(object):
         os.chdir(self.sources_directory)
 
 
-#     def check_compiling_and_linking_functions(self):
-#         key = self.key_name + "_post"
-#         value = """
-# echo 'int main(){}' > dummy.c
-# $LFS_TGT-gcc dummy.c
-# # Check if output contains /tools/lib64/ld-linux-x86-64.so.2
-# readelf -l a.out | grep ': /tools'
+    def check_compiling_and_linking_functions(self):
+        os.chdir(self.build_directory)
+        # Creates a shell script to check compiling and linking functions for required components
+        filename = os.path.join(self.build_directory, "compilation_linking_check.sh")
+
+        self.write_script_header(filename)
+
+        text = """
+
+pwd
+
+echo 'int main(){}' > dummy.c
+# Compile
+@@LFS_CHECK_COMPILATION_CC_COMMAND@@
+# Check output
+@@LFS_CHECK_COMPILATION_GREP_COMMAND@@
+
 # result=$?
 # if [ $result -eq 0 ]; then
 #    echo -e '\e[92m--- Glibc check was OK ---\e[0m'
@@ -152,12 +162,16 @@ class BaseComponent(object):
 #    echo -e '\e[91m--- Glibc check was FAILED ---\e[0m'
 #    exit 1
 # fi
-# rm -v dummy.c a.out
-# """
-#         tools.add_to_dictionary(self.components_data_dict, key, value, concat=False)
-#         # Run parent function
-#         BaseComponent.run_post_steps(self)
 
+@@LFS_CHECK_COMPILATION_RM_COMMAND@@
+"""
+        tools.add_text_to_file(filename, text)
+        substitution_list = ["@@LFS_CHECK_COMPILATION_CC_COMMAND@@", self.check_cc_command,
+                             "@@LFS_CHECK_COMPILATION_GREP_COMMAND@@", self.check_grep_command,
+                             "@@LFS_CHECK_COMPILATION_RM_COMMAND@@", self.check_rm_command]
+
+        tools.substitute_multiple_in_file(filename, substitution_list)
+        self.run_script(filename)
 
     def clean_workspace(self):
         if self.show_name == "":
@@ -317,6 +331,19 @@ class Gcc(CompilableComponent):
         CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "gcc"
 
+        # Check compilation and linking function for 'system' build
+        if self.build_action = "system":
+            self.check_cc_command = "cc dummy.c -v -Wl,--verbose &amp;&gt; dummy.log"
+            self.check_grep_command = """readelf -l a.out | grep ': /lib'
+grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log
+grep -B1 '^ /usr/include' dummy.log
+grep 'SEARCH.*/usr/lib' dummy.log |sed 's|; |\n|g'
+grep &quot;/lib.*/libc.so.6 &quot; dummy.log
+grep -B4 '^ /usr/include' dummy.log
+grep found dummy.log
+"""
+            self.check_rm_command = "rm -v dummy.c a.out dummy.log"
+
         # Required patch for glibc to compile properly. Add it to gcc previous steps
         # http://stackoverflow.com/questions/15787684/lfs-glibc-compilation-ld-error
         tools.add_to_dictionary(self.components_data_dict,
@@ -331,6 +358,15 @@ class Gcc(CompilableComponent):
         if self.build_action == "toolchain":
             # Previous steps extract 'mpfr', 'gmp' and 'mpc' tarballs as root user. We need to set owner.
             tools.set_recursive_owner_and_group(self.extracted_directory, config.NON_PRIVILEGED_USERNAME)
+
+
+    def run_post_steps(self):
+        if self.build_action == "system":
+            # Don't call parent function as the only check it includes in 'post' is already here
+            self.check_compilation_and_linking_functions()
+        else:
+            # Call parent function
+            BaseComponent.run_post_steps(self)
 
     # def extract_source_code(self):
     #     # First run parent method and then extract mpfr, gmp and mpc
@@ -405,6 +441,19 @@ class Glibc(CompilableComponent):
             self.replaceable_placeholder_value = config.TIMEZONE
         # self.confi_oure_options = self.configure_options + "--host=$LFS_TGT --build=$(../scripts/config.guess) --enable-kernel=2.6.32 --with-headers=/tools/include libc_cv_forced_unwind=yes libc_cv_c_cleanup=yes"
 
+        # Compilation check
+        if self.build_action = "toolchain":
+            self.check_cc_command = "$LFS_TGT-gcc dummy.c"
+            self.check_grep_command = "readelf -l a.out | grep ': /tools'"
+            self.check_rm_command = "rm -v dummy.c a.out"
+
+    def run_post_steps(self):
+        if self.build_action == "toolchain":
+            self.check_compilation_and_linking_functions()
+
+        # Call parent function
+        BaseComponent.run_post_steps(self)
+
 
 class Libstdcplusplus(CompilableComponent):
 
@@ -477,6 +526,19 @@ class Gcc2(Gcc):
                                "gcc2_previous",
                                "sed -i 's/if \((code.*))\)/if (\&1; \&\& \!DEBUG_INSN_P (insn))/' gcc/sched-deps.c")
 
+
+        # Compilation check
+        if self.build_action = "toolchain":
+            self.check_cc_command = "cc dummy.c"
+            self.check_grep_command = "readelf -l a.out | grep ': /tools'"
+            self.check_rm_command = "rm -v dummy.c a.out"
+
+    def run_post_steps(self):
+        if self.build_action == "toolchain":
+            self.check_compilation_and_linking_functions()
+
+        # Call parent function
+        BaseComponent.run_post_steps(self)
 
         #        self.configure_options = "CC=$LFS_TGT-gcc CXX=$LFS_TGT-g++ AR=$LFS_TGT-ar RANLIB=$LFS_TGT-ranlib --prefix=/tools --with-local-prefix=/tools --with-native-system-header-dir=/tools/include --enable-languages=c,c++ --disable-libstdcxx-pch --disable-multilib --disable-bootstrap --disable-libgomp"
 
