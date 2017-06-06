@@ -141,6 +141,16 @@ class LFSXmlParser(object):
                                 tools.substitute_multiple_in_file(componentfile_path, substitution_list)
 
 
+                        # 'vim' includes commands that are not necessary in the 'system' step chapter06
+                        # We remap them to 'notRequired' to avoid it to be included in '_post' steps
+                        if component_filename == "vim.xml":
+                                new_filename = componentfile_path + ".orig"
+                                tools.copy_file(componentfile_path, new_filename)
+                                substitution_list = ["<screen role=\"nodump\"><userinput>vim -c ':options'</userinput></screen>"
+                                                     "<screen role=\"nodump\"><userinput remap=\"notRequired\">vim -c ':options'</userinput></screen>"]
+                                tools.substitute_multiple_in_file(componentfile_path, substitution_list)
+
+
                         # Remove 'literal' subchild so commands waiting the EOF string get properly parsed
                         # Remove replaceable subchild. Necessary to properly set timezone
                         # Remove 'tzselect' command as we do not want it to be run. Use config parameter
