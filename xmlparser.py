@@ -146,8 +146,9 @@ class LFSXmlParser(object):
                         if component_filename == "vim.xml":
                                 new_filename = componentfile_path + ".orig"
                                 tools.copy_file(componentfile_path, new_filename)
-                                substitution_list = ["<screen role=\"nodump\"><userinput>vim -c ':options'</userinput></screen>"
-                                                     "<screen role=\"nodump\"><userinput remap=\"notRequired\">vim -c ':options'</userinput></screen>"]
+                                substitution_list = ["<screen role=\"nodump\"><userinput>vim -c \':options\'</userinput></screen>",
+                                                     "<screen role=\"nodump\"><userinput remap=\"notRequired\">vim -c \':options\'</userinput></screen>"]
+                                print "Will substitute"
                                 tools.substitute_multiple_in_file(componentfile_path, substitution_list)
 
 
