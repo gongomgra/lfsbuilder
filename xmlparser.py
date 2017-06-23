@@ -1,13 +1,14 @@
 
 import xml.etree.ElementTree as ET
 import os
+import re as regexp
 import tools
 import config
 
 class ShowAllEntities(object):
         def __getitem__(self, key):
             # key is your entity, you can do whatever you want with it here
-            return key
+            return "@@" + key + "@@"
 
 
 class LFSXmlParser(object):
@@ -15,9 +16,9 @@ class LFSXmlParser(object):
         def __init__(self):
                 self.packages_entities_file = "packages.ent"
                 self.general_entities_file = "general.ent"
-                self.toolchain_index_file = "chapter05.xml"
-                self.system_index_file = "chapter06.xml"
-                self.toolchain_save_index_file = "toolchain_index.txt"
+                self.entities_filelists = ["packages.ent", "general.ent"]
+                self.book_basedir = os.path.abspath("book")
+                self.save_index_file = "index.txt"
 
         def get_component_name(self, component_filename):
                 # 'gcc-pass1.xml':     'gcc'
@@ -25,32 +26,43 @@ class LFSXmlParser(object):
                 # 'libstdc++.xml':     'libstdcpp'
                 return component_filename.replace("-pass1", "").replace("-pass", "").replace("++", "pp").replace(".xml", "")
 
-        def generate_packages_data_dict(self):
-                # packages.ent file
-                file_text = tools.read_file(self.packages_entities_file)
-                data_dict = {}
-                for line in file_text.split("\n"):
-                        line_fields = line.split(" ")
-                        # Valid lines are of form: '<!ENTITY key value>'
-                        # so number of fields should be 3
-                        if len(line_fields) == 3:
-                                # Add to dictionary if key is a version or md5 string
-                                if line_fields[1].find("-version") != -1 or \
-                                   line_fields[1].find("-md5") != -1:
-                                        # data_dict['key'] = value
-                                        data_dict[line_fields[1].replace('-', '_')] = line_fields[2].replace('"', '').replace('>', '')
+        def process_entities(self, string):
+                # string = """&savannah;/releases/acl/acl-&acl-version;.src.tar.gz"""
+                query = ".*(\&[a-zA-Z0-9\-]*\;)+.*"
+                match = regexp.match(query, string)
 
-                # general.ent file
-                file_text = tools.read_file(self.general_entities_file)
-                for line in file_text.split("\n"):
-                        line_fields = line.split(" ")
-                        # Valid lines are of form: '<!ENTITY key *multiple_spaces* value>'
-                        # so number of fields should be 8
-                        if len(line_fields) == 8:
-                                # Add to dictionary if key is 'min-kernel'
-                                if line_fields[1].find("min-kernel") != -1:
-                                        # data_dict['key'] = value
-                                        data_dict[line_fields[1].replace('-', '_')] = line_fields[7].replace('"', '').replace('>', '')
+                # Iterate over the 'string' while matching
+                while match:
+                        # Get the matched string. 'findall' returns a list
+                        found = regexp.findall(query, string)[0]
+                        # found = "&acl-version;"
+                        aux_value = found.replace("&", "").replace(";", "")
+                        # aux_value = "acl-version"
+                        value = "@@{}@@".format(aux_value)
+                        # value = "@@acl-version@@"
+                        # Finally, replace entity
+                        string = string.replace(found, value)
+                        # Check if there is a new match
+                        match = regexp.match(query, string)
+
+
+                return string
+
+        def generate_entities_data_dict(self):
+                data_dict = {}
+                for entity_file in self.entities_filelists:
+                        file_text = tools.read_file(entity_file)
+                        for line in file_text.split("\n"):
+                                # Check if 'line' is an ENTITY description line
+                                if line.find("ENTITY") != -1:
+                                        line_fields = line.split("\"")
+                                        # line_fields = ['<!ENTITY attr-size ', '336 KB', '>']
+                                        key = line_fields[0].split(" ")[1]
+                                        # Process entities in 'value' if any
+                                        value = self.process_entities(line_fields[1])
+                                        # Add to dictionary
+                                        data_dict[key] = value
+
                 # Return generated dictionary
                 return data_dict
 
@@ -60,28 +72,33 @@ class LFSXmlParser(object):
                 # Get component list from chapter index
                 file_text = tools.read_file(indexfile)
                 for line in file_text.split("\n"):
-                        line_fields = line.split(" ")
-                        # Valid lines are of form: '<space> <space> <xi:include url file.xml>'
-                        # so number of fields should be 5
-                        if len(line_fields) == 5:
-                                # Add to componentList if file.xml is not any of
-                                # the given excludes
+                        # Valid lines includes text 'xi:include'
+                        if line.find("xi:include") != -1:
+                                line_fields = line.split("\"")
+                                # line_fields = ['  <xi:include xmlns:xi=',
+                                #                'http://www.w3.org/2001/XInclude',
+                                #                ' href=',
+                                #                'introduction.xml',
+                                #                '/>']
+                                component = line_fields[3]
+
+                                # Add to components_filelist if 'file.xml' is not any of
+                                # the given excludes or it is not a XML file
                                 add = True
-                                if tools.is_empty_list(exclude) == False:
+
+                                # Do not add it if it is not a XML file
+                                if component.find(".xml") == -1:
+                                        add = False
+
+                                # Do not add 'component' if excluded
+                                if(add == True and tools.is_empty_list(exclude) == False):
                                         for e in exclude:
-                                                # If there is a match, do not add it
-                                                if line_fields[4].find(e) != -1:
+                                                # Do not add it if match
+                                                if component.find(e) != -1:
                                                         add = False
-
-                                # If not matched excludes but it is not a XML file, do not add it
-                                if add == True and line_fields[4].find(".xml") == -1:
-                                                add = False
-
+                                # Add it
                                 if add == True:
-                                        # remove useless data 'href="tcl.xml"/>' to get 'tcl.xml'
-                                        c = line_fields[4].replace("href=\"", "").replace("\"/>", "")
-                                        components_filelist.append(c)
-
+                                        components_filelist.append(component)
 
                 return components_filelist
 
@@ -148,7 +165,6 @@ class LFSXmlParser(object):
                                 tools.copy_file(componentfile_path, new_filename)
                                 substitution_list = ["<screen role=\"nodump\"><userinput>vim -c \':options\'</userinput></screen>",
                                                      "<screen role=\"nodump\"><userinput remap=\"notRequired\">vim -c \':options\'</userinput></screen>"]
-                                print "Will substitute"
                                 tools.substitute_multiple_in_file(componentfile_path, substitution_list)
 
 
@@ -186,10 +202,11 @@ class LFSXmlParser(object):
 
                         component_name = self.get_component_name(component_filename)
 
-                        tools.add_text_to_file(self.toolchain_save_index_file, component_name)
+                        # Save components list to file
+                        tools.add_text_to_file(self.save_index_file, component_name)
 
                         # Do not create build directory by default
-                        key = component_name + "_buildDir"
+                        key = component_name + "-buildDir"
                         tools.add_to_dictionary(components_dict, key, "0")
 
                         # Check 'screen/userinput' nodes
@@ -208,7 +225,7 @@ class LFSXmlParser(object):
                                         if attribute == "pre":
                                                 # Check if we have to create a build directory
                                                 if subnode.text.find("mkdir -v build") != -1:
-                                                        key = component_name + "_buildDir"
+                                                        key = component_name + "-buildDir"
                                                         tools.add_to_dictionary(components_dict,
                                                                                key, "1", concat=False)
                                                         continue
@@ -218,19 +235,19 @@ class LFSXmlParser(object):
                                                         continue
 
                                                 else:
-                                                        key = component_name + "_previous"
+                                                        key = component_name + "-previous"
 
 
                                         elif attribute == "configure":
-                                                key = component_name + "_configure"
+                                                key = component_name + "-configure"
                                         elif attribute == "make":
-                                                key = component_name + "_make"
+                                                key = component_name + "-make"
                                         elif attribute == "install":
-                                                key = component_name + "_install"
+                                                key = component_name + "-install"
                                         elif attribute == "test":
-                                                key = component_name + "_test"
+                                                key = component_name + "-test"
                                         elif attribute == "check":
-                                                key = component_name + "_check"
+                                                key = component_name + "-check"
                                         elif attribute == "locale-full":
                                                 # Do not run the "locale-full" command because
                                                 # it is not necessary
@@ -242,7 +259,7 @@ class LFSXmlParser(object):
                                         else:
                                                 # By default, add it to the post steps.
                                                 # Stripping does not have 'remap' attribute
-                                                key = component_name + "_post"
+                                                key = component_name + "-post"
 
                                         # Add the value to dictionary
                                         tools.add_to_dictionary(components_dict, key,
@@ -267,65 +284,72 @@ class LFSXmlParser(object):
                         component_name = self.get_component_name(component_filename)
                         c = ET.SubElement(root, "component", name=component_name)
 
-                        # Try to add version field
-                        key = component_name.replace("1", "").replace("2", "") + "_version"
+                        # Try to add 'version' field
+                        key = component_name.replace("1", "").replace("2", "") + "-version"
                         if key in data_dict:
                                 ET.SubElement(c, "version").text = data_dict[key]
                         else:
                                 ET.SubElement(c, "version")
 
-                        # Try to add md5 field
-                        key = component_name.replace("1", "").replace("2", "") + "_md5"
+                        # Try to add 'md5' field
+                        key = component_name.replace("1", "").replace("2", "") + "-md5"
                         if key in data_dict:
                                 ET.SubElement(c, "md5").text = data_dict[key]
                         else:
                                 ET.SubElement(c, "md5")
 
-                        # Add buildDir field
-                        key = component_name + "_buildDir"
+                        # Try to add 'url' field
+                        key = component_name.replace("1", "").replace("2", "") + "-url"
+                        if key in data_dict:
+                                ET.SubElement(c, "url").text = data_dict[key]
+                        else:
+                                ET.SubElement(c, "url")
+
+                        # Add 'buildDir' field
+                        key = component_name + "-buildDir"
                         if key in data_dict:
                                 ET.SubElement(c, "buildDir").text = data_dict[key]
                         else:
                                 ET.SubElement(c, "buildDir")
 
-                        # Add pre field
-                        key = component_name + "_previous"
+                        # Add 'pre' field
+                        key = component_name + "-previous"
                         if key in data_dict:
                                 ET.SubElement(c, "previous").text = data_dict[key]
                         else:
                                 ET.SubElement(c, "previous")
 
 
-                        # Add configure field
-                        key = component_name + "_configure"
+                        # Add 'configure' field
+                        key = component_name + "-configure"
                         if key in data_dict:
                                 ET.SubElement(c, "configure").text = data_dict[key]
                         else:
                                 ET.SubElement(c, "configure")
 
-                        # Add make field
-                        key = component_name + "_make"
+                        # Add 'make' field
+                        key = component_name + "-make"
                         if key in data_dict:
                                 ET.SubElement(c, "make").text = data_dict[key]
                         else:
                                 ET.SubElement(c, "make")
 
-                        # Add install field
-                        key = component_name + "_install"
+                        # Add 'install' field
+                        key = component_name + "-install"
                         if key in data_dict:
                                 ET.SubElement(c, "install").text = data_dict[key]
                         else:
                                 ET.SubElement(c, "install")
 
-                        # Add test field
-                        key = component_name + "_test"
+                        # Add 'test' field
+                        key = component_name + "-test"
                         if key in data_dict:
                                 ET.SubElement(c, "test").text = data_dict[key]
                         else:
                                 ET.SubElement(c, "test")
 
-                        # Add post field
-                        key = component_name + "_post"
+                        # Add 'post' field
+                        key = component_name + "-post"
                         if key in data_dict:
                                 ET.SubElement(c, "post").text = data_dict[key]
                         else:
@@ -334,44 +358,39 @@ class LFSXmlParser(object):
                 # Write result
                 tools.write_xmlfile(filename, ET.tostring(root))
 
-                # Substitute 'util-linux-version' parameter first to avoid errors
-                tools.substitute_in_file(filename,
-                                        "util-linux-version", data_dict["util_linux_version"])
-
+                # Substitute placeholders
                 for key in data_dict:
-                        if key.find("_version") != -1:
-                                if key.find("gcc") != -1:
-                                        tools.substitute_in_file(filename, "gcc-version",
-                                                                data_dict[key])
-                                else:
-                                        tools.substitute_in_file(filename, key.replace("_", "-"),
-                                                                data_dict[key])
-                # Substitute 'min-kernel' parameter
-                tools.substitute_in_file(filename, "min-kernel", data_dict["min_kernel"])
+                        placeholder = "@@{}@@".format(key)
+                        tools.substitute_in_file(filename, placeholder,
+                                                 data_dict[key])
 
-        def generate_toolchain_xmlfile(self):
-                packages_data_dict = self.generate_packages_data_dict()
-                toolchain_index_path = os.path.abspath(os.path.join("book/chapter05", self.toolchain_index_file))
-                exclude = ["introduction", "toolchaintechnotes", "generalinstructions"]
-                components_filelist = self.generate_components_filelist_from_index(toolchain_index_path,
-                                                                         exclude)
-                components_data_dict = self.generate_components_dict(components_filelist, toolchain_index_path)
-                toolchain_data_dict = tools.join_dicts(components_data_dict, packages_data_dict)
+        def generate_commands_xmlfile(self, stepname, chapters_list=[], exclude=[]):
+                components_filelist = []
 
-                # Write commands
-                self.write_commands_xmlfile(components_filelist, toolchain_data_dict, config.toolchain_xml_filename)
+                # Get general data from '.ent' files
+                data_dict = self.generate_entities_data_dict()
 
-        def generate_system_xmlfile(self):
-                packages_data_dict = self.generate_packages_data_dict()
-                system_index_path = os.path.abspath(os.path.join("book/chapter06", self.system_index_file))
-                exclude = ["introduction", "pkgmgt", "chroot", "systemd", "dbus", "aboutdebug", "revisedchroot"]
-                components_filelist = self.generate_components_filelist_from_index(system_index_path,
-                                                                         exclude)
-                components_data_dict = self.generate_components_dict(components_filelist, system_index_path)
-                system_data_dict = tools.join_dicts(components_data_dict, packages_data_dict)
+                # Get data from every chapter
+                for chapter in chapters_list:
+                        index_filename = chapter + ".xml"
+                        index_path = os.path.abspath(os.path.join(self.book_basedir,
+                                                                  chapter, index_filename))
 
-                # Write commands
-                self.write_commands_xmlfile(components_filelist, system_data_dict, config.system_xml_filename)
+                        # Get components list
+                        aux_components_filelist = self.generate_components_filelist_from_index(index_path,
+                                                                                               exclude)
+
+                        components_filelist.extend(aux_components_filelist)
+
+                        # Get data from components list
+                        components_data_dict = self.generate_components_dict(aux_components_filelist,
+                                                                             index_path)
+                        # Add obtained data to the 'data_dict'
+                        data_dict = tools.join_dicts(data_dict, components_data_dict)
+
+
+                destination_filename = stepname + "_data.xml"
+                self.write_commands_xmlfile(components_filelist, data_dict, destination_filename)
 
         def generate_dict_from_xmlfile(self, filename):
                 data_dict = {}
