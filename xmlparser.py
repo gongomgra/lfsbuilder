@@ -389,7 +389,9 @@ class LFSXmlParser(object):
                         data_dict = tools.join_dicts(data_dict, components_data_dict)
 
 
-                destination_filename = stepname + "_data.xml"
+                # Get destination filename
+                attribute = "{}_xml_filename".format(stepname)
+                destination_filename = getattr(config, attribute)
                 self.write_commands_xmlfile(components_filelist, data_dict, destination_filename)
 
         def generate_dict_from_xmlfile(self, filename):

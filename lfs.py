@@ -1,8 +1,6 @@
 # LFS class
 import os
-
 import builders
-import xmlparser
 
 class LFS(object):
 
@@ -12,23 +10,28 @@ class LFS(object):
     def build(self):
         # Create required builder and call its build method
         if self.action == "toolchain":
-            # Generate toolchain commands XML file
-            x = xmlparser.LFSXmlParser()
-            x.generate_toolchain_xmlfile()
-            del x
-
-            # Build toolchain using commands in XML file
             t = builders.ToolchainBuilder()
+            # Generate 'toolchain' commands XML file
+            t.generate_commands_file()
+            # Build 'toolchain' using commands in XML file
             t.build()
+            # Delete object
             del t
 
         if self.action == "system":
-            # Generate system commands XML file
-            x = xmlparser.LFSXmlParser()
-            x.generate_system_xmlfile()
-            del x
-
-            # Build system using commands in XML file
             s = builders.SystemBuilder()
+            # Generate 'system' commands XML file
+            s.generate_commands_file()
+            # Build 'system' using commands in XML file
             s.build()
+            # Delete object
             del s
+
+        if self.action == "configuration":
+            c = builders.ConfigurationBuilder()
+            # Generate 'configuration' commands XML file
+            c.generate_commands_file()
+            # Build 'configuration' using commands in XML file
+            c.build()
+            # Delete object
+            del c

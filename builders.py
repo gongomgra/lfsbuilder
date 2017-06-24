@@ -116,6 +116,14 @@ class ComponentsBuilder(BaseBuilder):
         BaseBuilder.__init__(self)
         self.build_action = ""
         self.xml_filename = xml_filename
+        self.chapters_list = []
+        self.exclude = []
+
+    def generate_commands_file(self):
+        xmlp = xmlparser.LFSXmlParser()
+        xmlp.generate_commands_xmlfile(self.build_action,
+                                       self.chapters_list,
+                                       self.excludes)
 
     def build(self):
         # Create setenv.sh file
@@ -142,7 +150,6 @@ class ComponentsBuilder(BaseBuilder):
             o.clean_workspace()
             del o
 
-
 class ToolchainBuilder(ComponentsBuilder):
 
     def __init__(self):
@@ -150,6 +157,8 @@ class ToolchainBuilder(ComponentsBuilder):
         ComponentsBuilder.__init__(self, config.toolchain_xml_filename)
         self.build_action = "toolchain"
         self.env_PATH_value = "/tools/bin:/bin:/usr/bin"
+        self.chapters_list = ["chapter05"]
+        self.excludes = ["introduction", "toolchaintechnotes", "generalinstructions"]
         self.components_to_build = ["binutils", "gcc", "linuxapiheaders", "glibc", "libstdcplusplus", "binutils2", "gcc2", "tclcore", "expect", "dejagnu", "check", "ncurses", "bash", "bison", "bzip2", "coreutils", "diffutils", "file", "findutils", "gawk", "gettext", "grep", "gzip", "m4", "make", "patch", "perl", "sed", "tar", "texinfo", "utillinux", "xz", "stripping"]
 
     # def build(self):
@@ -215,12 +224,24 @@ class SystemBuilder(ComponentsBuilder):
         ComponentsBuilder.__init__(self, config.system_xml_filename)
         self.build_action = "system"
         self.env_PATH_value = "/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin"
+        self.chapters_list = ["chapter06"]
+        self.excludes = ["introduction", "pkgmgt", "chroot", "systemd", "dbus", "aboutdebug", "revisedchroot"]
         self.components_to_build = ["kernfs", "creatingdirs", "createfiles", "linuxapiheaders", "manpages", "glibc", "adjusting", "zlib", "file", "binutils", "gmp", "mpfr", "mpc", "gcc", "bzip2", "pkgconfig", "ncurses", "attr", "acl", "libcap", "sed", "shadow", "psmisc", "ianaetc", "m4", "bison", "flex", "grep", "readline", "bash", "bc", "libtool", "gdbm", "gperf", "expat", "inetutils", "perl", "xmlparser", "intltool", "autoconf", "automake", "xz", "kmod", "gettext", "procps", "e2fsprogs", "coreutils", "diffutils", "gawk", "findutils", "groff", "grub", "less", "gzip", "iproute2", "kbd", "libpipeline", "make", "patch", "sysklogd", "sysvinit", "eudev", "utillinux", "mandb", "tar", "texinfo", "vim", "stripping"]
 
-    def buildSteps(self):
 
-        # Call parent class steps to build component in componentsToBuild list
-        ComponentsBuilder.buildSteps(self)
+class ConfigurationBuilder(ComponentsBuilder):
+    def __init__(self):
+        ComponentsBuilder.__init__(self, config.configuration_xml_filename)
+        self.build_action = "configuration"
+        self.env_PATH_value = "/bin:/usr/bin:/sbin:/usr/sbin"
+        self.chapters_list = ["chapter07", "chapter08", "chapter09"]
+        # Exclude 'systemd'
+        self.excludes = ["introduction", "introductiond", "networkd", "clock", "consoled", "locale", "systemd-custom", "getcounted", "whatnow"]
+        self.components_to_build = ["bootscripts", "udev", "symlinks", "network", "usage", "profile", "inputrc", "etcshells", "fstab", "openssl", "cpio", "kernel", "busybox", "initrd", "wget", "ssh", "grub", "theend", "reboot"]
+    # def buildSteps(self):
+
+    #     # Call parent class steps to build component in componentsToBuild list
+    #     ComponentsBuilder.buildSteps(self)
 
 
         # # Create setenv.sh file
