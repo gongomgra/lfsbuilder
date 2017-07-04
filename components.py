@@ -1346,8 +1346,7 @@ class Reboot(SystemConfigurationComponent):
     def __init__(self, build_action, components_data_dict):
         CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "reboot"
-
-
+        self.build_action = "toolchain"
 
 
     # def run_extra_steps(self, stepname, run_directory):
