@@ -236,5 +236,5 @@ class ConfigurationBuilder(ComponentsBuilder):
         self.env_PATH_value = "/bin:/usr/bin:/sbin:/usr/sbin"
         self.chapters_list = ["chapter07", "chapter08", "chapter09"]
         # Exclude 'systemd'
-        self.excludes = ["introduction", "introductiond", "networkd", "clock", "consoled", "locale", "systemd-custom", "getcounted", "whatnow"]
-        self.components_to_build = ["bootscripts", "udev", "symlinks", "network", "usage", "profile", "inputrc", "etcshells", "fstab", "openssl", "cpio", "kernel", "busybox", "initrd", "wget", "ssh", "grub", "theend", "reboot"]
+        self.excludes = ["introduction", "udev", "introductiond", "networkd", "clock", "consoled", "locale", "systemd-custom", "getcounted", "whatnow"]
+        self.components_to_build = ["bootscripts", "symlinks", "network", "usage", "profile", "inputrc", "etcshells", "fstab", "openssl", "cacerts", "cpio", "kernel", "busybox", "initrd", "wget", "openssh", "grub", "theend", "reboot"]

@@ -133,7 +133,7 @@ class LFSXmlParser(object):
                                 new_filename = componentfile_path + ".orig"
                                 tools.copy_file(componentfile_path, new_filename)
                                 substitution_list = ["<replaceable>&lt;xxx&gt;</replaceable>",
-                                                     "@@LFS_REPLACEABLE@@",
+                                                     "@@LFS_TIMEZONE@@",
                                                      "<screen role=\"nodump\"><userinput>tzselect",
                                                      "<screen role=\"nodump\"><userinput remap=\"notRequired\">tzselect"]
 
@@ -145,7 +145,7 @@ class LFSXmlParser(object):
                                 new_filename = componentfile_path + ".orig"
                                 tools.copy_file(componentfile_path, new_filename)
                                 substitution_list = ["<replaceable>&lt;paper_size&gt;</replaceable>",
-                                                     "@@LFS_REPLACEABLE@@"]
+                                                     "@@LFS_PAPER_SIZE@@"]
                                 tools.substitute_multiple_in_file(componentfile_path, substitution_list)
 
                         # 'shadow' includes commands that are not necessary in the 'system' step chapter06
@@ -168,11 +168,176 @@ class LFSXmlParser(object):
                                 tools.substitute_multiple_in_file(componentfile_path, substitution_list)
 
 
+
+                        # 'symlinks' component issue 'udevadm' commands that may fail and
+                        # according to the book it is not necessary to create those symlinks right now.
+                        # Because of that, we mark them as 'not-required'
+                        if component_filename == "symlinks.xml":
+                                new_filename = componentfile_path + ".orig"
+                                tools.copy_file(componentfile_path, new_filename)
+                                substitution_list = ["<screen role=\"nodump\"><userinput>udevadm test /sys/block/hdd</userinput></screen>",
+                                                     "<screen role=\"nodump\"><userinput remap=\"notRequired\">udevadm test /sys/block/hdd</userinput></screen>",
+                                                     "<screen role=\"nodump\"><userinput>sed -i -e 's/\"write_cd_rules\"/\"write_cd_rules",
+                                                     "<screen role=\"nodump\"><userinput remap=\"notRequired\">sed -i -e 's/\"write_cd_rules\"/\"write_cd_rules",
+                                                     "<screen role=\"nodump\"><userinput>udevadm info -a -p /sys/class/video4linux/video0</userinput></screen>",
+                                                     "<screen role=\"nodump\"><userinput remap=\"notRequired\">udevadm info -a -p /sys/class/video4linux/video0</userinput></screen>",
+                                                     "<screen role=\"nodump\"><userinput>cat &gt; /etc/udev/rules.d/83-duplicate_devs.rules",
+                                                     "<screen role=\"nodump\"><userinput remap=\"notRequired\">cat &gt; /etc/udev/rules.d/83-duplicate_devs.rules"]
+
+                                tools.substitute_multiple_in_file(componentfile_path, substitution_list)
+
+                        # 'network' component create '/etc/sysconfig/ifconfig.eth0' and
+                        # '/etc/resolv.conf' files that we have to customize it
+                        if component_filename == "network.xml":
+                                new_filename = componentfile_path + ".orig"
+                                tools.copy_file(componentfile_path, new_filename)
+                                substitution_list = ["IP=192.168.1.2",
+                                                     "IP=@@LFS_ETH0_IP_ADDRESS@@",
+                                                     "GATEWAY=192.168.1.1",
+                                                     "GATEWAY=@@LFS_ETH0_GATEWAY_ADDRESS@@",
+                                                     "BROADCAST=192.168.1.255",
+                                                     "BROADCAST=@@LFS_ETH0_BROADCAST_ADDRESS@@",
+                                                     "<replaceable>&lt;Your Domain Name&gt;</replaceable>",
+                                                     "@@LFS_HOST_DOMAIN_NAME@@",
+                                                     "<replaceable>&lt;IP address of your primary nameserver&gt;</replaceable>",
+                                                     "@@LFS_DNS_ADDRESS_1@@",
+                                                     "<replaceable>&lt;IP address of your secondary nameserver&gt;</replaceable>",
+                                                     "@@LFS_DNS_ADDRESS_2@@",
+                                                     "<replaceable>&lt;lfs&gt;</replaceable>",
+                                                     "@@LFS_HOSTNAME@@",
+                                                     "<replaceable>&lt;192.168.1.1&gt;</replaceable>",
+                                                     "@@LFS_ETH0_IP_ADDRESS@@",
+                                                     "<replaceable>&lt;HOSTNAME.example.org&gt;</replaceable>",
+                                                     "@@LFS_HOSTNAME@@.example.com",
+                                                     "<replaceable>[alias1] [alias2 ...]</replaceable>",
+                                                     "",
+                                                     """<screen role=\"nodump\"><userinput>cat &gt; /etc/hosts &lt;&lt; \"EOF\"
+# Begin /etc/hosts (no network card version)""",
+                                                     """<screen role=\"nodump\"><userinput remap=\"notRequired\">cat &gt; /etc/hosts &lt;&lt; \"EOF\"
+# Begin /etc/hosts (no network card version)"""]
+
+                                tools.substitute_multiple_in_file(componentfile_path, substitution_list)
+
+                        # 'profile' component creates '/etc/profile' and we have
+                        # to customize it
+                        if component_filename == "profile.xml":
+                                new_filename = componentfile_path + ".orig"
+                                tools.copy_file(componentfile_path, new_filename)
+                                substitution_list = ["<screen role=\"nodump\"><userinput>LC_ALL=<replaceable>&lt;locale name&gt;</replaceable> locale charmap</userinput></screen>",
+                                                     "<screen role=\"nodump\"><userinput remap=\"notRequired\">LC_ALL=<replaceable>&lt;locale name&gt;</replaceable> locale charmap</userinput></screen>",
+                                                     "<screen role=\"nodump\"><userinput>LC_ALL=&lt;locale name&gt; locale language",
+                                                     "<screen role=\"nodump\"><userinput remap=\"notRequired\">LC_ALL=&lt;locale name&gt; locale language",
+                                                     "<replaceable>&lt;ll&gt;_&lt;CC&gt;.&lt;charmap&gt;&lt;@modifiers&gt;</replaceable>",
+                                                     "@@LFS_LANG_VALUE@@"]
+
+                                tools.substitute_multiple_in_file(componentfile_path, substitution_list)
+
+                        # 'fstab' component creates '/etc/fstab' and we have
+                        # to customize it
+                        if component_filename == "fstab.xml":
+                                new_filename = componentfile_path + ".orig"
+                                tools.copy_file(componentfile_path, new_filename)
+                                substitution_list = ["<replaceable>&lt;xxx&gt;</replaceable>",
+                                                     "@@LFS_ROOT_PARTITION_NAME@@",
+                                                     "<replaceable>&lt;fff&gt;</replaceable>",
+                                                     "@@LFS_FILESYSTEM_PARTITION_TYPE@@",
+                                                     "<replaceable>&lt;yyy&gt;</replaceable>",
+                                                     "@@LFS_SWAP_PARTITION_NAME@@",
+                                                     "<screen role=\"nodump\"><userinput>hdparm -I /dev/sda | grep NCQ</userinput></screen>",
+                                                     "<screen role=\"nodump\"><userinput remap=\"notRequired\">hdparm -I /dev/sda | grep NCQ</userinput></screen>"]
+
+                                tools.substitute_multiple_in_file(componentfile_path, substitution_list)
+
+                        # 'cpio' component runs commands that we do not need. We have
+                        # to remove them
+                        if component_filename == "cpio.xml":
+                                new_filename = componentfile_path + ".orig"
+                                tools.copy_file(componentfile_path, new_filename)
+                                substitution_list = ["<screen><userinput>make -C doc pdf &amp;&amp",
+                                                     "<screen><userinput remap=\"notRequired\">make -C doc pdf &amp;&amp;",
+                                                     "<screen role=\"root\"><userinput>install -v -m644 doc/cpio.{pdf,ps,dvi}",
+                                                     "<screen role=\"root\"><userinput remap=\"notRequired\">install -v -m644 doc/cpio.{pdf,ps,dvi}"]
+
+                                tools.substitute_multiple_in_file(componentfile_path, substitution_list)
+
+
+                        # 'kernel' component runs commands that we do not need. We have
+                        # to remove them
+                        if component_filename == "kernel.xml":
+                                new_filename = componentfile_path + ".orig"
+                                tools.copy_file(componentfile_path, new_filename)
+                                substitution_list = ["<userinput>make menuconfig",
+                                                     "<userinput remap=\"notRequired\">make menuconfig",
+                                                     "<userinput>mount --bind /boot /mnt/lfs/boot",
+                                                     "<userinput remap=\"notRequired\">mount --bind /boot /mnt/lfs/boot",
+                                ]
+
+                                tools.substitute_multiple_in_file(componentfile_path, substitution_list)
+
+
+                        # 'openssh' component runs commands that we do not need. We have
+                        # to remove them
+                        if component_filename == "openssh.xml":
+                                new_filename = componentfile_path + ".orig"
+                                tools.copy_file(componentfile_path, new_filename)
+                                substitution_list = ["<screen><userinput>ssh-keygen &amp;&amp;",
+                                                     "<screen><userinput remap=\"notRequired\">ssh-keygen &amp;&amp;",
+                                                     "<screen role=\"root\"><userinput>echo \"PasswordAuthentication",
+                                                     "<screen role=\"root\"><userinput remap=\"notRequired\">echo \"PasswordAuthentication",
+                                                     "<screen role=\"root\"><userinput>sed 's@d/login@d/sshd@g' /etc/pam.d/login",
+                                                     "<screen role=\"root\"><userinput remap=\"notRequired\">sed 's@d/login@d/sshd@g' /etc/pam.d/login"]
+
+                                tools.substitute_multiple_in_file(componentfile_path, substitution_list)
+
+
+                        # 'grub' component runs commands that we do not need. We have
+                        # to remove them. Also we have to modify the 'grub.cfg' file
+                        if component_filename == "grub.xml":
+                                new_filename = componentfile_path + ".orig"
+                                tools.copy_file(componentfile_path, new_filename)
+                                substitution_list = ["<userinput>cd /tmp",
+                                                     "<userinput remap=\"notRequired\">cd /tmp",
+                                                     "<userinput>grub-install /dev/sda</userinput>",
+                                                     "<userinput>grub-install /dev/@@LFS_ROOT_PARTITION_NAME@@</userinput>",
+                                                     "set root=(hd0,2)",
+                                                     "set root=(hd0,@@LFS_ROOT_PARTITION_NUMBER@@)",
+                                                     "root=/dev/sda2",
+                                                     "root=@@LFS_ROOT_PARTITION_NAME@@"]
+
+                                tools.substitute_multiple_in_file(componentfile_path, substitution_list)
+
+
+                        # 'theend' component creates '/etc/lsb-release' file that
+                        # we have to customize.
+                        if component_filename == "theend.xml":
+                                new_filename = componentfile_path + ".orig"
+                                tools.copy_file(componentfile_path, new_filename)
+                                substitution_list = ["DISTRIB_ID=\"Linux From Scratch\"",
+                                                     "DISTRIB_ID=\"@@LFS_DISTRIBUTION_NAME@@\"",
+                                                     "DISTRIB_RELEASE=\"&version;\"",
+                                                     "DISTRIB_RELEASE=\"@@LFS_DISTRIBUTION_VERSION@@\"",
+                                                     "DISTRIB_CODENAME=\"&lt;your name here&gt;\"",
+                                                     "DISTRIB_CODENAME=\"@@LFS_DISTRIBUTION_NAME@@\"",
+                                                     "DISTRIB_DESCRIPTION=\"Linux From Scratch\"",
+                                                     "DISTRIB_DESCRIPTION=\"@@LFS_DISTRIBUTION_DESCRIPTION@@\""]
+
+                                tools.substitute_multiple_in_file(componentfile_path, substitution_list)
+
+
+                        # 'reboot' component runs command that we do not need.
+                        # We have to remove them.
+                        if component_filename == "reboot.xml":
+                                new_filename = componentfile_path + ".orig"
+                                tools.copy_file(componentfile_path, new_filename)
+                                substitution_list = ["<userinput>logout</userinput>",
+                                                     "<userinput remap=\"notRequired\">logout</userinput>",
+                                                     "<userinput>shutdown -r now</userinput>",
+                                                     "<userinput remap=\"notRequired\">shutdown -r now</userinput>"]
+
+                                tools.substitute_multiple_in_file(componentfile_path, substitution_list)
+
+
                         # Remove 'literal' subchild so commands waiting the EOF string get properly parsed
-                        # Remove replaceable subchild. Necessary to properly set timezone
-                        # Remove 'tzselect' command as we do not want it to be run. Use config parameter
-                        # old = ["<literal>", "</literal>", "<replaceable>&lt;xxx&gt;</replaceable>"]
-                        # new = ["", "", "@@LFS_REPLACEABLE@@"]
                         substitution_list = ["<literal>", "",
                                              "</literal>", ""]
 

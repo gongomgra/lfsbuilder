@@ -82,7 +82,13 @@ class BaseComponent(object):
         if self.build_action != "toolchain":
             substitution_list.extend([config.BASE_DIRECTORY, ""])
 
+
         tools.substitute_multiple_in_file(file_path, substitution_list)
+
+        # Check there are not any pending placeholder
+        text = tools.read_file(file_path)
+        if text.find("@@"):
+            printer.error("Found pending placeholder in \'{}\'".format(file_path))
 
     def write_script_header(self, filename):
         printer.substepInfo("Generating script \'" + filename + "\'")
@@ -1242,6 +1248,106 @@ class Vim(CompilableComponent):
     def __init__(self, build_action, components_data_dict):
         CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "vim"
+
+class Bootscripts(CompilableComponent):
+    def __init__(self, build_action, components_data_dict):
+        CompilableComponent.__init__(self, build_action, components_data_dict)
+        self.name = "bootscripts"
+        self.package_name = "lfs-bootscripts"
+
+class Symlinks(SystemConfigurationComponent):
+    def __init__(self, build_action, components_data_dict):
+        CompilableComponent.__init__(self, build_action, components_data_dict)
+        self.name = "symlinks"
+
+class Network(SystemConfigurationComponent):
+    def __init__(self, build_action, components_data_dict):
+        CompilableComponent.__init__(self, build_action, components_data_dict)
+        self.name = "network"
+
+class Usage(SystemConfigurationComponent):
+    def __init__(self, build_action, components_data_dict):
+        CompilableComponent.__init__(self, build_action, components_data_dict)
+        self.name = "usage"
+
+class Profile(SystemConfigurationComponent):
+    def __init__(self, build_action, components_data_dict):
+        CompilableComponent.__init__(self, build_action, components_data_dict)
+        self.name = "profile"
+
+class Inputrc(SystemConfigurationComponent):
+    def __init__(self, build_action, components_data_dict):
+        CompilableComponent.__init__(self, build_action, components_data_dict)
+        self.name = "inputrc"
+
+class Etcshells(SystemConfigurationComponent):
+    def __init__(self, build_action, components_data_dict):
+        CompilableComponent.__init__(self, build_action, components_data_dict)
+        self.name = "etcshells"
+
+class Fstab(SystemConfigurationComponent):
+    def __init__(self, build_action, components_data_dict):
+        CompilableComponent.__init__(self, build_action, components_data_dict)
+        self.name = "fstab"
+
+class Openssl(CompilableComponent):
+    def __init__(self, build_action, components_data_dict):
+        CompilableComponent.__init__(self, build_action, components_data_dict)
+        self.name = "openssl"
+
+class Cacerts(SystemConfigurationComponent):
+    def __init__(self, build_action, components_data_dict):
+        CompilableComponent.__init__(self, build_action, components_data_dict)
+        self.name = "cacerts"
+
+class Cpio(CompilableComponent):
+    def __init__(self, build_action, components_data_dict):
+        CompilableComponent.__init__(self, build_action, components_data_dict)
+        self.name = "cpio"
+
+class Kernel(CompilableComponent):
+    def __init__(self, build_action, components_data_dict):
+        CompilableComponent.__init__(self, build_action, components_data_dict)
+        self.name = "kernel"
+        self.package_name = "linux"
+
+    def run_previous_steps(self):
+        print("Copying custom \'.config\' file")
+        sys.exit(0)
+
+class Busybox(CompilableComponent):
+    pass
+    # def __init__(self, build_action, components_data_dict):
+    #     CompilableComponent.__init__(self, build_action, components_data_dict)
+    #     self.name = "busybox"
+
+class Initrd(SystemConfigurationComponent):
+    pass
+    # def __init__(self, build_action, components_data_dict):
+    #     CompilableComponent.__init__(self, build_action, components_data_dict)
+    #     self.name = "initrd"
+
+class Wget(CompilableComponent):
+    def __init__(self, build_action, components_data_dict):
+        CompilableComponent.__init__(self, build_action, components_data_dict)
+        self.name = "wget"
+
+class Openssh(CompilableComponent):
+    def __init__(self, build_action, components_data_dict):
+        CompilableComponent.__init__(self, build_action, components_data_dict)
+        self.name = "openssh"
+
+class Theend(SystemConfigurationComponent):
+    def __init__(self, build_action, components_data_dict):
+        CompilableComponent.__init__(self, build_action, components_data_dict)
+        self.name = "theend"
+
+class Reboot(SystemConfigurationComponent):
+    def __init__(self, build_action, components_data_dict):
+        CompilableComponent.__init__(self, build_action, components_data_dict)
+        self.name = "reboot"
+
+
 
 
     # def run_extra_steps(self, stepname, run_directory):
