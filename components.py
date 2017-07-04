@@ -87,7 +87,7 @@ class BaseComponent(object):
 
         # Check there are not any pending placeholder
         text = tools.read_file(file_path)
-        if text.find("@@"):
+        if text.find("@@") != -1:
             printer.error("Found pending placeholder in \'{}\'".format(file_path))
 
     def write_script_header(self, filename):
