@@ -525,9 +525,10 @@ class LFSXmlParser(object):
 
                 # Substitute placeholders
                 for key in data_dict:
-                        placeholder = "@@{}@@".format(key)
-                        tools.substitute_in_file(filename, placeholder,
-                                                 data_dict[key])
+                        if data_dict[key] is not None:
+                                placeholder = "@@{}@@".format(key)
+                                tools.substitute_in_file(filename, placeholder,
+                                                         data_dict[key])
 
         def generate_commands_xmlfile(self, stepname, chapters_list=[], exclude=[]):
                 components_filelist = []
