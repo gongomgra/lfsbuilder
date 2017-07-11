@@ -7,8 +7,9 @@ import config
 
 class ShowAllEntities(object):
         def __getitem__(self, key):
-            # key is your entity, you can do whatever you want with it here
-            return "@@" + key + "@@"
+                # key is your entity, you can do whatever you want with it here
+                return tools.generate_placeholder(key)
+
 
 
 class LFSXmlParser(object):
@@ -36,12 +37,12 @@ class LFSXmlParser(object):
                         # Get the matched string. 'findall' returns a list
                         found = regexp.findall(query, string)[0]
                         # found = "&acl-version;"
-                        aux_value = found.replace("&", "").replace(";", "")
-                        # aux_value = "acl-version"
-                        value = "@@{}@@".format(aux_value)
-                        # value = "@@acl-version@@"
+                        key = found.replace("&", "").replace(";", "")
+                        # key = "acl-version"
+                        placeholder = tools.generate_placeholder(key)
+                        # placeholder = "@@LFS_ACL_VERSION@@"
                         # Finally, replace entity
-                        string = string.replace(found, value)
+                        string = string.replace(found, placeholder)
                         # Check if there is a new match
                         match = regexp.match(query, string)
 
@@ -526,7 +527,7 @@ class LFSXmlParser(object):
                 # Substitute placeholders
                 for key in data_dict:
                         if data_dict[key] is not None:
-                                placeholder = "@@{}@@".format(key)
+                                placeholder = tools.generate_placeholder(key)
                                 tools.substitute_in_file(filename, placeholder,
                                                          data_dict[key])
 

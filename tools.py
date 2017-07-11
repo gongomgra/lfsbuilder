@@ -194,6 +194,10 @@ def get_class (class_name):
         m = getattr(m, comp)
     return m
 
+def generate_placeholder(key):
+    value = key.upper().replace("-", "_")
+    return "@@LFS_{}@@".format(value)
+
 def extract_tarfile (filename, destination, extension=""):
     if extension == "":
         tar = tarfile.open(filename, "r:*")
