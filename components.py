@@ -686,6 +686,15 @@ class Ncurses(CompilableComponent):
     def __init__(self, build_action, components_data_dict):
         CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "ncurses"
+
+    def run_post_steps(self):
+        if self.build_action == "toolchain":
+            CompilableComponent.run_post_steps(self)
+        else:
+            # If we are building 'system' we have to avoid running this. It tries to compile
+            # component twice
+            printer.warning("Skipped 'post' steps to avoid building component twice")
+
 #         self.configure_options = self.configure_options + "--with-shared --without-debug --without-ada --enable-widec --enable-overwrite"
 
 #     def apply_source_code_patches(self):
