@@ -48,7 +48,7 @@ class BaseComponent(object):
 
         # Remove BASE_DIRECTORY if we are inside the chroot.
         # We are not related to BASE_DIRECTORY anymore
-        if self.build_action == "system":
+        if self.build_action != "toolchain":
             filename = filename.replace(config.BASE_DIRECTORY, "")
 
         cmd = cmd + " " + filename
