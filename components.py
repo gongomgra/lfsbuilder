@@ -774,9 +774,13 @@ class Coreutils(CompilableComponent):
     #     tools.a_odTextToFile(self.buildscript_path, text)
 
     def apply_source_code_patches(self):
+
+        if self.build_action == "toolchain":
         # coreutils should not apply patches while building the toolchain
         # reference: http://lfs-support.linuxfromscratch.narkive.com/CLsG3Tyw/5-18-1-coreutils-8-23
-        pass
+            pass
+        else:
+            CompilableComponent.apply_source_code_patches(self)
 
     # def generate_buildscript(self):
     #     self.buildscript_path = os.path.join(self.extracted_directory, self.buildscript_name)
