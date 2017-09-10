@@ -32,6 +32,9 @@ def read_file (filename):
         text = fp.read()
         fp.close()
         return text
+    else:
+        msg = "File " + filename + " not found."
+        printer.error(msg)
 
 def copy_file (src, dest):
     if src != dest:
