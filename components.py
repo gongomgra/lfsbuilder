@@ -1270,37 +1270,37 @@ class Bootscripts(CompilableComponent):
 
 class Symlinks(SystemConfigurationComponent):
     def __init__(self, build_action, components_data_dict):
-        CompilableComponent.__init__(self, build_action, components_data_dict)
+        SystemConfigurationComponent.__init__(self, build_action, components_data_dict)
         self.name = "symlinks"
 
 class Network(SystemConfigurationComponent):
     def __init__(self, build_action, components_data_dict):
-        CompilableComponent.__init__(self, build_action, components_data_dict)
+        SystemConfigurationComponent.__init__(self, build_action, components_data_dict)
         self.name = "network"
 
 class Usage(SystemConfigurationComponent):
     def __init__(self, build_action, components_data_dict):
-        CompilableComponent.__init__(self, build_action, components_data_dict)
+        SystemConfigurationComponent.__init__(self, build_action, components_data_dict)
         self.name = "usage"
 
 class Profile(SystemConfigurationComponent):
     def __init__(self, build_action, components_data_dict):
-        CompilableComponent.__init__(self, build_action, components_data_dict)
+        SystemConfigurationComponent.__init__(self, build_action, components_data_dict)
         self.name = "profile"
 
 class Inputrc(SystemConfigurationComponent):
     def __init__(self, build_action, components_data_dict):
-        CompilableComponent.__init__(self, build_action, components_data_dict)
+        SystemConfigurationComponent.__init__(self, build_action, components_data_dict)
         self.name = "inputrc"
 
 class Etcshells(SystemConfigurationComponent):
     def __init__(self, build_action, components_data_dict):
-        CompilableComponent.__init__(self, build_action, components_data_dict)
+        SystemConfigurationComponent.__init__(self, build_action, components_data_dict)
         self.name = "etcshells"
 
 class Fstab(SystemConfigurationComponent):
     def __init__(self, build_action, components_data_dict):
-        CompilableComponent.__init__(self, build_action, components_data_dict)
+        SystemConfigurationComponent.__init__(self, build_action, components_data_dict)
         self.name = "fstab"
 
 class Openssl(CompilableComponent):
@@ -1310,7 +1310,7 @@ class Openssl(CompilableComponent):
 
 class Cacerts(SystemConfigurationComponent):
     def __init__(self, build_action, components_data_dict):
-        CompilableComponent.__init__(self, build_action, components_data_dict)
+        SystemConfigurationComponent.__init__(self, build_action, components_data_dict)
         self.name = "cacerts"
 
 class Cpio(CompilableComponent):
@@ -1352,12 +1352,12 @@ class Openssh(CompilableComponent):
 
 class Theend(SystemConfigurationComponent):
     def __init__(self, build_action, components_data_dict):
-        CompilableComponent.__init__(self, build_action, components_data_dict)
+        SystemConfigurationComponent.__init__(self, build_action, components_data_dict)
         self.name = "theend"
 
 class Reboot(SystemConfigurationComponent):
     def __init__(self, build_action, components_data_dict):
-        CompilableComponent.__init__(self, build_action, components_data_dict)
+        SystemConfigurationComponent.__init__(self, build_action, components_data_dict)
         self.name = "reboot"
         self.build_action = "toolchain"
 
