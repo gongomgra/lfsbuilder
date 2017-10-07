@@ -229,7 +229,7 @@ class LFSXmlParser(object):
                                                      "<screen role=\"nodump\"><userinput>LC_ALL=&lt;locale name&gt; locale language",
                                                      "<screen role=\"nodump\"><userinput remap=\"notRequired\">LC_ALL=&lt;locale name&gt; locale language",
                                                      "<replaceable>&lt;ll&gt;_&lt;CC&gt;.&lt;charmap&gt;&lt;@modifiers&gt;</replaceable>",
-                                                     "@@LFS_LANG_VALUE@@"]
+                                                     "@@LFS_LANG@@"]
 
                                 tools.substitute_multiple_in_file(componentfile_path, substitution_list)
 

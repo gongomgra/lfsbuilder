@@ -20,6 +20,7 @@ class BaseComponent(object):
         self.build_directory = ""
         self.run_as_username = ""
         self.replaceable_placeholder_value = ""
+        self.component_substitution_list = ""
 
     # def __del__(self):
     #     print "Deleted!"
@@ -72,11 +73,14 @@ class BaseComponent(object):
         substitution_list = ["@@LFS_SETENV_FILE@@", setenv_script_path,
                             "@@LFS_COMPONENT_KEYNAME@@", self.key_name,
                             "@@LFS_BUILD_ACTION@@", self.build_action,
-                            "@@LFS_REPLACEABLE@@", self.replaceable_placeholder_value,
                             "&amp;", "&",
                             "&gt;", ">",
                             "&lt;", "<",
                             "&quot;", "\""]
+
+        # Add component substitution list
+        if self.component_substitution_list != "":
+            substitution_list.extend(self.component_substitution_list)
 
         # Remove BASE_DIRECTORY if not building 'toolchain'
         if self.build_action != "toolchain":
@@ -444,8 +448,9 @@ class Glibc(CompilableComponent):
         self.name = "glibc"
         self.make_options = "--jobs=1"
         if self.build_action == "system":
-            self.replaceable_placeholder_value = config.TIMEZONE
-        # self.confi_oure_options = self.configure_options + "--host=$LFS_TGT --build=$(../scripts/config.guess) --enable-kernel=2.6.32 --with-headers=/tools/include libc_cv_forced_unwind=yes libc_cv_c_cleanup=yes"
+            self.component_substitution_list = ["@@LFS_TIMEZONE@@", config.TIMEZONE]
+            # self.replaceable_placeholder_value = config.TIMEZONE
+            # self.confi_oure_options = self.configure_options + "--host=$LFS_TGT --build=$(../scripts/config.guess) --enable-kernel=2.6.32 --with-headers=/tools/include libc_cv_forced_unwind=yes libc_cv_c_cleanup=yes"
 
         # Compilation check
         if self.build_action == "toolchain":
@@ -1188,13 +1193,15 @@ class Groff(CompilableComponent):
     def __init__(self, build_action, components_data_dict):
         CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "groff"
-        self.replaceable_placeholder_value = config.PAPER_SIZE
+        self.component_substitution_list = ["@@LFS_PAPER_SIZE@@", config.PAPER_SIZE]
 
 class Grub(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
         CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "grub"
+        self.component_substitution_list = ["@@LFS_ROOT_PARTITION_NAME@@", config.ROOT_PARTITION_NAME,
+                                            "@@LFS_ROOT_PARTITION_NUMBER@@", config.ROOT_PARTITION_NUMBER]
 
 class Less(CompilableComponent):
 
@@ -1277,6 +1284,13 @@ class Network(SystemConfigurationComponent):
     def __init__(self, build_action, components_data_dict):
         SystemConfigurationComponent.__init__(self, build_action, components_data_dict)
         self.name = "network"
+        self.component_substitution_list = ["@@LFS_ETH0_IP_ADDRESS@@", config.ETH0_IP_ADDRESS,
+                                            "@@LFS_ETH0_GATEWAY_ADDRESS@@", config.ETH0_GATEWAY_ADDRESS,
+                                            "@@LFS_ETH0_BROADCAST_ADDRESS@@", config.ETH0_BROADCAST_ADDRESS,
+                                            "@@LFS_HOST_DOMAIN_NAME@@", config.DOMAIN_NAME,
+                                            "@@LFS_DNS_ADDRESS_1@@", config.DNS_ADDRESS_1,
+                                            "@@LFS_DNS_ADDRESS_2@@", config.DNS_ADDRESS_1,
+                                            "@@LFS_HOSTNAME@@", config.HOSTNAME]
 
 class Usage(SystemConfigurationComponent):
     def __init__(self, build_action, components_data_dict):
@@ -1287,6 +1301,7 @@ class Profile(SystemConfigurationComponent):
     def __init__(self, build_action, components_data_dict):
         SystemConfigurationComponent.__init__(self, build_action, components_data_dict)
         self.name = "profile"
+        self.component_substitution_list = ["@@LFS_LANG@@", config.LANG]
 
 class Inputrc(SystemConfigurationComponent):
     def __init__(self, build_action, components_data_dict):
@@ -1302,6 +1317,9 @@ class Fstab(SystemConfigurationComponent):
     def __init__(self, build_action, components_data_dict):
         SystemConfigurationComponent.__init__(self, build_action, components_data_dict)
         self.name = "fstab"
+        self.component_substitution_list = ["@@LFS_ROOT_PARTITION_NAME@@", config.ROOT_PARTITION_NAME,
+                                            "@@LFS_FILESYSTEM_PARTITION_TYPE@@", config.FILESYSTEM_PARTITION_TYPE,
+                                            "@@LFS_SWAP_PARTITION_NAME@@", config.SWAP_PARTITION_NAME]
 
 class Openssl(CompilableComponent):
     def __init__(self, build_action, components_data_dict):
@@ -1354,6 +1372,9 @@ class Theend(SystemConfigurationComponent):
     def __init__(self, build_action, components_data_dict):
         SystemConfigurationComponent.__init__(self, build_action, components_data_dict)
         self.name = "theend"
+        self.component_substitution_list = ["@@LFS_DISTRIBUTION_NAME@@", config.DISTRIBUTION_NAME,
+                                            "@@LFS_DISTRIBUTION_VERSION@@", config.DISTRIBUTION_VERSION,
+                                            "@@LFS_DISTRIBUTION_DESCRIPTION@@", config.DISTRIBUTION_DESCRIPTION]
 
 class Reboot(SystemConfigurationComponent):
     def __init__(self, build_action, components_data_dict):
