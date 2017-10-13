@@ -1193,6 +1193,8 @@ class Groff(CompilableComponent):
     def __init__(self, build_action, components_data_dict):
         CompilableComponent.__init__(self, build_action, components_data_dict)
         self.name = "groff"
+        # This package does not support parallel build.
+        self.make_options = "--jobs=1"
         self.component_substitution_list = ["@@LFS_PAPER_SIZE@@", config.PAPER_SIZE]
 
 class Grub(CompilableComponent):
