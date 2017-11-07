@@ -1205,6 +1205,12 @@ class Grub(CompilableComponent):
         self.component_substitution_list = ["@@LFS_ROOT_PARTITION_NAME@@", config.ROOT_PARTITION_NAME,
                                             "@@LFS_ROOT_PARTITION_NUMBER@@", config.ROOT_PARTITION_NUMBER]
 
+        if self.build_action == "configuration":
+            # If we are generating a VM disk (using '/dev/loop', etc... then
+            # we have to include '--no-floppy' option to the 'grub-install' commnad
+            text = components_data_dict["grub_post"].replace("grub-install", "grub-install --no-floppy")
+            tools.add_to_dictionary(components_data_dict, key="grub_post", value=text, concat=False)
+
 class Less(CompilableComponent):
 
     def __init__(self, build_action, components_data_dict):
@@ -1345,8 +1351,11 @@ class Kernel(CompilableComponent):
         self.package_name = "linux"
 
     def run_previous_steps(self):
+        CompilableComponent.run_previous_steps(self)
         print("Copying custom \'.config\' file")
-        sys.exit(0)
+        tools.copy_file("kernel_config/kernel_config_499",
+                        self.extracted_directory + "/.config")
+
 
 class Busybox(CompilableComponent):
     pass
