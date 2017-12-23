@@ -451,21 +451,21 @@ class LFSXmlParser(object):
                         c = ET.SubElement(root, "component", name=component_name)
 
                         # Try to add 'version' field
-                        key = component_name.replace("1", "").replace("2", "") + "-version"
+                        key = component_name + "-version"
                         if key in data_dict:
                                 ET.SubElement(c, "version").text = data_dict[key]
                         else:
                                 ET.SubElement(c, "version")
 
                         # Try to add 'md5' field
-                        key = component_name.replace("1", "").replace("2", "") + "-md5"
+                        key = component_name + "-md5"
                         if key in data_dict:
                                 ET.SubElement(c, "md5").text = data_dict[key]
                         else:
                                 ET.SubElement(c, "md5")
 
                         # Try to add 'url' field
-                        key = component_name.replace("1", "").replace("2", "") + "-url"
+                        key = component_name + "-url"
                         if key in data_dict:
                                 ET.SubElement(c, "url").text = data_dict[key]
                         else:
