@@ -525,6 +525,7 @@ class Gcc2(Gcc):
 
     def __init__(self, build_action, components_data_dict):
         Gcc.__init__(self, build_action, components_data_dict)
+        self.package_name = "gcc"
         self.show_name = "gcc2"
         self.key_name = "gcc2"
 
