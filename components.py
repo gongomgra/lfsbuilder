@@ -148,40 +148,6 @@ class BaseComponent(object):
         os.chdir(self.sources_directory)
 
 
-    def check_compiling_and_linking_functions(self):
-        os.chdir(self.build_directory)
-        # Creates a shell script to check compiling and linking functions for required components
-        filename = os.path.join(self.build_directory, "compilation_linking_check.sh")
-
-        self.write_script_header(filename)
-
-        text = """
-
-pwd
-
-echo 'int main(){}' > dummy.c
-# Compile
-@@LFS_CHECK_COMPILATION_CC_COMMAND@@
-# Check output
-@@LFS_CHECK_COMPILATION_GREP_COMMAND@@
-
-# result=$?
-# if [ $result -eq 0 ]; then
-#    echo -e '\e[92m--- Glibc check was OK ---\e[0m'
-# else
-#    echo -e '\e[91m--- Glibc check was FAILED ---\e[0m'
-#    exit 1
-# fi
-
-@@LFS_CHECK_COMPILATION_RM_COMMAND@@
-"""
-        tools.add_text_to_file(filename, text)
-        substitution_list = ["@@LFS_CHECK_COMPILATION_CC_COMMAND@@", self.check_cc_command,
-                             "@@LFS_CHECK_COMPILATION_GREP_COMMAND@@", self.check_grep_command,
-                             "@@LFS_CHECK_COMPILATION_RM_COMMAND@@", self.check_rm_command]
-
-        tools.substitute_multiple_in_file(filename, substitution_list)
-        self.run_script(filename)
 
     def clean_workspace(self):
         if self.show_name == "":
@@ -322,6 +288,39 @@ class CompilableComponent(BaseComponent):
         # Set owner if running as non privileged user
         if self.build_action == "toolchain":
             tools.set_owner_and_group(self.buildscript_path, config.NON_PRIVILEGED_USERNAME)
+
+    def check_compiling_and_linking_functions(self):
+        os.chdir(self.build_directory)
+        # Creates a shell script to check compiling and linking functions for required components
+        filename = os.path.join(self.build_directory, "compilation_linking_check.sh")
+
+        self.write_script_header(filename)
+
+        text = """
+echo 'int main(){}' > dummy.c
+# Compile
+@@LFS_CHECK_COMPILATION_CC_COMMAND@@
+# Check output
+@@LFS_CHECK_COMPILATION_GREP_COMMAND@@
+
+# result=$?
+# if [ $result -eq 0 ]; then
+#    echo -e '\e[92m--- Compilation check was OK ---\e[0m'
+# else
+#    echo -e '\e[91m--- Compilation check was FAILED ---\e[0m'
+#    exit 1
+# fi
+
+@@LFS_CHECK_COMPILATION_RM_COMMAND@@
+"""
+        tools.add_text_to_file(filename, text)
+        substitution_list = ["@@LFS_CHECK_COMPILATION_CC_COMMAND@@", self.check_cc_command,
+                             "@@LFS_CHECK_COMPILATION_GREP_COMMAND@@", self.check_grep_command,
+                             "@@LFS_CHECK_COMPILATION_RM_COMMAND@@", self.check_rm_command]
+
+        tools.substitute_multiple_in_file(filename, substitution_list)
+        self.run_script(filename)
+
 
     def clean_workspace(self):
         BaseComponent.clean_workspace(self)
