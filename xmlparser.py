@@ -52,6 +52,7 @@ class LFSXmlParser(object):
         def generate_entities_data_dict(self):
                 data_dict = {}
                 for entity_file in self.entities_filelists:
+                        entity_file = os.path.join(self.book_basedir, entity_file)
                         file_text = tools.read_file(entity_file)
                         for line in file_text.split("\n"):
                                 # Check if 'line' is an ENTITY description line
