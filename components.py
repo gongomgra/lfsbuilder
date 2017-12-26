@@ -201,7 +201,7 @@ class CompilableComponent(BaseComponent):
 
         # Use 'package_version' in pattern if it is not None
         if self.package_version is not None:
-            pattern = "{name}-{version}*.tar.*".format(name = self.package_name,
+            pattern = "{name}*{version}*.tar.*".format(name = self.package_name,
                                                        version = self.package_version)
 
         source_code_filename = tools.find_file(self.sources_directory, pattern)
