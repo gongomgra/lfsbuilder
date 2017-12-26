@@ -445,82 +445,24 @@ class LFSXmlParser(object):
                 #  </component>
                 # </components>
 
+                attributes_list = ["version", "md5", "url", "buildDir", "previous", "configure",
+                                   "make", "test", "install", "post"]
+
                 # Create new XML tree
                 root = ET.Element("components")
                 for component_filename in components_filelist:
                         component_name = self.get_component_name(component_filename)
                         c = ET.SubElement(root, "component", name=component_name)
 
-                        # Try to add 'version' field
-                        key = component_name + "-version"
-                        if key in data_dict:
-                                ET.SubElement(c, "version").text = data_dict[key]
-                        else:
-                                ET.SubElement(c, "version")
+                        for attribute in attributes_list:
+                                key = "{name}-{attribute}".format(name = component_name,
+                                                                  attribute = attribute)
 
-                        # Try to add 'md5' field
-                        key = component_name + "-md5"
-                        if key in data_dict:
-                                ET.SubElement(c, "md5").text = data_dict[key]
-                        else:
-                                ET.SubElement(c, "md5")
+                                if key in data_dict:
+                                        ET.SubElement(c, attribute).text = data_dict[key]
+                                else:
+                                        ET.SubElement(c, attribute)
 
-                        # Try to add 'url' field
-                        key = component_name + "-url"
-                        if key in data_dict:
-                                ET.SubElement(c, "url").text = data_dict[key]
-                        else:
-                                ET.SubElement(c, "url")
-
-                        # Add 'buildDir' field
-                        key = component_name + "-buildDir"
-                        if key in data_dict:
-                                ET.SubElement(c, "buildDir").text = data_dict[key]
-                        else:
-                                ET.SubElement(c, "buildDir")
-
-                        # Add 'pre' field
-                        key = component_name + "-previous"
-                        if key in data_dict:
-                                ET.SubElement(c, "previous").text = data_dict[key]
-                        else:
-                                ET.SubElement(c, "previous")
-
-
-                        # Add 'configure' field
-                        key = component_name + "-configure"
-                        if key in data_dict:
-                                ET.SubElement(c, "configure").text = data_dict[key]
-                        else:
-                                ET.SubElement(c, "configure")
-
-                        # Add 'make' field
-                        key = component_name + "-make"
-                        if key in data_dict:
-                                ET.SubElement(c, "make").text = data_dict[key]
-                        else:
-                                ET.SubElement(c, "make")
-
-                        # Add 'install' field
-                        key = component_name + "-install"
-                        if key in data_dict:
-                                ET.SubElement(c, "install").text = data_dict[key]
-                        else:
-                                ET.SubElement(c, "install")
-
-                        # Add 'test' field
-                        key = component_name + "-test"
-                        if key in data_dict:
-                                ET.SubElement(c, "test").text = data_dict[key]
-                        else:
-                                ET.SubElement(c, "test")
-
-                        # Add 'post' field
-                        key = component_name + "-post"
-                        if key in data_dict:
-                                ET.SubElement(c, "post").text = data_dict[key]
-                        else:
-                                ET.SubElement(c, "post")
 
                 # Write result
                 tools.write_xmlfile(filename, ET.tostring(root))
