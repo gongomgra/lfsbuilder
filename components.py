@@ -207,6 +207,7 @@ class CompilableComponent(BaseComponent):
         self.install_options = ""
         self.include_tests = 0
         self.test_options = ""
+        self.package_version = None
 
 
     def set_attributes(self):
@@ -214,6 +215,11 @@ class CompilableComponent(BaseComponent):
 
         # Check if component will need to create a build directory or not
         self.require_build_directory = self.components_data_dict[self.key_name + "_buildDir"]
+
+        # Set 'package_version' if exist
+        key_version = "{key_name}_version".format(key_name = self.key_name)
+        if self.components_data_dict[key_version] is not None:
+            self.package_version = self.components_data_dict[key_version]
 
     def build(self):
         self.extract_source_code()
@@ -226,15 +232,21 @@ class CompilableComponent(BaseComponent):
     def extract_source_code(self):
         # We look for a tar file
         pattern = self.package_name + "*.tar.*"
+
+        # Use 'package_version' in pattern if it is not None
+        if self.package_version is not None:
+            pattern = "{name}-{version}*.tar.*".format(name = self.package_name,
+                                                       version = self.package_version)
+
         source_code_filename = tools.find_file(self.sources_directory, pattern)
         if source_code_filename == "":
             printer.error("Can't find source code file for \'" + self.name + "\' with pattern: " + pattern)
         tools.extract(source_code_filename)
         # We get the name of the extracted directory
-        pattern = self.package_name + "*"
+        pattern = "{name}-{version}".format(name = self.package_name, version = self.package_version)
         self.extracted_directory = os.path.abspath(tools.find_directory(self.sources_directory, pattern))
         if self.extracted_directory == "":
-            printer.error("Can't find extracted directory for \'" + self.name + "\' with pattern: " + pattern)
+            printer.error("Can't find extracted directory for \'" + self.package_name + "\' with pattern: " + pattern)
 
         # Generate extractedDir/build/ if necessary.
         if self.require_build_directory == '1':
@@ -502,13 +514,16 @@ class Libstdcplusplus(CompilableComponent):
     # def apply_source_code_patches(self):
     #     BaseComponent.apply_source_code_patches(self)
 
-class Binutils2(CompilableComponent):
+class Binutils2(Binutils):
 
     def __init__(self, build_action, components_data_dict):
-        CompilableComponent.__init__(self, build_action, components_data_dict)
-        self.name = "binutils"
+        Binutils.__init__(self, build_action, components_data_dict)
+        self.show_name = "binutils2"
         self.key_name ="binutils2"
         self.make_options="--jobs=1"
+        # Use 'binutils' component version (usually the same)
+        self.package_version = self.components_data_dict["binutils_version"]
+
         # self.show__oame = "binutils2"
         # self.confi_oure_options = "CC=$LFS_TGT-gcc AR=$LFS_TGT-ar RANLIB=$LFS_TGT-ranlib --prefix=/tools --with-build-sysroot=$LFS --with-sysroot=$LFS --with-lib-path=/tools/lib --disable-nls --disable-werror"
 
@@ -525,9 +540,10 @@ class Gcc2(Gcc):
 
     def __init__(self, build_action, components_data_dict):
         Gcc.__init__(self, build_action, components_data_dict)
-        self.package_name = "gcc"
         self.show_name = "gcc2"
         self.key_name = "gcc2"
+        # Use 'gcc' component version (usually the same)
+        self.package_version = self.components_data_dict["gcc_version"]
 
         # Required patch for glibc to compile properly. Add it to gcc2 previous steps
         # http://stackoverflow.com/questions/15787684/lfs-glibc-compilation-ld-error
