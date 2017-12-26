@@ -161,7 +161,36 @@ class ToolchainBuilder(ComponentsBuilder):
         self.excludes = ["introduction", "toolchaintechnotes", "generalinstructions"]
         self.components_to_build = ["binutils", "gcc", "linuxapiheaders", "glibc", "libstdcplusplus", "binutils2", "gcc2", "tclcore", "expect", "dejagnu", "check", "ncurses", "bash", "bison", "bzip2", "coreutils", "diffutils", "file", "findutils", "gawk", "gettext", "grep", "gzip", "m4", "make", "patch", "perl", "sed", "tar", "texinfo", "utillinux", "xz", "stripping"]
 
-    # def build(self):
+    def build(self):
+        # Check the config.NON_PRIVILEGED_USERNAME exists
+        if tools.check_user_exists(config.NON_PRIVILEGED_USERNAME):
+            directory_list = ["tools", "sources"]
+
+            # Set owner for the config.BASE_DIRECTORY
+            tools.set_owner_and_group(os.path.abspath(config.BASE_DIRECTORY),
+                                      config.NON_PRIVILEGED_USERNAME)
+            msg = "Setting '{user}' as owner/group of the '{directory}' directory"
+            msg = msg.format(user = config.NON_PRIVILEGED_USERNAME,
+                             directory = config.BASE_DIRECTORY)
+            printer.info(msg)
+
+            # Set owner for entries in the 'directory_list'
+            for d in directory_list:
+                d = os.path.join(config.BASE_DIRECTORY, d)
+                tools.set_owner_and_group(d, config.NON_PRIVILEGED_USERNAME)
+                msg = "Setting {user} as owner of the {directory} directory"
+                msg = msg.format(user = config.NON_PRIVILEGED_USERNAME,
+                                 directory = d)
+                printer.info(msg)
+
+            # Continue running the parent method
+            ComponentsBuilder.build(self)
+
+        else:
+            msg = "User '{user}' expecified in the 'config.NON_PRIVILEGED_USERNAME' variable doesn't exist"
+            msg = msg.format(user = config.NON_PRIVILEGED_USERNAME)
+            printer.error(msg)
+
     #     # self.checkMountPoint()
     #     # self.checkToolsDirectory()
     #     # Call parent class steps to build component in componentsToBuild list
