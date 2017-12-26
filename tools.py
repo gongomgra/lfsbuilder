@@ -67,6 +67,13 @@ def substitute_in_file (filename, old, new):
 #         substitute_in_file(filename, old, new)
 
 def substitute_multiple_in_file (filename, substitution_list):
+    # Check 'substitution_list' has an even number of elements.
+    if len(substitution_list) % 2 != 0:
+            msg = """The substitution list is not valid. Number of elements: {length}.
+Please ensure you didn't miss any element, this parameter should have an even length."""
+            msg = msg.format(length = len(substitution_list))
+            printer.error(msg)
+
     for old,new in zip(substitution_list[0::2], substitution_list[1::2]):
         substitute_in_file(filename, old, new)
 
