@@ -460,6 +460,11 @@ class Glibc(CompilableComponent):
         self.make_options = "--jobs=1"
         if self.build_action == "system":
             self.component_substitution_list = ["@@LFS_TIMEZONE@@", config.TIMEZONE]
+            # Custom 'localedef' command for users to add theirs own
+            cmd = "localedef -i {locale} -f {charmap} {lang}".format(locale = config.LOCALE,
+                                                                     charmap = config.CHARMAP,
+                                                                     lang = config.LANG)
+            tools.add_to_dictionary(self.components_data_dict, "glibc_post", cmd)
             # self.replaceable_placeholder_value = config.TIMEZONE
             # self.confi_oure_options = self.configure_options + "--host=$LFS_TGT --build=$(../scripts/config.guess) --enable-kernel=2.6.32 --with-headers=/tools/include libc_cv_forced_unwind=yes libc_cv_c_cleanup=yes"
 
