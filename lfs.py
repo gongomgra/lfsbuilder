@@ -1,13 +1,17 @@
 # LFS class
 import os
 import builders
+import tools
 
 class LFS(object):
 
     def __init__ (self, action):
         self.action = action
+        self.temporal_folder = "tmp"
 
     def build(self):
+        # Create 'tmp' directory
+        tools.create_directory(self.temporal_folder)
         # Create required builder and call its build method
         if self.action == "toolchain":
             t = builders.ToolchainBuilder()

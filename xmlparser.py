@@ -18,6 +18,7 @@ class LFSXmlParser(object):
                 self.packages_entities_file = "packages.ent"
                 self.general_entities_file = "general.ent"
                 self.entities_filelists = ["packages.ent", "general.ent"]
+                self.temporal_folder = "tmp"
                 self.book_basedir = os.path.abspath("book")
                 self.save_index_file = "index.txt"
 
@@ -465,6 +466,7 @@ class LFSXmlParser(object):
 
 
                 # Write result
+                filename = os.path.abspath(os.path.join(self.temporal_folder, filename))
                 tools.write_xmlfile(filename, ET.tostring(root))
 
                 # Substitute placeholders
@@ -510,6 +512,8 @@ class LFSXmlParser(object):
                 parser.parser.UseForeignDTD(True)
                 parser.entity = ShowAllEntities()
                 etree = ET.ElementTree()
+                # Read commands from 'temporal_folder'
+                filename = os.path.abspath(os.path.join(self.temporal_folder, filename))
                 xml_tree = etree.parse(filename, parser=parser)
 
                 # Iterate over 'component' nodes to extract data
