@@ -99,12 +99,9 @@ def find_directory (base_directory, pattern):
     return result
 
 def create_directory(directory_path):
-    # Remove directory if exists
-    if os.path.exists(directory_path):
-        shutil.rmtree(directory_path)
-
-    # Recreate it
-    os.mkdir(directory_path)
+    # Create directory if it does not exist
+    if os.path.exists(directory_path) == False:
+        os.mkdir(directory_path)
 
 # ---
 
