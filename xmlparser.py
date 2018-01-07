@@ -18,9 +18,9 @@ class LFSXmlParser(object):
                 self.packages_entities_file = "packages.ent"
                 self.general_entities_file = "general.ent"
                 self.entities_filelists = ["packages.ent", "general.ent"]
-                self.temporal_folder = "tmp"
+                self.temporal_folder = os.path.abspath("tmp")
                 self.book_basedir = os.path.abspath("book")
-                self.save_index_file = "index.txt"
+                self.save_index_file = os.path.abspath(os.path.join(self.temporal_folder, "index.txt"))
 
         def get_component_name(self, component_filename):
                 # 'gcc-pass1.xml':     'gcc'
