@@ -1,0 +1,4 @@
+{
+    "name": "glibc",
+    "make_options": "--jobs=1"
+}

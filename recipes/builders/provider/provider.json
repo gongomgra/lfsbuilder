@@ -1,0 +1,8 @@
+{
+    "name": "provider",
+    "build_into_chroot": false,
+    "book": "custom",
+    "env_PATH_value": "/bin:/usr/bin:/sbin:/usr/sbin",
+
+    "components_to_build": ["imggenerator", "imgmount", "mount", "sources"]
+}

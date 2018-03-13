@@ -1,0 +1,5 @@
+{
+    "name": "findutils",
+    "include_tests": true,
+    "test_options": "--jobs=1"
+}

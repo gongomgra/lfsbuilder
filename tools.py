@@ -9,6 +9,8 @@ import zipfile
 import pwd
 import shutil
 import ctypes
+import json
+import importlib
 
 import printer
 
@@ -36,11 +38,26 @@ def read_file (filename):
         msg = "File " + filename + " not found."
         printer.error(msg)
 
+def backup_file(filepath):
+    new_filepath = "{f}.bck".format(f=filepath)
+
+    # If backup do not exists already
+    if os.path.exists(new_filepath) == False:
+        copy_file(filepath, new_filepath)
+
+def restore_backup_file(filepath):
+    old_filepath = "{f}.bck".format(f=filepath)
+    # If backup exists
+    if os.path.exists(old_filepath) == True:
+        os.remove(filepath)
+        copy_file(old_filepath, filepath)
+        os.remove(old_filepath)
+
 def copy_file (src, dest):
     if src != dest:
         shutil.copyfile(src, dest)
     else:
-        printer.error("dedalo.copy_file: 'src' and 'dest' are the same.")
+        printer.error("tools.copy_file: 'src' and 'dest' are the same.")
 
 def add_text_to_file (filename, text, at_the_beginning=0):
     if os.path.exists(filename):
@@ -62,9 +79,6 @@ def substitute_in_file (filename, old, new):
     new_text = original_text.replace(old, new)
     write_file(filename, new_text)
 
-# def substituteMultipleInFile (filename, oldList, newList):
-#     for old,new in zip(oldList, newList):
-#         substitute_in_file(filename, old, new)
 
 def substitute_multiple_in_file (filename, substitution_list):
     # Check 'substitution_list' has an even number of elements.
@@ -77,6 +91,123 @@ Please ensure you didn't miss any element, this parameter should have an even le
     for old,new in zip(substitution_list[0::2], substitution_list[1::2]):
         substitute_in_file(filename, old, new)
 
+def modify_blfs_component_bootscript_install(cmd):
+    # Include bootscript installation steps
+    # using the provided 'cmd' as base line
+    text = """
+# Install bootscript
+# 1. Extract 'blfs-bootscripts' tarball and 'cd' in
+cd @@LFS_SOURCES_DIRECTORY@@
+tar xf blfs-bootscripts-@@LFS_BLFS_BOOTSCRIPTS_VERSION@@.tar.*
+cd blfs-bootscripts-@@LFS_BLFS_BOOTSCRIPTS_VERSION@@
+
+# 2. Install required service bootscript
+{c}
+
+# 3. Return to the 'sources' directory and remove the 'blfs-bootscripts' directory
+cd @@LFS_SOURCES_DIRECTORY@@
+rm -rf blfs-bootscripts-@@LFS_BLFS_BOOTSCRIPTS_VERSION@@
+""".format(c=cmd)
+
+    return text
+
+def substitute_in_list(objective_list, element, substitution):
+    while objective_list.count(element) > 0:
+        # Get the 'element' index
+        index = objective_list.index(element)
+        # We replace the original list, not a copy at index
+        objective_list.remove(element)
+        objective_list[index:index] = substitution
+
+def remove_and_add_element(objective_list, element, index=None):
+    # Add at the end by default
+    try:
+        objective_list.remove(element)
+    except ValueError:
+        pass
+    finally:
+        if index is None:
+            objective_list.append(element)
+        else:
+            objective_list.insert(index, element)
+
+def remove_all_and_add_element(objective_list, element, index=None):
+    while objective_list.count(element) > 1:
+        # Remove element
+        objective_list.remove(element)
+
+    else:
+        remove_and_add_element(objective_list, element, index)
+
+def get_element_index(objective_list, element, not_present=None):
+    try:
+        index = objective_list.index(element)
+    except ValueError:
+        index = not_present
+    finally:
+        return index
+
+def is_element_present(objective_list, element):
+    result = False
+    if element in objective_list:
+        result = True
+
+    return result
+
+def disable_commands(commands_list):
+    result = []
+    for command in commands_list:
+        if command.startswith("<userinput") is False:
+            # User didn't provide XML attribute for command,
+            # so we add it and then we disable it
+            command = "<userinput>{c}".format(c=command)
+
+        result.append(command)
+        cmd = command.replace("<userinput", "<userinput remap=\"lfsbuilder_disabled\"")
+        result.append(cmd)
+
+    return result
+
+def read_recipe_file(recipe_path):
+    if os.path.exists(recipe_path):
+        fp = open(recipe_path, "r")
+        recipe_data = json.load(fp)
+        fp.close()
+        return recipe_data
+    else:
+        msg = "Error reading recipe. File '{f}' do not exists".format(f=recipe_path)
+        printer.error(msg)
+
+def read_functions_file(component_name, filename="functions.py", directory="components"):
+
+    module = None
+    functions_file = os.path.realpath(os.path.join("recipes", directory,
+                                                   component_name, filename))
+
+
+    if os.path.exists(functions_file):
+        module_path = "recipes/{d}/{c}/{f}".format(d=directory,
+                                                   c=component_name,
+                                                   f=filename)
+
+        directory, module_name = os.path.split(module_path)
+        module_name = os.path.splitext(module_name)[0]
+
+        path_bck = list(sys.path)
+        sys.path.insert(0, directory)
+
+        try:
+            module = importlib.import_module(module_name, directory)
+
+            # Remove the 'functions' module we have just imported from the 'sys.modules'
+            # dictionary so we can import a new module later on. If not, 'module' will always be
+            # the first 'functions.py' modules it has been imported during the program execution
+            del sys.modules[module_name]
+        finally:
+            sys.path[:] = path_bck # restore
+
+    return module
+
 def find_file (base_directory, pattern):
     result = []
     for value in os.listdir(base_directory):
@@ -85,6 +216,21 @@ def find_file (base_directory, pattern):
 
     # List to string
     result = ''.join(result)
+
+    # Return 'None' if not found
+    if result == "":
+        result = None
+
+    return result
+
+def find_file_recursive(base_directory, pattern):
+    result = []
+    files_list = [os.path.join(rootfolder, filename) for rootfolder, subfolder, filenames in os.walk(base_directory) for filename in filenames]
+
+    for filename in files_list:
+        if fnmatch.fnmatch(os.path.basename(filename), pattern):
+            result.append(filename)
+
     return result
 
 def find_directory (base_directory, pattern):
@@ -96,6 +242,11 @@ def find_directory (base_directory, pattern):
 
     # List to string
     result = ''.join(result)
+
+    # Return 'None' if not found
+    if result == "":
+        result = None
+
     return result
 
 def create_directory(directory_path):
@@ -115,7 +266,6 @@ def run_program (program_to_run):
     command_to_run = shlex.split(program_to_run)
     p = subprocess.Popen(command_to_run, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     return p
- #   return iter(p.stdout.readline, b'')
 
 def run_program_as_user(program_to_run, username):
     # Get system values for the username
@@ -144,20 +294,11 @@ def run_program_with_output (program_to_run, username = ""):
         printer.error("Command \'" + program_to_run + "\' failed to run. Return code: " + str(p.returncode))
 
 def run_program_without_output (program_to_run, username = ""):
-    # new_target = open(os.devnull, "w")
-    # old_target = sys.stdout
-    # sys.stdout = new_target
-
-    # for line in run_program(program_to_run):
-    #     print line
-
-    # sys.stdout = old_target
 
     if username == "":
         p = run_program(program_to_run)
     else:
         p = run_program_as_user(program_to_run, username)
-
 
     # Print to /dev/null
     new_target = open(os.devnull, "w")
@@ -179,8 +320,8 @@ def run_program_without_output (program_to_run, username = ""):
 def run_program_into_chroot (program_to_run, base_directory):
         real_root = os.open("/", os.O_RDONLY)
         os.chroot(base_directory)
-        # Removed 'os.chdir' call to run commands into chroot into directory we were previously to call 'chroot'
-        # Normally 'extracted_directory'
+        # Removed 'os.chdir' call to run commands into chroot from directory we were
+        # previously to call 'chroot'. Normally 'extracted_directory'
         # os.chdir("/")
 
         # Chrooted environment
@@ -203,7 +344,7 @@ def get_class (class_name):
 
 def generate_placeholder(key):
     value = key.upper().replace("-", "_")
-    return "@@LFS_{}@@".format(value)
+    return "@@LFS_{v}@@".format(v=value)
 
 def extract_tarfile (filename, destination, extension=""):
     if extension == "":
@@ -238,17 +379,6 @@ def extract (filename, destination=""):
         extract_tarfile(filename, destination, ext)
     else:
         printer.error("Archive \'" + filename + "\' extension not recognized")
-
-
-# def apply_patch (filename):
-#     printer.substepInfo("Applying patchfile \'" + os.path.basename(filename) + "\'")
-#     cmd = "patch -N -p1 < " + filename
-#     text = """#!/bin/bash
-# """ + cmd
-#     write_file("patch.sh", text)
-#     cmd_aux = "bash patch.sh"
-#     # run_program_with_output (cmd_aux)
-#     run_program_without_output (cmd_aux)
 
 # ---
 
@@ -288,14 +418,11 @@ def set_recursive_owner_and_group(directory, username, groupname=None):
         fileList = dirs + files
         for f in fileList:
             set_owner_and_group(os.path.join(rootDir, f), username, groupname)
-        # for f in files:
-        #     set_owner_and_group(os.path.join(rootDir, f), username, groupname)
 # ---
 
 def add_to_dictionary(dictionary, key, value, concat="\n"):
     # If key exists in dictionary, then concatenate values and update dictionary
-    check = key in dictionary
-    if check == True and concat != False:
+    if key in dictionary and dictionary[key] is not None and concat != False:
         value = dictionary[key] + concat + value
 
     dictionary[key] = value

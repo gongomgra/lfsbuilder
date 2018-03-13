@@ -1,0 +1,11 @@
+{
+    "name": "system",
+    "show_name": "System Builder",
+    "build_into_chroot": true,
+    "env_PATH_value": "/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin",
+    "chapters_list": ["chapter06"],
+
+    "excludes": ["introduction", "pkgmgt", "chroot", "systemd", "dbus", "aboutdebug", "revisedchroot"],
+
+    "components_to_build": ["kernfs", "creatingdirs", "createfiles", "linuxapiheaders", "manpages", "glibc", "adjusting", "zlib", "file", "binutils", "gmp", "mpfr", "mpc", "gcc", "bzip2", "pkgconfig", "ncurses", "attr", "acl", "libcap", "sed", "shadow", "psmisc", "ianaetc", "m4", "bison", "flex", "grep", "readline", "bash", "bc", "libtool", "gdbm", "gperf", "expat", "inetutils", "perl", "xmlparser", "intltool", "autoconf", "automake", "xz", "kmod", "gettext", "procps", "e2fsprogs", "coreutils", "diffutils", "gawk", "findutils", "groff", "grub", "less", "gzip", "iproute2", "kbd", "libpipeline", "make", "patch", "sysklogd", "sysvinit", "eudev", "utillinux", "mandb", "tar", "texinfo", "vim", "strippingagain"]
+}

@@ -1,0 +1,41 @@
+
+import os
+import sys
+
+import config
+import tools
+
+def modify_xmlfile(componentfile_path):
+    # 'gcc-pass2' includes a compilation test that we will remap to 'check'
+    # to avoid it to be included in '_previous' step
+    tools.backup_file(componentfile_path)
+    tools.substitute_in_file(componentfile_path, "<userinput>",
+                             "<userinput remap=\"check\">")
+
+
+def set_attributes(component_data_dict, parent_function):
+        # Required patch for glibc to compile properly. Add it to gcc2 previous steps
+        # http://stackoverflow.com/questions/15787684/lfs-glibc-compilation-ld-error
+        tools.add_to_dictionary(component_data_dict,
+                               "previous",
+                               "sed -i '/k prot/agcc_cv_libc_provides_ssp=yes' gcc/configure")
+        tools.add_to_dictionary(component_data_dict,
+                               "previous",
+                               "sed -i 's/if \((code.*))\)/if (\&1; \&\& \!DEBUG_INSN_P (insn))/' gcc/sched-deps.c")
+
+        # Call parent function
+        parent_function()
+
+        # Compilation check
+        # if self.builder_name == "toolchain":
+        #     self.check_cc_command = "cc dummy.c"
+        #     self.check_grep_command = "readelf -l a.out | grep ': /tools'"
+        #     self.check_rm_command = "rm -v dummy.c a.out"
+
+
+def run_post_steps(components_data_dict, parent_function):
+        # if self.builder_name == "toolchain":
+        #     self.check_compiling_and_linking_functions()
+
+        # Call parent function
+        parent_function()

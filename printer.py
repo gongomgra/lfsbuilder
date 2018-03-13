@@ -19,12 +19,10 @@ def info(text):
     # time.sleep(5)
 
 def warning(text):
-    print YELLOW + clockTime() + text + ENDCOLOR
-    import time
-    time.sleep(5)
+    print YELLOW + clockTime() + " " + text + ENDCOLOR
 
 def error(text):
-    print RED + clockTime() + text + ENDCOLOR
+    print RED + clockTime() + " " + text + ENDCOLOR
     import sys
     sys.exit(1)
 

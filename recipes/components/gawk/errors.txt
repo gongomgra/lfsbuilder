@@ -1,0 +1,3 @@
+Found errors running tests for toolchain in version 4.1.4. According to the link below,
+it is ok to keep going if both gcc and binutils sanity checks were ok
+http://www.linuxquestions.org/questions/linux-from-scratch-13/error-while-running-test-suite-of-gawk-4-1-1-lfsv7-6-a-4175524586/

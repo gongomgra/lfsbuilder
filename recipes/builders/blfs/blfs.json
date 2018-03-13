@@ -1,0 +1,13 @@
+{
+    "name": "blfs",
+    "build_into_chroot": true,
+    "show_name": "BLFS Builder",
+    "book": "blfs",
+    "env_PATH_value": "/bin:/usr/bin:/sbin:/usr/sbin",
+
+    "chapters_list": ["archive", "general", "gnome", "images", "kde", "lxde", "lxqt", "multimedia", "networking", "postlfs", "pst", "server", "x", "xfce", "xincludes", "xsoft"],
+
+    "excludes": ["appendices", "book","introduction", "stylesheets", "templates"],
+
+    "components_to_build": ["openssl", "cacerts", "openssh", "wget", "curl", "dhcpcd"]
+}

@@ -1,0 +1,4 @@
+{
+    "name": "fstab",
+    "base_component": "SystemConfigurationComponent"
+}
