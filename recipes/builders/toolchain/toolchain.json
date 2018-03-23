@@ -7,5 +7,5 @@
 
     "excludes": ["introduction", "toolchaintechnotes", "generalinstructions"],
 
-    "components_to_build": ["binutils", "gcc", "linuxapiheaders", "glibc", "libstdcplusplus", "binutils2", "gcc2", "tclcore", "expect", "dejagnu", "check", "ncurses", "bash", "bison", "bzip2", "coreutils", "diffutils", "file", "findutils", "gawk", "gettext", "grep", "gzip", "m4", "make", "patch", "perl", "sed", "tar", "texinfo", "utillinux", "xz", "stripping"]
+    "components_to_build": ["binutils", "gcc", "linuxapiheaders", "glibc", "libstdcplusplus", "binutils2", "gcc2", "tclcore", "expect", "dejagnu", "ncurses", "bash", "bison", "bzip2", "coreutils", "diffutils", "file", "findutils", "gawk", "gettext", "grep", "gzip", "m4", "make", "patch", "perl", "sed", "tar", "texinfo", "utillinux", "xz", "stripping"]
 }

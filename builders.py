@@ -52,6 +52,22 @@ class BuilderGenerator(object):
         self.builder_recipe_data = tools.read_recipe_file(self.builder_recipe)
         self.builder_data_dict = tools.join_dicts(self.builder_data_dict, self.builder_recipe_data)
 
+        # Get 'components_to_build' list from book if necessary
+        if config.CUSTOM_COMPONENTS_TO_BUILD is False and \
+           (self.builder_data_dict["name"] == "toolchain" or \
+            self.builder_data_dict["name"] == "system" or \
+            self.builder_data_dict["name"] == "configuration" or \
+            self.builder_data_dict["name"] == "blfs"):
+
+            self.index_filename = "{n}_components_to_build.txt".format(n=self.builder_data_dict["name"])
+            self.index_filename_path = os.path.join(self.builder_data_dict["lfsbuilder_tmp_directory"],
+                                                    self.index_filename)
+            tools.add_to_dictionary(self.builder_data_dict,
+                                    "components_to_build",
+                                    tools.list_from_file(self.index_filename_path),
+                                    concat=False)
+
+        # Module name
         self.module = "builders"
 
         # Instanciate a ComponentsBuilder by default

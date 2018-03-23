@@ -445,6 +445,9 @@ def is_empty_list(l):
 
     return empty
 
+def list_from_file(filename):
+    return [line for line in read_file(filename).split("\n")]
+
 # ---
 def write_xmlfile(filename, text):
     import xml.dom.minidom

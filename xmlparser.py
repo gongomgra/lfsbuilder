@@ -31,7 +31,9 @@ class LFSXmlParser(object):
 
                 self.entities_filelist = [self.packages_entities_file, self.general_entities_file]
 
-                self.save_index_file = os.path.abspath(os.path.join(self.temporal_folder, "index.txt"))
+                self.save_index_file = os.path.abspath(os.path.join(self.temporal_folder,
+                                                                    "{b}_components_to_build.txt"))
+                self.save_index_file = self.save_index_file.format(b=self.builder_data_dict["name"])
 
         def get_component_name(self, component_filename):
                 # 'gcc-pass1.xml':     'gcc'
@@ -115,8 +117,8 @@ class LFSXmlParser(object):
                 # Get component list from chapter index
                 file_text = tools.read_file(indexfile)
                 for line in file_text.split("\n"):
-                        # Valid lines includes text 'xi:include'
-                        if line.find("xi:include") != -1:
+                        # Valid lines includes text 'xi:include' and are not XML comments
+                        if line.find("xi:include") != -1 and line.find("<!--") == -1:
                                 line_fields = line.split("\"")
                                 # line_fields = ['  <xi:include xmlns:xi=',
                                 #                'http://www.w3.org/2001/XInclude',
@@ -149,6 +151,10 @@ class LFSXmlParser(object):
         def generate_components_dict(self, components_filelist):
                 # Generate components_dict from components_filelist
                 components_dict = {}
+
+                if os.path.exists(self.save_index_file):
+                        os.remove(self.save_index_file)
+
                 for componentfile_path in components_filelist:
                         component_filename = os.path.basename(componentfile_path)
 

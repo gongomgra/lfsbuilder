@@ -9,5 +9,5 @@
 
     "excludes": ["appendices", "book","introduction", "stylesheets", "templates"],
 
-    "components_to_build": ["openssl", "cacerts", "openssh", "wget", "curl", "dhcpcd"]
+    "components_to_build": ["cacerts", "openssh", "wget", "curl", "dhcpcd"]
 }

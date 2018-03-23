@@ -17,6 +17,9 @@ IMG_FILENAME = "@@LFSBUILDER_SRC_DIRECTORY@@/tmp/LFSBuilder.img"
 # 1M: 1 megabyte, 1G: 1 gigabyte
 IMG_SIZE = "1M"
 
+# Build components from book or not
+CUSTOM_COMPONENTS_TO_BUILD = True
+
 TIMEZONE = "Europe/Madrid"
 PAPER_SIZE = "A4"
 
