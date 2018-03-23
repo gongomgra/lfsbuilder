@@ -160,7 +160,6 @@ class LFSXmlParser(object):
                         # Read 'functions.py' file if exists
                         self.extra_functions = tools.read_functions_file(component_name)
 
-                        print "self.extra_functions: {f}".format(f=self.extra_functions)
                         if self.extra_functions is not None and \
                            hasattr(self.extra_functions, "modify_xmlfile"):
                                 self.extra_functions.modify_xmlfile(componentfile_path)
