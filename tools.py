@@ -131,6 +131,14 @@ def remove_and_add_element(objective_list, element, index=None):
         else:
             objective_list.insert(index, element)
 
+def remove_elements(objective_list, elements):
+    for element in elements:
+        remove_element(objective_list, element)
+
+def remove_element(objective_list, element):
+    if is_element_present(objective_list, element) is True:
+        objective_list.remove(element)
+
 def remove_all_and_add_element(objective_list, element, index=None):
     while objective_list.count(element) > 1:
         # Remove element

@@ -19,6 +19,8 @@ IMG_SIZE = "1M"
 
 # Build components from book or not
 CUSTOM_COMPONENTS_TO_BUILD = True
+INCLUDE_MESON_BUILD_SYSTEM = False
+
 
 TIMEZONE = "Europe/Madrid"
 PAPER_SIZE = "A4"
