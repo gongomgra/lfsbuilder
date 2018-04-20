@@ -1,0 +1,4 @@
+{
+    "name": "networkd",
+    "base_component": "SystemConfigurationComponent"
+}

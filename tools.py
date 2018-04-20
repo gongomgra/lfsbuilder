@@ -222,12 +222,13 @@ def find_file (base_directory, pattern):
         if fnmatch.fnmatch(value, pattern):
             result.append(os.path.join(base_directory, value))
 
-    # List to string
-    result = ''.join(result)
 
     # Return 'None' if not found
-    if result == "":
+    if is_empty_list(result) is True:
         result = None
+    else:
+        # List to string
+        result = ''.join(result[0])
 
     return result
 

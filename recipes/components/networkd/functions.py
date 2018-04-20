@@ -10,14 +10,15 @@ def modify_xmlfile(componentfile_path):
     # '/etc/resolv.conf' files that we have to customize it
     tools.backup_file(componentfile_path)
 
-    substitution_list = ["IP=192.168.1.2",
-                         "IP={eth0_ip}".format(eth0_ip=config.ETH0_IP_ADDRESS),
+    substitution_list = ["Address=192.168.0.2/24",
+                         "IP={eth0_ip}/{eth0_mask}".format(eth0_ip=config.ETH0_IP_ADDRESS,
+                                                           eth0_mask=config.ETH0_MASK),
 
-                         "GATEWAY=192.168.1.1",
-                         "GATEWAY={eth0_gateway}".format(eth0_gateway=config.ETH0_GATEWAY_ADDRESS),
+                         "Gateway=192.168.0.1",
+                         "Gateway={eth0_gateway}".format(eth0_gateway=config.ETH0_GATEWAY_ADDRESS),
 
-                         "BROADCAST=192.168.1.255",
-                         "BROADCAST={eth0_broadcast}".format(eth0_broadcast=config.ETH0_BROADCAST_ADDRESS),
+                         "DNS=192.168.0.1",
+                         "DNS={eth0_dns}".format(eth0_dns=config.DNS_ADDRESS_1),
 
                          "<replaceable>&lt;Your Domain Name&gt;</replaceable>",
                          config.DOMAIN_NAME,

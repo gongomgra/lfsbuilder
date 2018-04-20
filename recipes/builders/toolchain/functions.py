@@ -7,9 +7,6 @@ import tools
 import printer
 
 def build(builder_data_dict, parent_function):
-    print "'functions.py' file! This is the '{b}'".format(b=builder_data_dict["show_name"])
-
-    tools.pretty_print(builder_data_dict)
 
     check_non_privileged_user()
     check_mount_point()

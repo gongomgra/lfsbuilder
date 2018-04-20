@@ -12,12 +12,18 @@ def set_attributes(component_data_dict, parent_function):
 
     # Command to generate img
     post_text = """
-echo "Running 'dd' command. This may take a while..."
-dd if=/dev/zero of=@@LFS_IMG_FILENAME@@ bs=1 count=@@LFS_IMG_SIZE@@
+echo "Running \'dd\' command. This may take a while..."
+fallocate -l @@LFS_IMG_SIZE@@ @@LFS_IMG_FILENAME@@
 
+echo "Running \'mkfs\' command. This may take a while..."
+mkfs -t @@LFS_FILESYSTEM_PARTITION_TYPE@@ @@LFS_IMG_FILENAME@@
+
+# Remove useless directory if found
+rm -rf $LFS/lost+found/
 """
     post_text = post_text.replace("@@LFS_IMG_FILENAME@@", config.IMG_FILENAME)
     post_text = post_text.replace("@@LFS_IMG_SIZE@@", config.IMG_SIZE)
+    post_text = post_text.replace("@@LFS_FILESYSTEM_PARTITION_TYPE@@", config.FILESYSTEM_PARTITION_TYPE)
 
     tools.add_to_dictionary(component_data_dict, "post", post_text, concat=False)
 

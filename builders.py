@@ -52,21 +52,6 @@ class BuilderGenerator(object):
         self.builder_recipe_data = tools.read_recipe_file(self.builder_recipe)
         self.builder_data_dict = tools.join_dicts(self.builder_data_dict, self.builder_recipe_data)
 
-        # Get 'components_to_build' list from book if necessary
-        if config.CUSTOM_COMPONENTS_TO_BUILD is False and \
-           (self.builder_data_dict["name"] == "toolchain" or \
-            self.builder_data_dict["name"] == "system" or \
-            self.builder_data_dict["name"] == "configuration" or \
-            self.builder_data_dict["name"] == "blfs"):
-
-            self.index_filename = "{n}_components_to_build.txt".format(n=self.builder_data_dict["name"])
-            self.index_filename_path = os.path.join(self.builder_data_dict["lfsbuilder_tmp_directory"],
-                                                    self.index_filename)
-            tools.add_to_dictionary(self.builder_data_dict,
-                                    "components_to_build",
-                                    tools.list_from_file(self.index_filename_path),
-                                    concat=False)
-
         # Module name
         self.module = "builders"
 
@@ -89,16 +74,30 @@ class BaseBuilder(object):
         self.extra_functions = tools.read_functions_file(self.builder_data_dict["name"],
                                                          directory="builders")
 
-    def do_nothing(self):
-        pass
+    def get_book_components_to_build_list(self):
+        # Get 'components_to_build' list from book if necessary
+        if config.CUSTOM_COMPONENTS_TO_BUILD is False and \
+           (self.builder_data_dict["name"] == "toolchain" or \
+            self.builder_data_dict["name"] == "system" or \
+            self.builder_data_dict["name"] == "configuration" or \
+            self.builder_data_dict["name"] == "blfs"):
+
+            self.index_filename = "{n}_components_to_build.txt".format(n=self.builder_data_dict["name"])
+            self.index_filename_path = os.path.join(self.builder_data_dict["lfsbuilder_tmp_directory"],
+                                                    self.index_filename)
+            tools.add_to_dictionary(self.builder_data_dict,
+                                    "components_to_build",
+                                    tools.list_from_file(self.index_filename_path),
+                                    concat=False)
+        else:
+            pass
 
     def set_attributes(self):
         if hasattr(self.extra_functions, "set_attributes"):
-            # It is not necessary to do nothing in this method right now,
-            # but we send 'do_nothing()' as the parent_function to maintain
-            # code structure
             self.extra_functions.set_attributes(self.builder_data_dict,
-                                                self.do_nothing)
+                                                self.get_book_components_to_build_list)
+        else:
+            self.get_book_components_to_build_list()
 
     def build(self):
         pass
@@ -166,7 +165,7 @@ class BaseComponentsBuilder(BaseBuilder):
         self.component_data_dict = {}
 
 
-    def generate_commands_file(self):
+    def generate_data_files(self):
         if self.builder_data_dict["book"] == "lfs" or \
            self.builder_data_dict["book"] == "blfs":
             # We have to parse book xmlfiles
@@ -176,12 +175,12 @@ class BaseComponentsBuilder(BaseBuilder):
         else:
             pass
 
-    def generate_xml_component_data_dict(self):
+    def generate_xml_components_data_dict(self):
         self.xml_components_data_dict = {}
         if self.builder_data_dict["book"] == "lfs" or \
            self.builder_data_dict["book"] == "blfs":
 
-            lfsxml = xmlparser.LFSXmlParser()
+            lfsxml = xmlparser.LFSXmlParser(self.builder_data_dict)
             self.xml_components_data_dict = lfsxml.generate_dict_from_xmlfile(
                 self.builder_data_dict["xml_commands_filename"])
             del lfsxml
@@ -195,7 +194,7 @@ class BaseComponentsBuilder(BaseBuilder):
         self.create_setenv_script()
 
         # Generate components_data_dict from XML file
-        self.generate_xml_component_data_dict()
+        self.generate_xml_components_data_dict()
 
         # Build componentsList
         for component in self.builder_data_dict["components_to_build"]:
@@ -209,7 +208,7 @@ class BaseComponentsBuilder(BaseBuilder):
                                                self.xml_components_data_dict)
             o = cg.get_component_reference()
 
-            # Remove reference to the 'GeneratorComponent'. It is useless
+            # Remove reference to the 'ComponentGenerator'. It is useless
             del cg
 
             # Build the real component

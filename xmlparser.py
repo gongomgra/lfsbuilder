@@ -85,14 +85,14 @@ class LFSXmlParser(object):
                                         line = saved_line + line
 
                                 # Remove leading and trailing whitespaces in line if any
-                                line = line.strip(" ")
+                                line = line.rstrip()
 
                                 # Check if 'line' is an ENTITY description line
                                 if line.find("ENTITY") != -1:
                                         line_fields = line.split("\"")
                                         # Process ENTITY line if we have a complete line.
                                         # That is, it ends with '>' character
-                                        if line_fields[-1] == ">":
+                                        if line_fields[-1] == ">" or line_fields[-1].strip()[-1] == "-->":
                                                 # line_fields = ['<!ENTITY attr-size ', '336 KB', '>']
                                                 key = line_fields[0].split(" ")[1]
                                                 # Process entities in 'value' if any
@@ -151,9 +151,6 @@ class LFSXmlParser(object):
         def generate_components_dict(self, components_filelist):
                 # Generate components_dict from components_filelist
                 components_dict = {}
-
-                if os.path.exists(self.save_index_file):
-                        os.remove(self.save_index_file)
 
                 for componentfile_path in components_filelist:
                         component_filename = os.path.basename(componentfile_path)
@@ -220,8 +217,8 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
 
                         # Check 'screen/userinput' nodes
                         for node in xml_tree.iter('screen'):
-                                if node.attrib.get('revision') == "systemd":
-                                        # skip systemd by the moment
+                                if node.attrib.get('revision') == config.EXCLUDED_BOOT_MANAGER:
+                                        # skip unselected boot manager
                                         continue
                                 for subnode in node.iter('userinput'):
                                         # Does the 'remap' attribute exists?
@@ -295,6 +292,8 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
                 attributes_list = ["version", "md5", "url", "require_build_dir", "previous", "configure",
                                    "make", "test", "install", "post"]
 
+                substitution_rounds = 2
+
                 # Create new XML tree
                 root = ET.Element("components")
                 for component_filepath in components_filelist:
@@ -315,12 +314,17 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
                 filename = os.path.abspath(os.path.join(self.temporal_folder, filename))
                 tools.write_xmlfile(filename, ET.tostring(root))
 
-                # Substitute placeholders
-                for key in data_dict:
-                        if data_dict[key] is not None:
-                                placeholder = tools.generate_placeholder(key)
-                                tools.substitute_in_file(filename, placeholder,
-                                                         data_dict[key])
+                # Substitute placeholders. Run substitutions twice because
+                # some placeholders are composed
+                i = 0
+                while i < substitution_rounds:
+                        for key in data_dict:
+                                if data_dict[key] is not None:
+                                        placeholder = tools.generate_placeholder(key)
+                                        tools.substitute_in_file(filename, placeholder,
+                                                                 data_dict[key])
+                        # Update loop index
+                        i += 1
 
 
         def parse_lfs_book(self, data_dict):
@@ -378,6 +382,10 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
                 components_filelist = []
                 # Get general data from '.ent' files
                 data_dict = self.generate_entities_data_dict()
+
+                # Remove 'self.save_index_file' to avoid building components multiple times
+                if os.path.exists(self.save_index_file):
+                        os.remove(self.save_index_file)
 
                 if self.builder_data_dict["book"] == "lfs":
                         components_filelist = self.parse_lfs_book(data_dict)

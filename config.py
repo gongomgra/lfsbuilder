@@ -19,11 +19,23 @@ IMG_SIZE = "1M"
 
 # Build components from book or not
 CUSTOM_COMPONENTS_TO_BUILD = True
-INCLUDE_MESON_BUILD_SYSTEM = False
+INCLUDE_MESON_BUILDER = False
 
+# Select boot manager
+# 'sysv' for sysvinit
+# 'systemd' for systemd
+SYSV = True
+SYSTEMD = False
 
 TIMEZONE = "Europe/Madrid"
 PAPER_SIZE = "A4"
+
+KEYMAP = "es"
+CONSOLE_FONT = "Lat2-Terminus16"
+LANG = "en_US.UTF-8"
+LOCALE = "en_US"
+CHARMAP = "UTF-8"
+
 
 ROOT_PARTITION_NAME = "sda"
 ROOT_PARTITION_NUMBER = ""
@@ -36,6 +48,7 @@ SWAP_PARTITION_NAME = ""
 ETH0_IP_ADDRESS = "192.168.99.2"
 ETH0_GATEWAY_ADDRESS = "192.168.99.1"
 ETH0_BROADCAST_ADDRESS = "192.168.99.255"
+ETH0_MASK = "24"
 DOMAIN_NAME = "localdomain"
 
 # OpenNIC DNS servers
@@ -43,9 +56,6 @@ DNS_ADDRESS_1 = "52.174.55.168"
 DNS_ADDRESS_2 = "31.3.135.232"
 HOSTNAME = "lfs"
 
-LANG = "en_US.UTF-8"
-LOCALE = "es_ES"
-CHARMAP = "UTF-8"
 
 DISTRIBUTION_NAME = "Linux From Scratch"
 DISTRIBUTION_VERSION = "8.0 LFSBuilder"

@@ -15,6 +15,7 @@ class ComponentGenerator(object):
                                                          component_name, self.json_component_file))
 
         self.component_data_defaults = {
+            "name": component_name,
             "show_name": component_name,
             "key_name": component_name,
             "package_name": component_name,
@@ -46,6 +47,17 @@ class ComponentGenerator(object):
             "build_into_chroot": builder_data_dict["build_into_chroot"]
         }
 
+        # Update keys, values that match the 'key_name'
+        # from 'xml_components_data_dict'
+        for key, value in xml_components_data_dict.items():
+            if key.startswith(self.component_data_defaults["key_name"]):
+                # Rename 'component named' keys removing the 'component_name' and add to dictionary
+                new_key = key.replace("{c}_".format(c=self.component_data_defaults["key_name"]),
+                                      "")
+
+                tools.add_to_dictionary(self.component_data_defaults, new_key, value, concat=False)
+
+
         # Read component recipe
         self.component_recipe_data = tools.read_recipe_file(self.component_recipe)
         self.component_data_dict = tools.join_dicts(self.component_data_defaults,
@@ -60,18 +72,6 @@ class ComponentGenerator(object):
             if attribute not in self.component_data_dict:
                 tools.add_to_dictionary(self.component_data_dict, attribute,
                                         self.component_data_dict["name"], concat=False)
-
-
-        # Include keys, values that match the 'key_name'
-        # from 'xml_components_data_dict'
-        for key, value in xml_components_data_dict.items():
-            if key.startswith(self.component_data_dict["key_name"]):
-                # Rename 'component named' keys removing the 'component_name' and add to dictionary
-                new_key = key.replace("{c}_".format(c=self.component_data_dict["key_name"]),
-                                      "")
-                # If there is a "configure" key already, do not smash it
-                if new_key not in self.component_data_dict:
-                    tools.add_to_dictionary(self.component_data_dict, new_key, value, concat=False)
 
         # Cast 'require_build_dir' from string to bool
         # bool(int 1) = True
