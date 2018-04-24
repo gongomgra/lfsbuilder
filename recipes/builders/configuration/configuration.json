@@ -7,7 +7,7 @@
 
     "excludes": ["introduction", "udev", "introductiond", "getcounted", "whatnow", "reboot"],
 
-    "sysv_components": ["bootscripts", "network", "usage", "profile"],
+    "sysv_components": ["bootscripts", "network", "usage", "profile", "symlinks"],
 
     "systemd_components": ["networkd", "clock", "consoled", "locale", "systemd-custom"],
 

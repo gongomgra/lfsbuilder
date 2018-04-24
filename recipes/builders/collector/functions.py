@@ -8,6 +8,9 @@ import printer
 
 def set_attributes(builder_data_dict, parent_function):
 
+    # Call parent function
+    parent_function()
+
     # .- Write 'setenv.sh' into 'lfs_src_directory/tmp'
     tools.add_to_dictionary(builder_data_dict,
                             "setenv_directory",
@@ -18,7 +21,3 @@ def set_attributes(builder_data_dict, parent_function):
                             "sources_directory",
                             builder_data_dict["lfsbuilder_tmp_directory"],
                             concat=False)
-
-
-    # Call parent function
-    parent_function()

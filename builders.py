@@ -22,6 +22,7 @@ class BuilderGenerator(object):
                                   "env_PATH_value": "${UNSET_VARIABLE}",
                                   "chapters_list": [],
                                   "excludes": [],
+                                  "components_to_build": [],
                                   "setenv_directory": config.BASE_DIRECTORY,
                                   "book": "lfs"}
 
@@ -74,7 +75,14 @@ class BaseBuilder(object):
         self.extra_functions = tools.read_functions_file(self.builder_data_dict["name"],
                                                          directory="builders")
 
-    def get_book_components_to_build_list(self):
+        # Get 'components_to_build_list' if necessary
+        if hasattr(self.extra_functions, "get_components_to_build_list"):
+            self.extra_functions.get_components_to_build_list(self.builder_data_dict,
+                                                              self.get_components_to_build_list)
+        else:
+            self.get_components_to_build_list()
+
+    def get_components_to_build_list(self):
         # Get 'components_to_build' list from book if necessary
         if config.CUSTOM_COMPONENTS_TO_BUILD is False and \
            (self.builder_data_dict["name"] == "toolchain" or \
@@ -92,12 +100,13 @@ class BaseBuilder(object):
         else:
             pass
 
+    def do_nothing(self):
+        pass
+
     def set_attributes(self):
         if hasattr(self.extra_functions, "set_attributes"):
             self.extra_functions.set_attributes(self.builder_data_dict,
-                                                self.get_book_components_to_build_list)
-        else:
-            self.get_book_components_to_build_list()
+                                                self.do_nothing)
 
     def build(self):
         pass
@@ -163,7 +172,6 @@ class BaseComponentsBuilder(BaseBuilder):
         BaseBuilder.__init__(self, builder_data_dict)
 
         self.component_data_dict = {}
-
 
     def generate_data_files(self):
         if self.builder_data_dict["book"] == "lfs" or \

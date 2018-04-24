@@ -209,7 +209,7 @@ def read_functions_file(component_name, filename="functions.py", directory="comp
 
             # Remove the 'functions' module we have just imported from the 'sys.modules'
             # dictionary so we can import a new module later on. If not, 'module' will always be
-            # the first 'functions.py' modules it has been imported during the program execution
+            # the first 'functions.py' module it has been imported during the program execution
             del sys.modules[module_name]
         finally:
             sys.path[:] = path_bck # restore

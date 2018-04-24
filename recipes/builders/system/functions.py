@@ -6,7 +6,7 @@ import config
 import tools
 import printer
 
-def set_attributes(builder_data_dict, parent_function):
+def get_components_to_build_list(builder_data_dict, parent_function):
 
     # Call parent function
     parent_function()
