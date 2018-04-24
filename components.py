@@ -62,7 +62,7 @@ class ComponentGenerator(object):
         self.component_recipe_data = tools.read_recipe_file(self.component_recipe)
         self.component_data_dict = tools.join_dicts(self.component_data_defaults,
                                                     self.component_recipe_data)
-
+        # Module name
         self.module = "components"
 
         # Attributes with 'name' as initial value

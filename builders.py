@@ -56,8 +56,14 @@ class BuilderGenerator(object):
         # Module name
         self.module = "builders"
 
-        # Instanciate a ComponentsBuilder by default
+        # Instantiate a ComponentsBuilder by default
         self.class_fullname = "{m}.ComponentsBuilder".format(m=self.module)
+
+        # Instantiate a 'InfrastructureComponentsBuilder' if required
+        if "base_builder" in self.builder_data_dict and \
+           self.builder_data_dict["base_builder"].lower() == "infrastructurecomponentsbuilder":
+            self.class_fullname = "{m}.{t}".format(m = self.module,
+                                                   t = "InfrastructureComponentsBuilder")
 
         # Create object
         self.obj = tools.get_class(self.class_fullname)
@@ -196,7 +202,7 @@ class BaseComponentsBuilder(BaseBuilder):
         else:
             pass
 
-    def build(self):
+    def build_components(self):
 
         # Create setenv.sh file
         self.create_setenv_script()
@@ -228,26 +234,35 @@ class BaseComponentsBuilder(BaseBuilder):
             o.clean_workspace()
             del o
 
+    def build(self):
+        if hasattr(self.extra_functions, "build"):
+            self.extra_functions.build(self.builder_data_dict,
+                                       self.build_components)
+        else:
+            # Call parent function directly
+            self.build_components()
+
     def clean_workspace(self):
-        pass
+        # Remove 'setenv.sh' file
+        os.remove(os.path.join(self.builder_data_dict["setenv_directory"], "setenv.sh"))
+
+class InfrastructureComponentsBuilder(BaseComponentsBuilder):
+
+    def __init__(self, builder_data_dict):
+        BaseComponentsBuilder.__init__(self, builder_data_dict)
+
+        # Build components from the 'lfs_src_directory/tmp' directory
+        tools.add_to_dictionary(self.builder_data_dict,
+                                "setenv_directory",
+                                builder_data_dict["lfsbuilder_tmp_directory"],
+                                concat=False)
+
+        tools.add_to_dictionary(self.builder_data_dict,
+                                "sources_directory",
+                                builder_data_dict["lfsbuilder_tmp_directory"],
+                                concat=False)
 
 class ComponentsBuilder(BaseComponentsBuilder):
 
     def __init__(self, builder_data_dict):
         BaseComponentsBuilder.__init__(self, builder_data_dict)
-
-    def call_build_parent_function(self):
-        BaseComponentsBuilder.build(self)
-
-    def build(self):
-        if hasattr(self.extra_functions, "build"):
-            self.extra_functions.build(self.builder_data_dict,
-                                       self.call_build_parent_function)
-        else:
-            # Call parent function directly
-            self.call_build_parent_function()
-
-    def clean_workspace(self):
-        BaseComponentsBuilder.clean_workspace(self)
-        # Remove 'setenv.sh' file
-        os.remove(os.path.join(self.builder_data_dict["setenv_directory"], "setenv.sh"))

@@ -35,15 +35,3 @@ def get_components_to_build_list(builder_data_dict, parent_function):
             builder_data_dict["components_to_build"].remove("sources")
         except ValueError:
             pass
-
-def set_attributes(builder_data_dict, parent_function):
-    # .- Write 'setenv.sh' into 'lfs_src_directory/tmp'
-    tools.add_to_dictionary(builder_data_dict,
-                            "setenv_directory",
-                            builder_data_dict["lfsbuilder_tmp_directory"],
-                            concat=False)
-
-    tools.add_to_dictionary(builder_data_dict,
-                            "sources_directory",
-                            builder_data_dict["lfsbuilder_tmp_directory"],
-                            concat=False)

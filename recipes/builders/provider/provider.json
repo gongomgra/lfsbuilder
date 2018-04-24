@@ -1,5 +1,6 @@
 {
     "name": "provider",
+    "base_builder": "InfrastructureComponentsBuilder",
     "build_into_chroot": false,
     "book": "custom",
     "env_PATH_value": "/bin:/usr/bin:/sbin:/usr/sbin",
