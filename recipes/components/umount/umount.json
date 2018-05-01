@@ -1,9 +1,0 @@
-{
-    "name": "umount",
-    "run_as_username": "root",
-    "build_into_chroot": false,
-    "base_component": "SystemConfigurationComponent",
-    "post": "",
-
-    "umount_directories": ["dev/pts", "dev", "run", "proc", "sys", "usr", "home", "sources"]
-}

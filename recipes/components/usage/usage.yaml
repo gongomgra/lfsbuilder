@@ -1,0 +1,5 @@
+
+name: 'usage'
+base_component: 'SystemConfigurationComponent'
+
+disable_commands_list: ['cat &gt; /etc/sysconfig/console &lt;&lt; \"EOF\"']

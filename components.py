@@ -9,10 +9,6 @@ import printer
 class ComponentGenerator(object):
 
     def __init__(self, component_name, builder_data_dict, xml_components_data_dict):
-        # Read the component recipe and return a reference to the object type
-        self.json_component_file = "{c}.json".format(c=component_name)
-        self.component_recipe = os.path.realpath(os.path.join("recipes", "components",
-                                                         component_name, self.json_component_file))
 
         self.component_data_defaults = {
             "name": component_name,
@@ -59,7 +55,7 @@ class ComponentGenerator(object):
 
 
         # Read component recipe
-        self.component_recipe_data = tools.read_recipe_file(self.component_recipe)
+        self.component_recipe_data = tools.read_recipe_file(component_name)
         self.component_data_dict = tools.join_dicts(self.component_data_defaults,
                                                     self.component_recipe_data)
         # Module name

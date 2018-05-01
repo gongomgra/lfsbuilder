@@ -1,0 +1,5 @@
+
+name: 'kernfs'
+base_component: 'SystemConfigurationComponent'
+build_into_chroot: false
+run_as_username: 'root'

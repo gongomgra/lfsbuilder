@@ -1,4 +1,0 @@
-{
-    "name": "groff",
-    "make_options": "--jobs=1"
-}

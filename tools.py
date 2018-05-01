@@ -9,7 +9,7 @@ import zipfile
 import pwd
 import shutil
 import ctypes
-import json
+import yaml
 import importlib
 
 import printer
@@ -164,6 +164,7 @@ def is_element_present(objective_list, element):
 
 def disable_commands(commands_list):
     result = []
+
     for command in commands_list:
         if command.startswith("<userinput") is False:
             # User didn't provide XML attribute for command,
@@ -176,15 +177,29 @@ def disable_commands(commands_list):
 
     return result
 
-def read_recipe_file(recipe_path):
-    if os.path.exists(recipe_path):
-        fp = open(recipe_path, "r")
-        recipe_data = json.load(fp)
-        fp.close()
-        return recipe_data
-    else:
-        msg = "Error reading recipe. File '{f}' do not exists".format(f=recipe_path)
-        printer.error(msg)
+def read_recipe_file(component_name, directory="components"):
+
+    filename = "{c}.yaml".format(c=component_name)
+    recipe_path = os.path.realpath(os.path.join("recipes", directory,
+                                                component_name, filename))
+    recipe_data = {}
+
+    if os.path.exists(recipe_path) is False:
+        # Try "yml" instead of "yaml"
+        filename = "{c}.yml".format(c=component_name)
+        recipe_path = os.path.realpath(os.path.join("recipes", directory,
+                                                    component_name, filename))
+        # Error if do not exists
+        if os.path.exists(recipe_path) is False:
+            msg = "Error reading recipe. File '{f}' do not exists".format(f=recipe_path)
+            printer.error(msg)
+
+    # File exists, so read it
+    fp = open(recipe_path, "r")
+    recipe_data = yaml.load(fp)
+    fp.close()
+
+    return recipe_data
 
 def read_functions_file(component_name, filename="functions.py", directory="components"):
 

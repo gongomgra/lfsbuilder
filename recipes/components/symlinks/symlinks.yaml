@@ -1,0 +1,8 @@
+
+name: 'symlinks'
+base_component: 'SystemConfigurationComponent'
+
+disable_commands_list: [udevadm test /sys/block/hdd,
+                        sed -i -e 's/"write_cd_rules"/"write_cd_rules,
+                        udevadm info -a -p /sys/class/video4linux/video0,
+                        cat &gt; /etc/udev/rules.d/83-duplicate_devs.rules]

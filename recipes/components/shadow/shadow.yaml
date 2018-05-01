@@ -1,0 +1,7 @@
+
+name: 'shadow'
+
+substitution_list: ['<userinput>passwd root',
+                    '<userinput remap="post">echo "root:{p}" | chpasswd',
+                    '{p}',
+                    'config.ROOT_PASSWD']

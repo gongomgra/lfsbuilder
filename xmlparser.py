@@ -148,6 +148,37 @@ class LFSXmlParser(object):
 
                 return components_filelist
 
+        def modify_xmlfile(self, component_recipe_data, componentfile_path):
+                # Remove 'literal' subchild so commands waiting the EOF string get properly parsed
+                substitution_list = ["<literal>", "",
+                                     "</literal>", ""]
+
+                #  Remove commands that try to run a bash console interactively
+                bash_removes = ["exec /bin/bash --login +h",
+                                "exec /tools/bin/bash --login +h",
+                                """chroot $LFS /tools/bin/env -i            \
+HOME=/root TERM=$TERM PS1='\u:\w\$ ' \
+PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
+/tools/bin/bash --login"""]
+
+                # Disable bash commands and add them to the 'substitution_list'
+                bash_removes_disabled = tools.disable_commands(bash_removes)
+                substitution_list.extend(bash_removes_disabled)
+
+                # Get component data and include its 'substitution_list' and 'disable_commands'
+                # into the 'substitution_list'
+                if "substitution_list" in component_recipe_data and \
+                   component_recipe_data["substitution_list"] is not None:
+                        substitution_list.extend(component_recipe_data["substitution_list"])
+
+                if "disable_commands_list" in component_recipe_data and \
+                   component_recipe_data["disable_commands_list"] is not None:
+                        substitution_list.extend(tools.disable_commands(component_recipe_data["disable_commands_list"]))
+
+                # Substitute
+                tools.substitute_multiple_in_file(componentfile_path, substitution_list)
+
+
         def generate_components_dict(self, components_filelist):
                 # Generate components_dict from components_filelist
                 components_dict = {}
@@ -157,51 +188,27 @@ class LFSXmlParser(object):
 
                         component_name = self.get_component_name(component_filename)
 
+                        component_recipe_data = tools.read_recipe_file(component_name)
+
                         # Backup xmlfile
                         tools.backup_file(componentfile_path)
 
                         # Read 'functions.py' file if exists
                         self.extra_functions = tools.read_functions_file(component_name)
 
+                        # .- modify_xml
                         if self.extra_functions is not None and \
                            hasattr(self.extra_functions, "modify_xmlfile"):
-                                self.extra_functions.modify_xmlfile(componentfile_path)
+                                self.extra_functions.modify_xmlfile(component_recipe_data,
+                                                                    componentfile_path,
+                                                                    self.modify_xmlfile)
+                        else:
+                                self.modify_xmlfile(component_recipe_data, componentfile_path)
 
 
-                        # Remove 'literal' subchild so commands waiting the EOF string get properly parsed
-                        substitution_list = ["<literal>", "",
-                                             "</literal>", ""]
-
-                        # Remove commands that try to run a bash console interactively
-                        # 'chroot.xml' and 'revisedchroot.xml' are excluded
-
-                        #                     bash_removes = ["<screen role=\"nodump\"><userinput>exec /bin/bash --login +h</userinput></screen>", "<screen role=\"nodump\"><userinput remap=\"lfsbuilder_disabled\">exec /bin/bash --login +h</userinput></screen>",
-    #                                     "<screen role=\"nodump\"><userinput>exec /tools/bin/bash --login +h</userinput></screen>", "<screen role=\"nodump\"><userinput remap=\"lfsbuilder_disabled\">exec /tools/bin/bash --login +h</userinput></screen>",
-    #                                     "<screen role=\"nodump\"><userinput>chroot $LFS /tools/bin/env -i            \
-    # HOME=/root TERM=$TERM PS1='\u:\w\$ ' \
-    # PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
-    # /tools/bin/bash --login</userinput></screen>", "<screen role=\"nodump\"><userinput remap=\"lfsbuilder_disabled\">chroot $LFS /tools/bin/env -i            \
-    # HOME=/root TERM=$TERM PS1='\u:\w\$ ' \
-    # PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
-    # /tools/bin/bash --login</userinput></screen>"]
-
-
-                        # Disable bash commands
-                        bash_removes = ["exec /bin/bash --login +h",
-                                        "exec /tools/bin/bash --login +h",
-                                        """chroot $LFS /tools/bin/env -i            \
-HOME=/root TERM=$TERM PS1='\u:\w\$ ' \
-PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
-/tools/bin/bash --login"""]
-
-                        # Disable bash commands and add them to the 'substitution_list'
-                        bash_removes_disabled = tools.disable_commands(bash_removes)
-                        substitution_list.extend(bash_removes_disabled)
-
-                        # Substitute
-                        tools.substitute_multiple_in_file(componentfile_path, substitution_list)
 
                         # Create XML parser on every iteration
+                        print componentfile_path
                         parser = ET.XMLParser()
                         parser.parser.UseForeignDTD(True)
                         parser.entity = ShowAllEntities()
@@ -271,6 +278,8 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
                                         tools.add_to_dictionary(components_dict, key,
                                                                subnode.text)
 
+                        # 'parser' is no longer required
+                        del parser
 
                         # Restore backup
                         if config.RESTORE_XML_BACKUPS is True:

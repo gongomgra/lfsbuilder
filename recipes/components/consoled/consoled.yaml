@@ -1,0 +1,15 @@
+
+name: 'consoled'
+base_component: 'SystemConfigurationComponent'
+
+substitution_list: ['KEYMAP=de-latin1',
+                     'KEYMAP={km}',
+                     '{km}',
+                     'config.KEYMAP',
+
+                     'FONT=Lat2-Terminus16',
+                     'FONT={f}',
+                     '{f}',
+                     'config.CONSOLE_FONT']
+
+disable_commands_list: ['localectl']

@@ -1,0 +1,4 @@
+
+name: 'vim'
+
+disable_commands_list: ["vim -c ':options'"]

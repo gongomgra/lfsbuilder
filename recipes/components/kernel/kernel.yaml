@@ -1,0 +1,7 @@
+
+name: 'kernel'
+package_name: 'linux'
+kernel_config_filename: 'kernel_config_499'
+
+disable_commands_list: ['make menuconfig',
+                        'mount --bind /boot /mnt/lfs/boot']

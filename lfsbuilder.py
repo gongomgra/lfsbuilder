@@ -159,8 +159,9 @@ class LFSBuilder(object):
         # Set boolean configuration flags
         self.set_config_option(self.build_args)
 
-        # Check boot manager and meson builder combination
-        if self.check_meson_builder_combination(m = config.INCLUDE_MESON_BUILDER,
+        # .- Check boot manager and meson builder combination
+        if tools.is_element_present(self.build_args.builders_list, "system") is True and \
+           self.check_meson_builder_combination(m = config.INCLUDE_MESON_BUILDER,
                                                 sv = config.SYSV,
                                                 sd = config.SYSTEMD) is False:
             printer.error("You can not use that combination of 'boot_manager' and 'meson builder'")
@@ -246,8 +247,6 @@ class LFSBuilder(object):
         else:
             # Sanitize input from 'config.py'
             setattr(config, "INCLUDE_MESON_BUILDER", bool(config.INCLUDE_MESON_BUILDER))
-
-
 
 
     def check_meson_builder_combination(self, m, sv, sd):

@@ -1,0 +1,3 @@
+
+name: 'systemd'
+base_component: 'SystemConfigurationComponent'

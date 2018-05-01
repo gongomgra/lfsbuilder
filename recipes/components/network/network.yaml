@@ -1,0 +1,43 @@
+
+name: 'network'
+base_component: 'SystemConfigurationComponent'
+
+substitution_list: ['IP=192.168.1.2',
+                    'IP={eth0_ip}',
+                    '{eth0_ip}',
+                    'config.ETH0_IP_ADDRESS',
+
+                    'GATEWAY=192.168.1.1',
+                    'GATEWAY={eth0_gateway}',
+                    '{eth0_gateway}',
+                    'config.ETH0_GATEWAY_ADDRESS',
+
+                    'BROADCAST=192.168.1.255',
+                    'BROADCAST={eth0_broadcast}',
+                    '{eth0_broadcast}',
+                    'config.ETH0_BROADCAST_ADDRESS',
+
+                    '<replaceable>&lt;Your Domain Name&gt;</replaceable>',
+                    'config.DOMAIN_NAME',
+
+                    '<replaceable>&lt;IP address of your primary nameserver&gt;</replaceable>',
+                    'config.DNS_ADDRESS_1',
+
+                    '<replaceable>&lt;IP address of your secondary nameserver&gt;</replaceable>',
+                    'config.DNS_ADDRESS_2',
+
+                    '<replaceable>&lt;lfs&gt;</replaceable>',
+                    'config.HOSTNAME',
+
+                    '<replaceable>&lt;192.168.1.1&gt;</replaceable>',
+                    'config.ETH0_IP_ADDRESS',
+
+                    '<replaceable>&lt;HOSTNAME.example.org&gt;</replaceable>',
+                    '{hostname}.example.com',
+                    '{hostname}',
+                    'config.HOSTNAME',
+
+                    '<replaceable>[alias1] [alias2 ...]</replaceable>',
+                    '']
+
+disable_commands_list: ['<screen role=\"nodump\"><userinput>cat &gt; /etc/hosts &lt;&lt; \"EOF\"\n\# Begin /etc/hosts (no network card version)']

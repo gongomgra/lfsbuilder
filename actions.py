@@ -33,6 +33,7 @@ class ModifyBuildersList(argparse.Action):
         # Substitute 'lfs' name for its builders component
         tools.substitute_in_list(self.builders_list, "lfs", ["toolchain", "system", "configuration"])
 
+
         # .- Check there is not any duplicated builder after substitutions. Raise error if so
         self.check_builders_dupes()
 
@@ -49,27 +50,28 @@ class ModifyBuildersList(argparse.Action):
                 printer.error("Duplicated builder '{b}' is not allowed".format(b=b))
 
     def check_builders_order(self):
-        index_dict = {"toolchain": tools.get_element_index(self.builders_list,
-                                                           "toolchain",
-                                                           not_present=-2),
 
-                      "system": tools.get_element_index(self.builders_list,
-                                                        "system",
-                                                        not_present=-2),
+        # Get the position number of every builder into the 'self.builders_list'
+        self.builders_index_dict = {"toolchain": tools.get_element_index(self.builders_list,
+                                                                         "toolchain",
+                                                                         not_present=-2),
 
-                      "configuration": tools.get_element_index(self.builders_list,
-                                                           "configuration",
-                                                           not_present=-2),
+                                    "system": tools.get_element_index(self.builders_list,
+                                                                      "system",
+                                                                      not_present=-2),
 
-                      "blfs": tools.get_element_index(self.builders_list,
-                                                           "blfs",
-                                                           not_present=-1)
+                                    "configuration": tools.get_element_index(self.builders_list,
+                                                                             "configuration",
+                                                                             not_present=-2),
+
+                                    "blfs": tools.get_element_index(self.builders_list,
+                                                                    "blfs",
+                                                                    not_present=-1)
         }
 
-
         # .- Ensure 'blfs' is present and its 'index' is max
-        if index_dict["blfs"] != -1 and \
-           index_dict["blfs"] != max(index_dict.values()):
+        if self.builders_index_dict["blfs"] != -1 and \
+           self.builders_index_dict["blfs"] != max(self.builders_index_dict.values()):
             printer.error("You can not build 'blfs' before any of the 'lfs' book's builders")
 
         # .- Check present 'lfs' book's builders can be built
@@ -78,11 +80,13 @@ class ModifyBuildersList(argparse.Action):
         is_configuration_present = tools.is_element_present(self.builders_list, "configuration")
 
 
-        has_toolchain_min_index = index_dict["toolchain"] == min([index_dict["toolchain"],
-                                                                  index_dict["system"],
-                                                                  index_dict["configuration"]])
+        has_toolchain_min_index = self.builders_index_dict["toolchain"] == min([
+            self.builders_index_dict["toolchain"],
+            self.builders_index_dict["system"],
+            self.builders_index_dict["configuration"]
+        ])
         # Would be equal only in case both are not present
-        is_system_before_configuration = index_dict["system"] <= index_dict["configuration"]
+        is_system_before_configuration = self.builders_index_dict["system"] <= self.builders_index_dict["configuration"]
 
         is_lfs_order_valid = self.check_lfs_builders_order(t = is_toolchain_present,
                                                            s = is_system_present,

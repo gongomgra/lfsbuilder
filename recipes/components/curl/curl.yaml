@@ -1,0 +1,11 @@
+
+name: 'curl'
+
+# 'curl' xml files run commands using logical conditions.
+# That is: patch && configure && make
+# We are applying patches in a previous step, so 'configure' never
+# run because the 'patch' commands return 'FALSE' and the conditional statement
+# ends in that point: patch && configure && make --> 0 && configure && make
+# We enforce to return 'TRUE' to workaround it
+substitution_list: ['.patch &amp;&amp;',
+                    '.patch || true']

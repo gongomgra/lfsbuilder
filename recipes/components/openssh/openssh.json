@@ -1,5 +1,0 @@
-{
-    "name": "openssh",
-    "book": "blfs",
-    "openssh_public_key_filename": "vms.pub"
-}

@@ -1,0 +1,9 @@
+
+name: 'profile'
+base_component: 'SystemConfigurationComponent'
+
+substitution_list: ['<replaceable>&lt;ll&gt;_&lt;CC&gt;.&lt;charmap&gt;&lt;@modifiers&gt;</replaceable>',
+                    'config.LANG']
+
+disable_commands_list: ['LC_ALL=<replaceable>&lt;locale name&gt;</replaceable> locale charmap',
+                        'LC_ALL=&lt;locale name&gt; locale language']

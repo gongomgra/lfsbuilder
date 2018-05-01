@@ -1,0 +1,5 @@
+
+name: 'locale'
+base_component: 'SystemConfigurationComponent'
+
+disable_commands_list: ['locale -a', 'LC_ALL', 'localectl']

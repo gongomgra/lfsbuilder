@@ -11,11 +11,6 @@ import xmlparser
 class BuilderGenerator(object):
 
     def __init__(self, builder_name):
-        # Read the builder recipe and return a reference to the object type
-        self.json_builder_file = "{b}.json".format(b=builder_name)
-        self.builder_recipe = os.path.realpath(os.path.join("recipes", "builders",
-                                                            builder_name, self.json_builder_file))
-        self.attributes_list = ["sources", "tools"]
 
         # Default values
         self.builder_data_dict = {"name": builder_name,
@@ -26,11 +21,16 @@ class BuilderGenerator(object):
                                   "setenv_directory": config.BASE_DIRECTORY,
                                   "book": "lfs"}
 
+        self.attributes_list = ["sources", "tools"]
         for attribute in self.attributes_list:
             key = "{a}_directory".format(a=attribute)
             value = os.path.join(config.BASE_DIRECTORY, attribute)
             tools.add_to_dictionary(self.builder_data_dict, key, value, concat=False)
 
+
+        # Read the builder recipe and return a reference to the object type
+        self.builder_recipe_data = tools.read_recipe_file(self.builder_data_dict["name"],
+                                                          directory = "builders")
 
         # Add 'lfsbuilder_src_directory' to 'self.builder_data_dict'
         tools.add_to_dictionary(self.builder_data_dict, "lfsbuilder_src_directory",
@@ -49,9 +49,11 @@ class BuilderGenerator(object):
                                         None),
                                 concat=False)
 
-        # Read recipe
-        self.builder_recipe_data = tools.read_recipe_file(self.builder_recipe)
-        self.builder_data_dict = tools.join_dicts(self.builder_data_dict, self.builder_recipe_data)
+
+        # Join dicts. 'self.builder_recipe_data' values will have preference over those
+        # currently in 'self.builder_data_dict'
+        self.builder_data_dict = tools.join_dicts(self.builder_data_dict,
+                                                  self.builder_recipe_data)
 
         # Module name
         self.module = "builders"

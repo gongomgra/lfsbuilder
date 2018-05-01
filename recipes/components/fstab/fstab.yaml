@@ -1,0 +1,14 @@
+
+name: 'fstab'
+base_component: 'SystemConfigurationComponent'
+
+substitution_list: ['<replaceable>&lt;xxx&gt;</replaceable>',
+                     'config.ROOT_PARTITION_NAME',
+
+                     '<replaceable>&lt;fff&gt;</replaceable>',
+                     'config.FILESYSTEM_PARTITION_TYPE',
+
+                     '<replaceable>&lt;yyy&gt;</replaceable>',
+                     'config.SWAP_PARTITION_NAME']
+
+disable_commands_list: ['<userinput>hdparm -I /dev/sda | grep NCQ']

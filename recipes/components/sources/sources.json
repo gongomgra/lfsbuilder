@@ -1,6 +1,0 @@
-{
-    "name": "sources",
-    "run_as_username": "root",
-    "build_into_chroot": false,
-    "base_component": "SystemConfigurationComponent"
-}
