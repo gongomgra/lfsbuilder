@@ -112,8 +112,38 @@ class BaseBuilder(object):
                                     "components_to_build",
                                     tools.list_from_file(self.index_filename_path),
                                     concat=False)
+
+        #.- continue-at
+        if config.CONTINUE_AT is not None and \
+           (self.builder_data_dict["name"] == "toolchain" or \
+            self.builder_data_dict["name"] == "system" or \
+            self.builder_data_dict["name"] == "configuration" or \
+            self.builder_data_dict["name"] == "blfs"):
+            # .- Try to start from the 'continue-at' component
+            self.continue_at()
+
+    def continue_at(self):
+        # .- is component present
+        if tools.is_element_present(self.builder_data_dict["components_to_build"],
+                                    config.CONTINUE_AT) is True:
+            # get component index and trim 'components_to_build' list
+            index = tools.get_element_index(self.builder_data_dict["components_to_build"],
+                                            config.CONTINUE_AT)
+            # trim list and update 'self.builder_data_dict' value
+            aux_list = self.builder_data_dict["components_to_build"][index:]
+            tools.add_to_dictionary(self.builder_data_dict,
+                                    "components_to_build",
+                                    aux_list,
+                                    concat = False)
+            # .- set 'config.CONTINUE_AT' to 'None' so we do not get into this method
+            # any more on the current execution
+            setattr(config, "CONTINUE_AT", None)
         else:
-            pass
+            text = """'continue-at' component '{c}' do not exists on the
+'components_to_build' list for the '{b}' builder""".format(c = config.CONTINUE_AT,
+                                                           b = self.builder_data_dict["name"])
+            printer.error(text)
+
 
     def do_nothing(self):
         pass
@@ -178,7 +208,6 @@ class BaseComponentsBuilder(BaseBuilder):
             pass
 
     def build_components(self):
-
         # Create setenv.sh file
         self.create_setenv_script()
 

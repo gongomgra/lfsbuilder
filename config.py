@@ -19,7 +19,7 @@ IMG_FILENAME = "@@LFSBUILDER_SRC_DIRECTORY@@/tmp/LFSBuilder.img"
 IMG_SIZE = "1M"
 
 # Build components from book or not
-CUSTOM_COMPONENTS_TO_BUILD = True
+CUSTOM_COMPONENTS_TO_BUILD = False
 INCLUDE_MESON_BUILDER = False
 
 # Select boot manager
@@ -69,3 +69,4 @@ blfs_xml_filename = "blfs_data.xml"
 
 REMOVE_REBOOT_COMPONENT = False
 MOUNT_SYSTEM_BUILDER_DIRECTORIES = False
+CONTINUE_AT = None

@@ -141,6 +141,10 @@ class Cli(object):
         group_meson_builder.add_argument("--no-include-meson-builder",
                                          action = "store_true")
 
+        # .- continue-at
+        self.build_parser.add_argument("--continue-at",
+                                       action = actions.SetConfigOption)
+
         # Return configured parser
         return self.build_parser
 
