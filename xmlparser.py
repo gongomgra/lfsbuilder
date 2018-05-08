@@ -229,7 +229,6 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
 
 
                         # Create XML parser on every iteration
-                        print componentfile_path
                         parser = ET.XMLParser()
                         parser.parser.UseForeignDTD(True)
                         parser.entity = ShowAllEntities()

@@ -5,6 +5,7 @@ import argparse
 
 import config
 import tools
+import printer
 
 class ModifyBuildersList(argparse.Action):
 

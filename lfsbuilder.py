@@ -8,6 +8,7 @@ import builders
 import config
 import tools
 import printer
+import cli
 import actions
 import downloader
 
@@ -16,74 +17,23 @@ class LFSBuilder(object):
     def __init__ (self):
         self.lfsbuilder_src_directory = os.path.dirname(os.path.realpath(__file__))
         self.temporal_folder = os.path.join(self.lfsbuilder_src_directory, "tmp")
-
-        # Parse command line
-        self.parser = argparse.ArgumentParser(
-            description = "LFSBuilder")
-#             usage = """lfsbuilder.py [<options>] <command> [<args>]
-# Options:
-
-
-# Commands:
-#   build     Build specified builders
-#   parse     Generate XML commands file for specified builder
-#   download  Download
-# """)
-
-        # Arguments definition
-        # .- verbose
-        self.parser.add_argument("-v", "--verbose",
-                                 help="Output verbose messages",
-                                 action="store_true")
-
-
-        # .- base directory
-        self.parser.add_argument("--base-directory",
-                                 help="Set base directory",
-                                 action=actions.SetConfigOption)
-
-        # .- non privileged username
-        self.parser.add_argument("--non-privileged-username",
-                                 help="Set non privileged username",
-                                 action=actions.SetConfigOption)
-
-        # .- sources orig directory
-        self.parser.add_argument("--sources-orig-directory",
-                                 help="Set origin directory for sources",
-                                 action=actions.SetConfigOption)
-
-        # .- makeflags
-        self.parser.add_argument("--makeflags",
-                                 help="Set MAKEFLAGS value",
-                                 action=actions.SetConfigOption)
-
-        # .- restore XML backups file
-        self.parser.add_argument("--restore-xml-backups",
-                                 help="Restore XML backups files",
-                                 action=actions.SetConfigOption)
-
-        # .- timezone
-        self.parser.add_argument("--lfs-version",
-                                 help="Version of the book",
-                                 action=actions.SetConfigOption)
-
-        # .- command. Save all the arguments starting from the command name until
-        # the end of the 'argv' values into a list
-        self.parser.add_argument("command",
-                                 help="Subcommand to run",
-                                 nargs=argparse.REMAINDER)
-
+        self.basic_parser = None
+        self.build_parser = None
+        self.download_parser = None
+        self.xml_parser = None
+        self.cli = cli.Cli()
 
         # Parse sys.args and use dispatcher pattern to
         # invoke method named as command
-        self.all_args = self.parser.parse_args()
+        self.basic_parser = self.cli.configure_basic_parser()
+        self.all_args = self.basic_parser.parse_args()
 
         # Set boolean configuration flags
         self.set_config_option(self.all_args)
 
         if not hasattr(self, self.all_args.command[0]):
             printer.warning("Unknown command '{c}'".format(c=self.all_args.command[0]))
-            # self.parser.print_help()
+            self.basic_parser.print_help()
             sys.exit(1)
 
         # .- Create 'tmp' directory
@@ -94,67 +44,8 @@ class LFSBuilder(object):
 
     def build(self):
         # Parse command line arguments
-        parser = argparse.ArgumentParser(
-            description = "Build specified builders",
-            usage = "Usage for build")
-
-        # Arguments definition
-        # .- generate-img-file
-        group_gen_img_file = parser.add_mutually_exclusive_group()
-        group_gen_img_file.add_argument("--generate-img-file",
-                                        action = "store_true")
-
-        group_gen_img_file.add_argument("--no-generate-img-file",
-                                        action = "store_true")
-
-        # .- no mount sources
-        group_mount_sources = parser.add_mutually_exclusive_group()
-        group_mount_sources.add_argument("--mount-sources",
-                                         action = "store_true")
-
-        group_mount_sources.add_argument("--no-mount-sources",
-                                         action = "store_true")
-
-        # .- mount-img-file
-        group_mount_img_file = parser.add_mutually_exclusive_group()
-        group_mount_img_file.add_argument("--mount-img-file",
-                                          action = "store_true")
-
-        group_mount_img_file.add_argument("--no-mount-img-file",
-                                          action = "store_true")
-
-        # .- builders list
-        parser.add_argument("builders_list",
-                            action=actions.ModifyBuildersList,
-                            nargs=argparse.REMAINDER)
-
-        # .- mount-system-directories
-        group_mount_system_dir = parser.add_mutually_exclusive_group()
-        group_mount_system_dir.add_argument("--mount-system-directories",
-                                            action = "store_true")
-
-        group_mount_system_dir.add_argument("--no-mount-system-directories",
-                                            action = "store_true")
-
-        # .- boot_manager
-        group_boot_manager = parser.add_mutually_exclusive_group()
-        group_boot_manager.add_argument("--sysv",
-                                        action = "store_true")
-
-        group_boot_manager.add_argument("--systemd",
-                                        action = "store_true")
-
-        # .- meson builder
-        group_meson_builder = parser.add_mutually_exclusive_group()
-        group_meson_builder.add_argument("--include-meson-builder",
-                                         action = "store_true")
-
-        group_meson_builder.add_argument("--no-include-meson-builder",
-                                         action = "store_true")
-
-
-        # Parse arguments
-        self.build_args = parser.parse_args(self.all_args.command[1:])
+        self.build_parser = self.cli.configure_build_parser()
+        self.build_args = self.build_parser.parse_args(self.all_args.command[1:])
 
         # Set boolean configuration flags
         self.set_config_option(self.build_args)
@@ -175,7 +66,8 @@ class LFSBuilder(object):
             del bg
 
             # Generate data files if necessary
-            o.generate_data_files()
+            if config.GENERATE_DATA_FILES is True:
+                o.generate_data_files()
 
             # Run the real builder
             o.set_attributes()
@@ -218,6 +110,13 @@ class LFSBuilder(object):
 
         if "mount_system_directories" in flags and flags.mount_system_directories is True:
             setattr(config, "MOUNT_SYSTEM_BUILDER_DIRECTORIES", True)
+
+        # .- Set 'generate-data-files'
+        if "no_generate_data_files" in flags and flags.no_generate_data_files is True:
+            setattr(config, "GENERATE_DATA_FILES", False)
+
+        if "generate_data_files" in flags and flags.generate_data_files is True:
+            setattr(config, "GENERATE_DATA_FILES", True)
 
         # .- Set 'sysv' and 'systemd'
         if "sysv" in flags and flags.sysv is True:
@@ -268,18 +167,9 @@ m  \   00   01   11   10
 
     def download(self):
         # Parse command line arguments
-        parser = argparse.ArgumentParser(
-            description = "Download XML and sources")
-
-        # Arguments
-        parser.add_argument("--sources",
-                            action = "store_true")
-        parser.add_argument("--xml",
-                            action = "store_true")
-        parser.add_argument("book_name")
-
         # Parse arguments
-        self.download_args = parser.parse_args(self.all_args.command[1:])
+        self.download_parser = self.cli.configure_download_parser()
+        self.download_args = self.download_parser.parse_args(self.all_args.command[1:])
 
         # Sanitize book name from input
         self.download_args.book_name = self.download_args.book_name.lower()
@@ -302,6 +192,24 @@ m  \   00   01   11   10
             printer.warning("You must provide any of the '--xml' or '--sources' options")
             # self.parser.print_help()
             sys.exit(1)
+
+    def parse(self):
+        # Parse command line arguments
+        self.xml_parser = self.cli.configure_xml_parser()
+        self.xml_args = self.xml_parser.parse_args(self.all_args.command[1:])
+
+        # Generate command file for 'builders_list'
+        for builder in self.xml_args.builders_list:
+            os.chdir(self.lfsbuilder_src_directory)
+            # Generate builder object from BuilderGenerator
+            bg = builders.BuilderGenerator(builder)
+            o = bg.get_builder_reference()
+            del bg
+
+            # Generate data files
+            o.generate_data_files()
+
+            del o
 
 if __name__ == '__main__':
     lfsb = LFSBuilder()
