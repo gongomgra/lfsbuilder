@@ -2,6 +2,7 @@
 import os
 import sys
 import urllib2
+import shutil
 
 import config
 import tools
@@ -30,6 +31,12 @@ class Downloader(object):
     def download_xml(self):
         printer.info("About to download XML files for '{n}'".format(n=self.downloader_data["name"]))
         os.chdir(self.downloader_data["lfsbuilder_tmp_directory"])
+
+        # Delete destination folder if exists
+        if os.path.exists(self.downloader_data["name"]) is True:
+            # Delete directory to download new files
+            shutil.rmtree(self.downloader_data["name"])
+
         cmd_name = "{n}_svn_command".format(n=self.downloader_data["name"])
         cmd = self.downloader_data[cmd_name].format(v=config.LFS_VERSION)
 
