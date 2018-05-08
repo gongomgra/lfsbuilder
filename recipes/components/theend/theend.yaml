@@ -4,7 +4,7 @@ base_component: 'SystemConfigurationComponent'
 
 # 'theend' component creates '/etc/lsb-release' file that
 # we have to customize.
-substitution_list: ['DISTRIB_ID=\"Linux From Scratch\"',
+component_substitution_list: ['DISTRIB_ID=\"Linux From Scratch\"',
                     'DISTRIB_ID=\"{dn}\"',
                     '{dn}',
                     'config.DISTRIBUTION_NAME',

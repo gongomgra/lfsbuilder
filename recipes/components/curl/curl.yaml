@@ -7,5 +7,5 @@ name: 'curl'
 # run because the 'patch' commands return 'FALSE' and the conditional statement
 # ends in that point: patch && configure && make --> 0 && configure && make
 # We enforce to return 'TRUE' to workaround it
-substitution_list: ['.patch &amp;&amp;',
+component_substitution_list: ['.patch &amp;&amp;',
                     '.patch || true']

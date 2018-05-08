@@ -167,9 +167,12 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
 
                 # Get component data and include its 'substitution_list' and 'disable_commands'
                 # into the 'substitution_list'
-                if "substitution_list" in component_recipe_data and \
-                   component_recipe_data["substitution_list"] is not None:
-                        substitution_list.extend(component_recipe_data["substitution_list"])
+                if "component_substitution_list" in component_recipe_data and \
+                   component_recipe_data["component_substitution_list"] is not None:
+                        self.process_component_substitution_list(
+                                component_recipe_data["component_substitution_list"])
+
+                        substitution_list.extend(component_recipe_data["component_substitution_list"])
 
                 if "disable_commands_list" in component_recipe_data and \
                    component_recipe_data["disable_commands_list"] is not None:
@@ -178,6 +181,18 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
                 # Substitute
                 tools.substitute_multiple_in_file(componentfile_path, substitution_list)
 
+        def process_component_substitution_list(self, substitution_list):
+                ## Process 'component_substitution_list' data to convert
+                # 'config.X_Y_Z' string to its 'config.py' file values
+                index = 0
+                attribute = None
+                for element in substitution_list:
+                        if element.startswith("config.") is True:
+                                attribute = element.split(".")[1]
+                                attribute = getattr(config, attribute)
+                                substitution_list[index] = attribute
+
+                        index += 1
 
         def generate_components_dict(self, components_filelist):
                 # Generate components_dict from components_filelist
@@ -204,7 +219,6 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
                                                                     self.modify_xmlfile)
                         else:
                                 self.modify_xmlfile(component_recipe_data, componentfile_path)
-
 
 
                         # Create XML parser on every iteration
@@ -380,8 +394,6 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
                         xmlfile_path = tools.find_file_recursive(self.book_basedir, filename)
                         # Modify common values in BLFS XML files
                         self.modify_blfs_xmlfile(xmlfile_path)
-                        # Parse entities
-                        data_dict.update(self.generate_entities_data_dict(xmlfile_path))
                         # Add commands
                         data_dict.update(self.generate_components_dict(xmlfile_path))
 
@@ -400,7 +412,6 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
                         components_filelist = self.parse_lfs_book(data_dict)
 
                 elif self.builder_data_dict["book"] == "blfs":
-                        print "--- Let's parse BLFS"
                         components_filelist = self.parse_blfs_book(data_dict)
                 else:
                         print "--- Book no to be parsed"

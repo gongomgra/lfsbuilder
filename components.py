@@ -20,28 +20,41 @@ class ComponentGenerator(object):
             "extracted_directory": None,
             "build_directory_path": None,
             "buildscript_path": None,
+            "require_build_dir": False,
             "run_as_username": config.NON_PRIVILEGED_USERNAME,
+            "runscript_cmd": builder_data_dict["runscript_cmd"],
 
             "sources_directory":
             "{b}/sources".format(b=config.BASE_DIRECTORY),
 
             "builder_name": builder_data_dict["name"],
             "component_substitution_list": None,
+            "disable_commands_list": None,
 
+            "configure": None,
+            "make": None,
+            "install": None,
+            "test": None,
             "include_tests": None,
             "configure_options": None,
             "make_options": None,
             "install_options": None,
             "test_options": None,
 
-            "lfsbuilder_src_directory": builder_data_dict["lfsbuilder_src_directory"],
-
-            "lfsbuilder_tmp_directory": builder_data_dict["lfsbuilder_tmp_directory"],
+            "base_module": "components",
+            "base_component": "CompilableComponent",
 
             "setenv_directory": builder_data_dict["setenv_directory"],
+            "setenv_filename": builder_data_dict["setenv_filename"],
 
-            "build_into_chroot": builder_data_dict["build_into_chroot"]
+            "build_into_chroot": builder_data_dict["build_into_chroot"],
+            "script_template": "script.tpl",
+
+            "lfsbuilder_src_directory": builder_data_dict["lfsbuilder_src_directory"],
+            "lfsbuilder_tmp_directory": builder_data_dict["lfsbuilder_tmp_directory"],
+            "lfsbuilder_templates_directory": builder_data_dict["lfsbuilder_templates_directory"]
         }
+
 
         # Update keys, values that match the 'key_name'
         # from 'xml_components_data_dict'
@@ -53,21 +66,10 @@ class ComponentGenerator(object):
 
                 tools.add_to_dictionary(self.component_data_defaults, new_key, value, concat=False)
 
-
         # Read component recipe
         self.component_recipe_data = tools.read_recipe_file(component_name)
         self.component_data_dict = tools.join_dicts(self.component_data_defaults,
                                                     self.component_recipe_data)
-        # Module name
-        self.module = "components"
-
-        # Attributes with 'name' as initial value
-        self.name_attributes_list = ["show_name", "key_name", "package_name"]
-
-        for attribute in self.name_attributes_list:
-            if attribute not in self.component_data_dict:
-                tools.add_to_dictionary(self.component_data_dict, attribute,
-                                        self.component_data_dict["name"], concat=False)
 
         # Cast 'require_build_dir' from string to bool
         # bool(int 1) = True
@@ -81,14 +83,22 @@ class ComponentGenerator(object):
             int(self.component_data_dict["build_into_chroot"]))
 
 
-        # Instanciate a 'CompilableComponent' by default
-        self.class_fullname = "{m}.CompilableComponent".format(m=self.module)
-
+        # Instanciate component object.
         # Select component type for instance
-        if "base_component" in self.component_data_dict and \
-           self.component_data_dict["base_component"].lower() == "systemconfigurationcomponent":
-            self.class_fullname = "{m}.{t}".format(m=self.module,
+        # .- CompilableComponent
+        if self.component_data_dict["base_component"].lower() == "compilablecomponent":
+            self.class_fullname = "{m}.{t}".format(m=self.component_data_dict["base_module"],
+                                                   t="CompilableComponent")
+
+        #.- SystemConfigurationComponent
+        elif self.component_data_dict["base_component"].lower() == "systemconfigurationcomponent":
+            self.class_fullname = "{m}.{t}".format(m=self.component_data_dict["base_module"],
                                                    t="SystemConfigurationComponent")
+
+        else:
+            text = "Unknown 'base_component': '{b}'"
+            text = text.format(b=self.component_data_dict["base_component"])
+            printer.error(text)
 
         # Create object
         self.obj = tools.get_class(self.class_fullname)
@@ -123,16 +133,13 @@ class BaseComponent(object):
 
     def get_command_to_run_script(self, filename):
 
-        cmd = "env -i /bin/bash -x"
-        if self.component_data_dict["builder_name"] == "system":
-            cmd = "/tools/bin/env -i /tools/bin/bash -x"
-
         # Remove BASE_DIRECTORY if we are inside the chroot.
         # We are not related to BASE_DIRECTORY anymore
         if self.component_data_dict["build_into_chroot"] == True:
             filename = filename.replace(config.BASE_DIRECTORY, "")
 
-        cmd = "{c} {f}".format(c=cmd, f=filename)
+        cmd = "{c} {f}".format(c=self.component_data_dict["runscript_cmd"],
+                               f=filename)
 
         return cmd
 
@@ -146,7 +153,7 @@ class BaseComponent(object):
         # Remove BASE_DIRECTORY from path if we are not building the 'toolchain'
         setenv_script_path = os.path.realpath(os.path.join(
             self.component_data_dict["setenv_directory"],
-            "setenv.sh"))
+            self.component_data_dict["setenv_filename"]))
 
         if self.component_data_dict["build_into_chroot"] == True:
             # If we are into the chroot, setenv.sh is located at root directory (/setenv.sh)
@@ -201,17 +208,13 @@ class BaseComponent(object):
         if text.find("@@LFS") != -1:
             printer.error("Found pending placeholder in '{f}'".format(f = file_path))
 
-    def write_script_header(self, filename):
-        printer.substepInfo("Generating script '{f}'".format(f = filename))
+    def copy_script_header(self, script_filename):
+        template = os.path.join(self.component_data_dict["lfsbuilder_templates_directory"],
+                                self.component_data_dict["script_template"])
 
-        text = """#!/bin/bash
-# Component keyName: '@@LFS_COMPONENT_KEYNAME@@'
-# Build action: '@@LFS_BUILDER_NAME@@'
-# Load custom environment
-. @@LFS_SETENV_FILE@@
-"""
+        printer.substepInfo("Generating script '{f}'".format(f = script_filename))
 
-        tools.write_file(filename, text)
+        tools.copy_file(template, script_filename)
 
     def run_post_steps(self):
         os.chdir(self.component_data_dict["extracted_directory"])
@@ -223,7 +226,7 @@ class BaseComponent(object):
 
     def run_extra_steps(self, stepname, run_directory):
         filename = os.path.join(run_directory, stepname + ".sh")
-        self.write_script_header(filename)
+        self.copy_script_header(filename)
 
         tools.add_text_to_file(filename, self.component_data_dict[stepname])
 
@@ -337,7 +340,7 @@ class BaseCompilableComponent(BaseComponent):
 
         if patch_filename is not None:
             script_filename = os.path.join(self.component_data_dict["extracted_directory"], "patch.sh")
-            self.write_script_header(script_filename)
+            self.copy_script_header(script_filename)
             cmd = "patch -N -p1 --verbose < {f}".format(f=patch_filename)
             tools.add_text_to_file(script_filename, cmd)
             self.run_script(script_filename, run_directory = self.component_data_dict["extracted_directory"])
@@ -391,7 +394,7 @@ class BaseCompilableComponent(BaseComponent):
             self.component_data_dict["build_directory_path"],
             self.buildscript_name)
 
-        self.write_script_header(self.component_data_dict["buildscript_path"])
+        self.copy_script_header(self.component_data_dict["buildscript_path"])
         self.add_configure_to_buildscript()
         self.add_make_to_buildscript()
         self.add_tests_to_buildscript()
@@ -407,7 +410,7 @@ class BaseCompilableComponent(BaseComponent):
         # Creates a shell script to check compiling and linking functions for required components
         filename = os.path.join(self.build_directory, "compilation_linking_check.sh")
 
-        self.write_script_header(filename)
+        self.copy_script_header(filename)
 
         text = """
 echo 'int main(){}' > dummy.c

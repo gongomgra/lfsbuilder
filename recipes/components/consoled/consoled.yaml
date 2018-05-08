@@ -2,7 +2,7 @@
 name: 'consoled'
 base_component: 'SystemConfigurationComponent'
 
-substitution_list: ['KEYMAP=de-latin1',
+component_substitution_list: ['KEYMAP=de-latin1',
                      'KEYMAP={km}',
                      '{km}',
                      'config.KEYMAP',

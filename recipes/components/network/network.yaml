@@ -2,7 +2,7 @@
 name: 'network'
 base_component: 'SystemConfigurationComponent'
 
-substitution_list: ['IP=192.168.1.2',
+component_substitution_list: ['IP=192.168.1.2',
                     'IP={eth0_ip}',
                     '{eth0_ip}',
                     'config.ETH0_IP_ADDRESS',

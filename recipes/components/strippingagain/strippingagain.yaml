@@ -4,7 +4,7 @@ base_component: 'SystemConfigurationComponent'
 
 # According to the link below, not all files can be stripped, so we ignore those errors
 # http://archives.linuxfromscratch.org/mail-archives/lfs-support/2002-July/008317.html
-# substitution_list: ['/tools/lib/*',
+# component_substitution_list: ['/tools/lib/*',
 #                     '/tools/lib/* || true',
 
 #                     '/tools/{,s}bin/*',

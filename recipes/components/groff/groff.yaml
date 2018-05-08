@@ -2,5 +2,5 @@
 name: 'groff'
 make_options: '--jobs=1'
 
-substitution_list: ['<replaceable>&lt;paper_size&gt;</replaceable>',
+component_substitution_list: ['<replaceable>&lt;paper_size&gt;</replaceable>',
                     'config.PAPER_SIZE']

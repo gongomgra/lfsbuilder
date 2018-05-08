@@ -2,7 +2,7 @@
 name: 'fstab'
 base_component: 'SystemConfigurationComponent'
 
-substitution_list: ['<replaceable>&lt;xxx&gt;</replaceable>',
+component_substitution_list: ['<replaceable>&lt;xxx&gt;</replaceable>',
                      'config.ROOT_PARTITION_NAME',
 
                      '<replaceable>&lt;fff&gt;</replaceable>',

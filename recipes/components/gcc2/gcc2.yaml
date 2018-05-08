@@ -4,5 +4,5 @@ package_name: 'gcc'
 
 # 'gcc-pass2' includes a compilation test that we will remap to 'check'
 # to avoid it to be included in '_previous' step
-substitution_list: ['<userinput>',
+component_substitution_list: ['<userinput>',
                     '<userinput remap="check">']

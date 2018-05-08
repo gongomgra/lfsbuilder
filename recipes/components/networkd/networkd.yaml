@@ -2,7 +2,7 @@
 name: 'networkd'
 base_component: 'SystemConfigurationComponent'
 
-substitution_list: ['Address=192.168.0.2/24',
+component_substitution_list: ['Address=192.168.0.2/24',
                     'Address={eth0_ip}/{eth0_mask}',
                     '{eth0_ip}',
                     'config.ETH0_IP_ADDRESS',

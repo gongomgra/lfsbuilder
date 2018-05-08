@@ -13,33 +13,35 @@ class BuilderGenerator(object):
     def __init__(self, builder_name):
 
         # Default values
-        self.builder_data_dict = {"name": builder_name,
-                                  "env_PATH_value": "${UNSET_VARIABLE}",
-                                  "chapters_list": [],
-                                  "excludes": [],
-                                  "components_to_build": [],
-                                  "setenv_directory": config.BASE_DIRECTORY,
-                                  "book": "lfs"}
+        self.builder_data_dict = {
+            "name": builder_name,
+            "env_PATH_value": "${UNSET_VARIABLE}",
+            "chapters_list": [],
+            "excludes": [],
+            "components_to_build": [],
+            "setenv_directory": config.BASE_DIRECTORY,
+            "setenv_filename": "setenv.sh",
+            "setenv_template": "setenv.tpl",
+            "book": "lfs",
+            "runscript_cmd": "env -i /bin/bash -x",
+            "base_module": "builders",
+            "base_builder": "ComponentsBuilder",
+            "sources_directory": os.path.join(config.BASE_DIRECTORY, "sources"),
+            "tools_directory": os.path.join(config.BASE_DIRECTORY, "tools"),
+            "lfsbuilder_src_directory": os.path.dirname(os.path.realpath(__file__)),
+            "lfsbuilder_tmp_directory": os.path.join(
+                os.path.dirname(os.path.realpath(__file__)),
+                "tmp"),
+            "lfsbuilder_templates_directory": os.path.join(
+                os.path.dirname(os.path.realpath(__file__)),
+                "templates")
 
-        self.attributes_list = ["sources", "tools"]
-        for attribute in self.attributes_list:
-            key = "{a}_directory".format(a=attribute)
-            value = os.path.join(config.BASE_DIRECTORY, attribute)
-            tools.add_to_dictionary(self.builder_data_dict, key, value, concat=False)
 
+        }
 
         # Read the builder recipe and return a reference to the object type
         self.builder_recipe_data = tools.read_recipe_file(self.builder_data_dict["name"],
                                                           directory = "builders")
-
-        # Add 'lfsbuilder_src_directory' to 'self.builder_data_dict'
-        tools.add_to_dictionary(self.builder_data_dict, "lfsbuilder_src_directory",
-                                os.path.dirname(os.path.realpath(__file__)), concat=False)
-
-        # Add 'lfsbuilder_tmp_directory' to 'self.builder_data_dict'
-        tools.add_to_dictionary(self.builder_data_dict, "lfsbuilder_tmp_directory",
-                                os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                                             "tmp"), concat=False)
 
 
         # Add 'xml_commands_filename' to 'self.builder_data_dict' from 'config.py' file. default=None
@@ -51,21 +53,26 @@ class BuilderGenerator(object):
 
 
         # Join dicts. 'self.builder_recipe_data' values will have preference over those
-        # currently in 'self.builder_data_dict'
+        # currently in 'self.builder_data_dict' (defaults)
         self.builder_data_dict = tools.join_dicts(self.builder_data_dict,
                                                   self.builder_recipe_data)
 
-        # Module name
-        self.module = "builders"
-
         # Instantiate a ComponentsBuilder by default
-        self.class_fullname = "{m}.ComponentsBuilder".format(m=self.module)
+        self.class_fullname = "{m}.{t}".format(m=self.builder_data_dict["base_module"],
+                                                             t=self.builder_data_dict["base_builder"])
 
         # Instantiate a 'InfrastructureComponentsBuilder' if required
-        if "base_builder" in self.builder_data_dict and \
-           self.builder_data_dict["base_builder"].lower() == "infrastructurecomponentsbuilder":
-            self.class_fullname = "{m}.{t}".format(m = self.module,
+        if self.builder_data_dict["base_builder"].lower() == "componentsbuilder":
+            self.class_fullname = "{m}.{t}".format(m = self.builder_data_dict["base_module"],
+                                                   t = "ComponentsBuilder")
+
+        elif self.builder_data_dict["base_builder"].lower() == "infrastructurecomponentsbuilder":
+            self.class_fullname = "{m}.{t}".format(m = self.builder_data_dict["base_module"],
                                                    t = "InfrastructureComponentsBuilder")
+        else:
+            text = "Unknown 'base_builder': '{b}'"
+            text = text.format(b=self.component_data_dict["base_builder"])
+            printer.error(text)
 
         # Create object
         self.obj = tools.get_class(self.class_fullname)
@@ -120,50 +127,12 @@ class BaseBuilder(object):
         pass
 
     def create_setenv_script(self):
-        filename = os.path.join(self.builder_data_dict["setenv_directory"], "setenv.sh")
+        setenv_filename = os.path.join(self.builder_data_dict["setenv_directory"],
+                                       self.builder_data_dict["setenv_filename"])
 
-        text = """# Builder: '@@LFS_BUILDER_NAME@@'
+        template = os.path.join(self.builder_data_dict["lfsbuilder_templates_directory"],
+                                self.builder_data_dict["setenv_template"])
 
-# Do not locate and remember (hash) commands as they are looked up for execution
-set +h
-
-# Any command which fail will cause the shell script to exit immediately
-set -e
-
-# Any command will fail if using any unset variable. For example: "sudo rm -rf /${UNSET_VARIABLE}*"
-# won't run "sudo rm /*". It will fail instead
-set -u
-
-# Default umask value
-umask 022
-
-# LFS custom PATH
-PATH=@@LFS_ENV_PATH_VALUE@@
-export PATH
-
-# LFS mount point
-LFS=@@LFS_BASE_DIRECTORY@@
-export LFS
-
-# LFS target kernel name
-LFS_TGT=$(uname -m)-lfs-linux-gnu
-export LFS_TGT
-
-LC_ALL=POSIX
-export LC_ALL
-
-# LFS compile core numbers
-MAKEFLAGS='@@LFS_MAKEFLAGS@@'
-export MAKEFLAGS
-
-# Terminal has full of colors
-TERM=xterm-256color
-export TERM
-"""
-        # Write file
-        tools.write_file(filename, text)
-
-        # Substitute parameters
         substitution_list = ["@@LFS_BUILDER_NAME@@", self.builder_data_dict["name"],
                              "@@LFS_ENV_PATH_VALUE@@", self.builder_data_dict["env_PATH_value"],
                              "@@LFS_SOURCES_DIRECTORY@@", self.builder_data_dict["sources_directory"],
@@ -172,7 +141,11 @@ export TERM
                              "@@LFS_BASE_DIRECTORY@@", config.BASE_DIRECTORY,
                              "@@LFS_MAKEFLAGS@@", config.MAKEFLAGS]
 
-        tools.substitute_multiple_in_file(filename, substitution_list)
+        # Copy template
+        tools.copy_file(template, setenv_filename)
+
+        # Substitute parameters
+        tools.substitute_multiple_in_file(setenv_filename, substitution_list)
 
 class BaseComponentsBuilder(BaseBuilder):
 
@@ -246,7 +219,8 @@ class BaseComponentsBuilder(BaseBuilder):
 
     def clean_workspace(self):
         # Remove 'setenv.sh' file
-        os.remove(os.path.join(self.builder_data_dict["setenv_directory"], "setenv.sh"))
+        os.remove(os.path.join(self.builder_data_dict["setenv_directory"],
+                               self.builder_data_dict["setenv_filename"]))
 
 class InfrastructureComponentsBuilder(BaseComponentsBuilder):
 
