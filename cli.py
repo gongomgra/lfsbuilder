@@ -155,9 +155,12 @@ class Cli(object):
 
         # Arguments
         self.download_parser.add_argument("--sources",
-                            action = "store_true")
+                                          action = "store_true")
         self.download_parser.add_argument("--xml",
-                            action = "store_true")
+                                          action = "store_true")
+        self.download_parser.add_argument("--lfs-version",
+                                          action = actions.SetConfigOption)
+
         self.download_parser.add_argument("book_name")
 
         # Return configured parser

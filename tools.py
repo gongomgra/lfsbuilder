@@ -18,19 +18,19 @@ import printer
 
 # ---
 
-def write_file (filename, text):
+def write_file (filename, text, mode = "w"):
     # If file exists, delete it
     if os.path.exists(filename):
         os.remove(filename)
 
-    fp = open(filename, "w")
+    fp = open(filename, mode)
     fp.write(text)
     fp.close()
 
-def read_file (filename):
+def read_file (filename, mode = "r"):
     # If file exists, read it
     if os.path.exists(filename):
-        fp = open(filename, "r")
+        fp = open(filename, mode)
         text = fp.read()
         fp.close()
         return text
