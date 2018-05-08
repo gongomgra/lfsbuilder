@@ -12,3 +12,5 @@ component_substitution_list: ['<replaceable>&lt;xxx&gt;</replaceable>',
                      'config.SWAP_PARTITION_NAME']
 
 disable_commands_list: ['<userinput>hdparm -I /dev/sda | grep NCQ']
+
+comment_out_list: ['/dev/     swap']

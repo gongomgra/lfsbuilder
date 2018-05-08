@@ -166,7 +166,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
                 substitution_list.extend(bash_removes_disabled)
 
                 # Get component data and include its 'substitution_list' and 'disable_commands'
-                # into the 'substitution_list'
+                # elements into the 'substitution_list'
                 if "component_substitution_list" in component_recipe_data and \
                    component_recipe_data["component_substitution_list"] is not None:
                         self.process_component_substitution_list(
@@ -176,8 +176,15 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
 
                 if "disable_commands_list" in component_recipe_data and \
                    component_recipe_data["disable_commands_list"] is not None:
-                        substitution_list.extend(tools.disable_commands(component_recipe_data["disable_commands_list"]))
+                        substitution_list.extend(
+                                tools.disable_commands(
+                                        component_recipe_data["disable_commands_list"]))
 
+                if "comment_out_list" in component_recipe_data and \
+                   component_recipe_data["comment_out_list"] is not None:
+                        substitution_list.extend(
+                                tools.comment_out(
+                                        component_recipe_data["comment_out_list"]))
                 # Substitute
                 tools.substitute_multiple_in_file(componentfile_path, substitution_list)
 

@@ -187,6 +187,20 @@ def disable_commands(commands_list):
 
     return result
 
+def comment_out(comment_out_list, comment_symbol = "#"):
+    ## Comments out strings from files by preceding the 'comment_symbol'
+    # 'comment_out_list': elements to comment out
+    # 'comment_symbol': symbol to precede strings with.
+    result = []
+
+    for element in comment_out_list:
+        result.append(element)
+        comment_out = "{c} {e}".format(c = comment_symbol,
+                                       e = element)
+        result.append(comment_out)
+
+    return result
+
 def read_recipe_file(component_name, directory="components"):
 
     filename = "{c}.yaml".format(c=component_name)
