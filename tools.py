@@ -164,15 +164,25 @@ def is_element_present(objective_list, element):
 
 def disable_commands(commands_list):
     result = []
+    userinput_xml_tag = "<userinput>"
+    disable_remap_attribute = "<userinput remap=\"lfsbuilder_disabled\">"
 
     for command in commands_list:
-        if command.startswith("<userinput") is False:
+        if command.startswith("<userinput") is True:
+            # XML tag was provided. Substitute with the disabled 'remap' attribute
+            aux_cmd = command.split(">")[1]
+            cmd = "{d}{c}".format(d = disable_remap_attribute,
+                                  c = aux_cmd)
+        else:
             # User didn't provide XML attribute for command,
-            # so we add it and then we disable it
-            command = "<userinput>{c}".format(c=command)
+            # so we add it and then we disable it.
+            # We are supposing it doesn't require a 'remap' attribute
+            command = "{u}{c}".format(u = userinput_xml_tag,
+                                      c = command)
+            cmd = command.replace(userinput_xml_tag, disable_remap_attribute)
 
+        # Add substitution strings to the 'result' list
         result.append(command)
-        cmd = command.replace("<userinput", "<userinput remap=\"lfsbuilder_disabled\"")
         result.append(cmd)
 
     return result
