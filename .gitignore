@@ -1,3 +1,5 @@
 # Emacs temporal files
 *.*~
 tmp/*
+*.pyc
+*.pyo
