@@ -59,14 +59,14 @@ def copy_file (src, dest):
     else:
         printer.error("tools.copy_file: 'src' and 'dest' are the same.")
 
-def add_text_to_file (filename, text, at_the_beginning=0):
+def add_text_to_file (filename, text, at_the_beginning=False):
     if os.path.exists(filename):
         previous_text = read_file(filename)
 
-        if at_the_beginning == 0:
-            new_text = previous_text + "\n" + text
+        if at_the_beginning is True:
+            new_text = "{t}\n{p}".format(t = text, p = previous_text)
         else:
-            new_text = text + "\n" + previous_text
+            new_text = "{p}\n{t}".format(t = text, p = previous_text)
 
         write_file(filename, new_text)
     else:
@@ -117,7 +117,7 @@ def substitute_in_list(objective_list, element, substitution):
         index = objective_list.index(element)
         # We replace the original list, not a copy at index
         objective_list.remove(element)
-        objective_list[index:index] = substitution
+        objective_list.insert(index, substitution)
 
 def remove_and_add_element(objective_list, element, index=None):
     # Add at the end by default
@@ -233,11 +233,11 @@ def read_functions_file(component_name, filename="functions.py", directory="comp
 
 
     if os.path.exists(functions_file):
-        module_path = "recipes/{d}/{c}/{f}".format(d=directory,
-                                                   c=component_name,
-                                                   f=filename)
+        unix_module_path = "recipes/{d}/{c}/{f}".format(d=directory,
+                                                        c=component_name,
+                                                        f=filename)
 
-        directory, module_name = os.path.split(module_path)
+        directory, module_name = os.path.split(unix_module_path)
         module_name = os.path.splitext(module_name)[0]
 
         path_bck = list(sys.path)
@@ -260,7 +260,6 @@ def find_file (base_directory, pattern):
     for value in os.listdir(base_directory):
         if fnmatch.fnmatch(value, pattern):
             result.append(os.path.join(base_directory, value))
-
 
     # Return 'None' if not found
     if is_empty_list(result) is True:

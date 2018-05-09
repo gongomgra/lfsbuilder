@@ -45,12 +45,20 @@ class ModifyBuildersList(argparse.Action):
         setattr(namespace, self.dest, self.builders_list)
 
 
-    def check_builders_dupes(self):
+    def check_builders_dupes(self, bl=None):
+        # We are running this method from 'unittest'
+        if bl is not None:
+            self.builders_list = bl
+
         for b in set(self.builders_list):
             if self.builders_list.count(b) > 1:
                 printer.error("Duplicated builder '{b}' is not allowed".format(b=b))
 
-    def check_builders_order(self):
+
+    def check_builders_order(self, bl=None):
+        # We are running this method from 'unittest'
+        if bl is not None:
+            self.builders_list = bl
 
         # Get the position number of every builder into the 'self.builders_list'
         self.builders_index_dict = {"toolchain": tools.get_element_index(self.builders_list,
@@ -144,7 +152,13 @@ l: whether the 'system' builder is pretended to be built before the 'configurati
         m = bool(m)
         l = bool(l)
 
-        return (not(t) and l) or (not(s) and not(c)) or (not(t) and not(c)) or (not(t) and not(s) and m) or (not(t) and not(s) and not(m)) or (s and m and l) or (not(c) and m)
+        return (not(t) and l) or \
+            (not(s) and not(c)) or \
+            (not(t) and not(c)) or \
+            (not(t) and not(s) and m) or \
+            (not(t) and not(s) and not(m)) or \
+            (s and m and l) or \
+            (not(c) and m)
 
 
 class SetConfigOption(argparse.Action):
