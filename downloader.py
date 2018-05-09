@@ -60,8 +60,9 @@ class Downloader(object):
         # Download sources from 'wget-list'
         printer.info("Downloading sources for '{n}'".format(n=self.downloader_data["name"]))
         for url in tools.list_from_file(wget_list_filename):
-            filename = url.split("/")[-1]
-            self.download_file_from_url(filename, url)
+            if url:
+                filename = url.split("/")[-1]
+                self.download_file_from_url(filename, url)
 
     def download_file_from_url(self, filename, url):
         msg = "Downloading file '{f}' from '{u}'".format(f = filename,
