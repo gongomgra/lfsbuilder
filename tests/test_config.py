@@ -295,6 +295,13 @@ class ConfigTestCase(unittest.TestCase):
         self.assertIsNot(type(config.CONTINUE_AT), bool)
         # end
 
+    def test_verbose_is_boolean(self):
+        """\_ check 'config.VERBOSE' is boolean"""
+
+        self.assertIs(type(config.VERBOSE), bool)
+        # end
+
+
 
 if __name__ == '__main__':
     unittest.main()
