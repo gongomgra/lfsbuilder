@@ -117,7 +117,7 @@ def substitute_in_list(objective_list, element, substitution):
         index = objective_list.index(element)
         # We replace the original list, not a copy at index
         objective_list.remove(element)
-        objective_list.insert(index, substitution)
+        objective_list[index:index] = substitution
 
 def remove_and_add_element(objective_list, element, index=None):
     # Add at the end by default

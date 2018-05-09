@@ -65,10 +65,6 @@ class LFSBuilder(object):
             o = bg.get_builder_reference()
             del bg
 
-            # Generate data files if necessary
-            if config.GENERATE_DATA_FILES is True:
-                o.generate_data_files()
-
             # Run the real builder
             o.set_attributes()
 
@@ -198,6 +194,9 @@ m  \   00   01   11   10
         self.xml_parser = self.cli.configure_xml_parser()
         self.xml_args = self.xml_parser.parse_args(self.all_args.command[1:])
 
+        # Set GENERATE_DATA_FILES to True to ensure they get created
+        setattr(config, "GENERATE_DATA_FILES", True)
+
         # Generate command file for 'builders_list'
         for builder in self.xml_args.builders_list:
             os.chdir(self.lfsbuilder_src_directory)
@@ -205,10 +204,6 @@ m  \   00   01   11   10
             bg = builders.BuilderGenerator(builder)
             o = bg.get_builder_reference()
             del bg
-
-            # Generate data files
-            o.generate_data_files()
-
             del o
 
 if __name__ == '__main__':

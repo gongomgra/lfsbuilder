@@ -90,12 +90,26 @@ class BaseBuilder(object):
         self.extra_functions = tools.read_functions_file(self.builder_data_dict["name"],
                                                          directory="builders")
 
+        # Generate data files if necessary
+        if config.GENERATE_DATA_FILES is True:
+            self.generate_data_files()
+
         # Get 'components_to_build_list' if necessary
         if hasattr(self.extra_functions, "get_components_to_build_list"):
             self.extra_functions.get_components_to_build_list(self.builder_data_dict,
                                                               self.get_components_to_build_list)
         else:
             self.get_components_to_build_list()
+
+    def generate_data_files(self):
+        if self.builder_data_dict["book"] == "lfs" or \
+           self.builder_data_dict["book"] == "blfs":
+            # We have to parse book xmlfiles
+            xmlp = xmlparser.LFSXmlParser(self.builder_data_dict)
+            xmlp.generate_commands_xmlfile()
+            del xmlp
+        else:
+            pass
 
     def get_components_to_build_list(self):
         # Get 'components_to_build' list from book if necessary
@@ -183,16 +197,6 @@ class BaseComponentsBuilder(BaseBuilder):
         BaseBuilder.__init__(self, builder_data_dict)
 
         self.component_data_dict = {}
-
-    def generate_data_files(self):
-        if self.builder_data_dict["book"] == "lfs" or \
-           self.builder_data_dict["book"] == "blfs":
-            # We have to parse book xmlfiles
-            xmlp = xmlparser.LFSXmlParser(self.builder_data_dict)
-            xmlp.generate_commands_xmlfile()
-            del xmlp
-        else:
-            pass
 
     def generate_xml_components_data_dict(self):
         self.xml_components_data_dict = {}

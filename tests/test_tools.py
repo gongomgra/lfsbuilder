@@ -177,7 +177,7 @@ class ToolsTestCase(unittest.TestCase):
         tools.substitute_in_list(
                 copy_list,
                 self.element_a,
-                self.element_b
+                [self.element_b]
             )
 
         self.assertIn(self.element_b, copy_list)
