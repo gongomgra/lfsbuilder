@@ -40,7 +40,10 @@ class Downloader(object):
         cmd_name = "{n}_svn_command".format(n=self.downloader_data["name"])
         cmd = self.downloader_data[cmd_name].format(v=config.LFS_VERSION)
 
-        tools.run_program_with_output(cmd)
+        if config.VERBOSE is True:
+            tools.run_program_with_output(cmd)
+        else:
+            tools.run_program_without_output(cmd)
 
     def download_source(self):
 

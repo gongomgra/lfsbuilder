@@ -251,7 +251,12 @@ class BaseComponent(object):
             # If we are building from outside, e.g. building 'toolchain',
             # we need to ensure we have the required permission
             tools.set_owner_and_group(filename, self.component_data_dict["run_as_username"])
-            tools.run_program_with_output(cmd, username=self.component_data_dict["run_as_username"])
+
+            # Run program with or without output
+            if config.VERBOSE is True:
+                tools.run_program_with_output(cmd, username=self.component_data_dict["run_as_username"])
+            else:
+                tools.run_program_without_output(cmd, username=self.component_data_dict["run_as_username"])
         else:
             tools.run_program_into_chroot(cmd, config.BASE_DIRECTORY)
 

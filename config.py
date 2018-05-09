@@ -69,4 +69,5 @@ blfs_xml_filename = "blfs_data.xml"
 
 REMOVE_REBOOT_COMPONENT = False
 MOUNT_SYSTEM_BUILDER_DIRECTORIES = False
+VERBOSE = True
 CONTINUE_AT = None

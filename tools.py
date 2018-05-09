@@ -372,7 +372,10 @@ def run_program_into_chroot (program_to_run, base_directory):
         # os.chdir("/")
 
         # Chrooted environment
-        run_program_with_output(program_to_run)
+        if config.VERBOSE is True:
+            run_program_with_output(program_to_run)
+        else:
+            run_program_without_output(program_to_run)
 
         # Back to old root
         os.fchdir(real_root)
