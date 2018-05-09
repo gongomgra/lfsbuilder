@@ -282,6 +282,12 @@ class BaseCompilableComponent(BaseComponent):
                                               v = self.component_data_dict["version"])
 
         source_code_filename = tools.find_file(self.component_data_dict["sources_directory"], pattern)
+
+        # Try a second run if 'source_code_filename' is None using only name as pattern.
+        if source_code_filename == None:
+            pattern = "{n}*.tar.*".format(n=self.component_data_dict["package_name"])
+            source_code_filename = tools.find_file(self.component_data_dict["sources_directory"], pattern)
+
         if source_code_filename == None:
             msg = "Can't find source code file for '{n}' with pattern: '{p}'"
             msg = msg.format(n = self.component_data_dict["name"], p = pattern)
