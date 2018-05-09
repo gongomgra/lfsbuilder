@@ -10,6 +10,8 @@ def set_attributes(component_data_dict, parent_function):
     # Call parent_function
     parent_function()
 
+    tools.add_to_dictionary(component_data_dict, key="post", value="")
+
     # Generate 'umount' commands from 'component_data_dict["umount_directories"]'
     for d in component_data_dict["umount_directories"]:
         if os.path.ismount(os.path.join(config.BASE_DIRECTORY, d)):
