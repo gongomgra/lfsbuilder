@@ -43,6 +43,7 @@ class LFSBuilder(object):
         getattr(self, self.all_args.command[0])()
 
     def build(self):
+        # 'build' command
         # Parse command line arguments
         self.build_parser = self.cli.configure_build_parser()
         self.build_args = self.build_parser.parse_args(self.all_args.command[1:])
@@ -70,6 +71,55 @@ class LFSBuilder(object):
 
             o.build()
             o.clean_workspace()
+            del o
+
+    def download(self):
+        # 'download' command
+        # Parse command line arguments
+        self.download_parser = self.cli.configure_download_parser()
+        self.download_args = self.download_parser.parse_args(self.all_args.command[1:])
+
+        # Sanitize book name from input
+        self.download_args.book_name = self.download_args.book_name.lower()
+
+        if self.download_args.book_name != "lfs" and self.download_args.book_name != "blfs":
+            printer.warning("Unknown book name for download: '{b}'".format(
+                b=self.download_args.book_name))
+            # self.parser.print_help()
+            sys.exit(1)
+
+        # Run downloader
+        d = downloader.Downloader(self.download_args.book_name)
+
+        # Run download method
+        if self.download_args.sources is True:
+            d.download_source()
+        elif self.download_args.xml is True:
+            d.download_xml()
+        else:
+            printer.warning("You must provide any of the '--xml' or '--sources' options")
+            # self.parser.print_help()
+            sys.exit(1)
+
+    def parse(self):
+        # 'parse' command
+        # Parse command line arguments
+        self.xml_parser = self.cli.configure_xml_parser()
+        self.xml_args = self.xml_parser.parse_args(self.all_args.command[1:])
+
+        # Set boolean configuration flags
+        self.set_config_option(self.xml_args)
+
+        # Set GENERATE_DATA_FILES to True to ensure they get created
+        setattr(config, "GENERATE_DATA_FILES", True)
+
+        # Generate command file for 'builders_list'
+        for builder in self.xml_args.builders_list:
+            os.chdir(self.lfsbuilder_src_directory)
+            # Generate builder object from BuilderGenerator
+            bg = builders.BuilderGenerator(builder)
+            o = bg.get_builder_reference()
+            del bg
             del o
 
 
@@ -161,50 +211,6 @@ m  \   00   01   11   10
         return (m and not(sv) and sd) or (sv and not(sd))
 
 
-    def download(self):
-        # Parse command line arguments
-        # Parse arguments
-        self.download_parser = self.cli.configure_download_parser()
-        self.download_args = self.download_parser.parse_args(self.all_args.command[1:])
-
-        # Sanitize book name from input
-        self.download_args.book_name = self.download_args.book_name.lower()
-
-        if self.download_args.book_name != "lfs" and self.download_args.book_name != "blfs":
-            printer.warning("Unknown book name for download: '{b}'".format(
-                b=self.download_args.book_name))
-            # self.parser.print_help()
-            sys.exit(1)
-
-        # Run downloader
-        d = downloader.Downloader(self.download_args.book_name)
-
-        # Run download method
-        if self.download_args.sources is True:
-            d.download_source()
-        elif self.download_args.xml is True:
-            d.download_xml()
-        else:
-            printer.warning("You must provide any of the '--xml' or '--sources' options")
-            # self.parser.print_help()
-            sys.exit(1)
-
-    def parse(self):
-        # Parse command line arguments
-        self.xml_parser = self.cli.configure_xml_parser()
-        self.xml_args = self.xml_parser.parse_args(self.all_args.command[1:])
-
-        # Set GENERATE_DATA_FILES to True to ensure they get created
-        setattr(config, "GENERATE_DATA_FILES", True)
-
-        # Generate command file for 'builders_list'
-        for builder in self.xml_args.builders_list:
-            os.chdir(self.lfsbuilder_src_directory)
-            # Generate builder object from BuilderGenerator
-            bg = builders.BuilderGenerator(builder)
-            o = bg.get_builder_reference()
-            del bg
-            del o
 
 if __name__ == '__main__':
     lfsb = LFSBuilder()
