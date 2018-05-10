@@ -47,7 +47,8 @@ class BuilderGenerator(object):
         # Add 'xml_commands_filename' to 'self.builder_data_dict' from 'config.py' file. default=None
         tools.add_to_dictionary(self.builder_data_dict, "xml_commands_filename",
                                 getattr(config,
-                                        "{b}_xml_filename".format(b=self.builder_data_dict["name"]),
+                                        "{b}_XML_FILENAME".format(
+                                            b=self.builder_data_dict["name"].upper()),
                                         None),
                                 concat=False)
 

@@ -159,7 +159,8 @@ class LFSXmlParser(object):
                                 """chroot $LFS /tools/bin/env -i            \
 HOME=/root TERM=$TERM PS1='\u:\w\$ ' \
 PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
-/tools/bin/bash --login"""]
+/tools/bin/bash --login""",
+                                "chroot $LFS /tools/bin/env -i"]
 
                 # Disable bash commands and add them to the 'substitution_list'
                 bash_removes_disabled = tools.disable_commands(bash_removes)
@@ -424,7 +425,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
 
 
                 # Get destination filename
-                attribute = "{s}_xml_filename".format(s=self.builder_data_dict["name"])
+                attribute = "{s}_XML_FILENAME".format(s=self.builder_data_dict["name"].upper())
                 destination_filename = getattr(config, attribute)
                 self.write_commands_xmlfile(components_filelist, data_dict, destination_filename)
 
@@ -447,11 +448,3 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
                                                        subnode.text, concat=False)
                 # return generated dictionary
                 return data_dict
-
-# lfs = LfsXmlParser()
-# #lfs.generate_toolchain_xmlfile()
-# import pprint
-# pp = pprint.PrettyPrinter(indent=4)
-# pp.pprint(lfs.generate_dict_from_xmlfile("toolchain.xml"))
-
-# del lfs
