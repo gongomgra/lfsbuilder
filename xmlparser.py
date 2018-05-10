@@ -68,6 +68,7 @@ class LFSXmlParser(object):
                 # Do not concat lines by default
                 add_line = False
                 saved_line = ""
+                html_comments_regexp = r"<!--(.|\s|\n)*?-->"
 
                 # Sanitize input
                 if tools.is_empty_list(entities_files):
@@ -75,6 +76,13 @@ class LFSXmlParser(object):
 
                 for entity_file in entities_files:
                         file_text = tools.read_file(entity_file)
+
+                        # Remove HTML comments from file_text.
+                        # It makes parsing entities much easier
+                        file_text = regexp.sub(html_comments_regexp,
+                                               "",
+                                               file_text,
+                                               flags=regexp.DOTALL)
 
                         # Restart flag for every file
                         add_line = False
@@ -90,9 +98,10 @@ class LFSXmlParser(object):
                                 # Check if 'line' is an ENTITY description line
                                 if line.find("ENTITY") != -1:
                                         line_fields = line.split("\"")
+
                                         # Process ENTITY line if we have a complete line.
                                         # That is, it ends with '>' character
-                                        if line_fields[-1] == ">" or line_fields[-1].strip()[-1] == "-->":
+                                        if line_fields[-1] == ">":
                                                 # line_fields = ['<!ENTITY attr-size ', '336 KB', '>']
                                                 key = line_fields[0].split(" ")[1]
                                                 # Process entities in 'value' if any
