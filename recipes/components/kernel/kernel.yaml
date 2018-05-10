@@ -1,7 +1,20 @@
 
 name: 'kernel'
 package_name: 'linux'
-kernel_config_filename: 'kernel_config_499'
+kernel_config_filename: 'kernel_config_version_4_15_3_arch_x86_64'
 
 disable_commands_list: ['make menuconfig',
                         'mount --bind /boot /mnt/lfs/boot']
+
+
+# We use the 'configure' step, which is empty on the book, to ensure that
+# provided config file is valid for the kernel version we are trying to build
+# before actually building it with 'make', by running the 'make olddefconfig' command.
+#
+# By doing this, we ensure that the 'make oldconfig' command, which run an interactive session,
+# won't be run and that all the required options for the new kernel version are set
+# with its default values.
+#
+# Uncomment below line to activate this functionality
+
+# configure: 'make olddefconfig'
