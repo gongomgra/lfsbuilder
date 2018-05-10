@@ -4,10 +4,14 @@ run_as_username: 'root'
 build_into_chroot: false
 base_component: 'SystemConfigurationComponent'
 
-mount_commands: 'dev: 'mount -v --bind /dev $LFS/dev\nif [ -h $LFS/dev/shm ]; then\n  mkdir -pv $LFS/$(readlink $LFS/dev/shm)\nfi'
-dev/pts: 'mount -vt devpts devpts $LFS/dev/pts -o gid=5,mode=620'
-proc: 'mount -vt proc proc $LFS/proc'
-sys: 'mount -vt sysfs sysfs $LFS/sys'
-run: 'mount -vt tmpfs tmpfs $LFS/run'
+mount_commands:
+    dev: |
+         mount -v --bind /dev $LFS/dev
+         if [ -h $LFS/dev/shm ]; then
+            mkdir -pv $LFS/$(readlink $LFS/dev/shm)
+         fi
 
-
+    dev/pts: mount -vt devpts devpts $LFS/dev/pts -o gid=5,mode=620
+    proc: mount -vt proc proc $LFS/proc
+    sys: mount -vt sysfs sysfs $LFS/sys
+    run: mount -vt tmpfs tmpfs $LFS/run
