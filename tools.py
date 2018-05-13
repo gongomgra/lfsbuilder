@@ -12,6 +12,7 @@ import ctypes
 import yaml
 import importlib
 
+import config
 import printer
 
 # Functions and utilities
