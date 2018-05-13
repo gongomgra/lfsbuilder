@@ -1,4 +1,8 @@
 
 name: 'make'
 include_tests: 1
-
+# Make >= 4.2.1 needs to specify "PERL_USE_UNSAFE_INC=1" environment variable
+# for 'make check' to run properly. More info:
+# https://bugs.archlinux.org/task/55127
+# https://lists.gnu.org/archive/html/bug-make/2017-03/msg00040.html
+test_options: "PERL_USE_UNSAFE_INC=1"
