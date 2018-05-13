@@ -1,6 +1,7 @@
 
 import os
 import sys
+import shutil
 
 import config
 import tools
@@ -31,8 +32,8 @@ variable doesn't exist"
         cmd = "groupadd {U}".format(u=config.NON_PRIVILEGED_USERNAME)
         tools.run_program_without_output(cmd)
 
-        cmd = "useradd -s /bin/bash -g {u} -m -k /dev/null {u}".format(
-            u=config.NON_PRIVILEGED_USERNAME)
+        cmd = "useradd -s /bin/bash -g {u} -m -k /dev/null {u}"
+        cmd = cmd.format(u=config.NON_PRIVILEGED_USERNAME)
         tools.run_program_without_output(cmd)
 
         printer.info("User '{u}' created".format(u=config.NON_PRIVILEGED_USERNAME))
@@ -46,8 +47,10 @@ def check_mount_point():
 
 def check_tools_directory(tools_directory):
     root_tools_directory = os.path.abspath(os.path.join("/", "tools"))
+    root_tools_directory_bck = os.path.abspath(os.path.join("/", "tools.bck"))
+    create_symlink = False
 
-    # Check if toolsDir exists or not
+    # .- Check if tools_directory exists or not
     if os.path.exists(tools_directory) == True and os.path.isdir(tools_directory) == True:
         printer.info("Tools directory '{d}' exists".format(d=tools_directory))
     else:
@@ -55,23 +58,35 @@ def check_tools_directory(tools_directory):
         os.mkdir(tools_directory)
         printer.info("Tools directory '{d}' created".format(d=tools_directory))
 
-        # Check the root directory symlink (/tools)
-    if os.path.exists(root_tools_directory) == True and os.path.islink(root_tools_directory) == True:
+    # .- Check the root directory symlink (/tools)
+    if os.path.exists(root_tools_directory) == True:
         printer.info("Symlink target '{d}' exists".format(d=root_tools_directory))
-    else:
-        printer.warning("Symlink target '{d}' doesn't exists. Creating it".format(d=root_tools_directory))
-        os.mkdir(root_tools_directory)
-        printer.info("Symlink target directory '{d}' created".format(d=root_tools_directory))
+        # Is link?
+        if os.path.islink(root_tools_directory) == True and \
+           os.path.realpath(root_tools_directory) == os.path.realpath(tools_directory):
+            msg = "Symlink target '{dest}' is properly set to '{orig}'"
+            msg = msg.format(dest=root_tools_directory, orig=tools_directory)
+            printer.info(msg)
+            create_symlink = False
 
-    if os.path.realpath(root_tools_directory) == tools_directory:
-        printer.info("Symlink target '{dest}' is properly set to '{orig}'".format(
-            dest=root_tools_directory,
-            orig=tools_directory))
-    else:
-        printer.warning("Symlink target '{dest}' not set correctly. Creating backup at \'" + root_tools_directoryBck +
-                        "\' and creating a correct one")
-        os.rename(root_tools_directory, root_tools_directoryBck)
-        os.mkdir(root_tools_directory)
+        else:
+            if os.path.exists(root_tools_directory_bck) is True:
+                msg = "Deleting backup directory '{d}'"
+                msg = msg.format(dest=root_tools_directory_bck)
+                printer.warning(msg)
+                shutil.rmtree(root_tools_directory_bck)
+            # Backup
+            msg = "Backing up previous tools directory '{d}' into '{b}'"
+            msg = msg.format(d=root_tools_directory, b=root_tools_directory_bck)
+            printer.info(msg)
+            os.rename(root_tools_directory, root_tools_directory_bck)
+            create_symlink = True
+
+    # .- Create symlink
+    if create_symlink is True:
+        msg = "Symlink target '{d}' doesn't exists. Creating it"
+        msg = msg.format(d=root_tools_directory)
+        printer.warning(msg)
         os.symlink(tools_directory, root_tools_directory)
         printer.info("Symlink target \'" + root_tools_directory + "\' created")
 
