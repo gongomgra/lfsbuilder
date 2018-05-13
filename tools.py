@@ -463,11 +463,11 @@ def set_recursive_owner_and_group(directory, username, groupname=None):
     set_owner_and_group(directory, username, groupname)
 
     # Set recursively for what is inside
-    for rootDir, dirs, files in os.walk(directory):
+    for root_dir, dirs, files in os.walk(directory):
         # Join everything found into a single list and iterate
-        fileList = dirs + files
-        for f in fileList:
-            set_owner_and_group(os.path.join(rootDir, f), username, groupname)
+        file_list = dirs + files
+        for f in file_list:
+            set_owner_and_group(os.path.join(root_dir, f), username, groupname)
 # ---
 
 def add_to_dictionary(dictionary, key, value, concat="\n"):

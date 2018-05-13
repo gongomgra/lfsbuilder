@@ -2,6 +2,8 @@
 
 import os
 import sys
+import pwd
+import grp
 import argparse
 
 import builders
@@ -22,6 +24,8 @@ class LFSBuilder(object):
         self.download_parser = None
         self.xml_parser = None
         self.cli = cli.Cli()
+        self.actual_owner_uid = pwd.getpwuid(os.stat(__file__).st_uid).pw_name
+        self.actual_owner_gid = grp.getgrgid(os.stat(__file__).st_gid).gr_name
 
         # Parse sys.args and use dispatcher pattern to
         # invoke method named as command
@@ -43,7 +47,12 @@ class LFSBuilder(object):
         getattr(self, self.all_args.command[0])()
 
     def build(self):
-        # 'build' command
+        # 'build' command. It requires 'sudo' privileges to mount/umount directories
+        # and run admin commands such as 'chroot', 'loosetup' and others.
+        if os.getuid() != 0:
+            msg = "'build' command requires root privileges. Please try again using 'sudo'"
+            printer.error(msg)
+
         # Parse command line arguments
         self.build_parser = self.cli.configure_build_parser()
         self.build_args = self.build_parser.parse_args(self.all_args.command[1:])
@@ -72,6 +81,12 @@ class LFSBuilder(object):
             o.build()
             o.clean_workspace()
             del o
+
+        # Set 'lfsbuilder_src_directory' permission back to the original 'uid' and 'gid'
+        tools.set_recursive_owner_and_group(self.lfsbuilder_src_directory,
+                                            self.actual_owner_uid,
+                                            self.actual_owner_gid)
+
 
     def download(self):
         # 'download' command
