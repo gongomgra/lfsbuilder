@@ -48,7 +48,7 @@ def check_mount_point():
 def check_tools_directory(tools_directory):
     root_tools_directory = os.path.abspath(os.path.join("/", "tools"))
     root_tools_directory_bck = os.path.abspath(os.path.join("/", "tools.bck"))
-    create_symlink = False
+    create_symlink = True
 
     # .- Check if tools_directory exists or not
     if os.path.exists(tools_directory) == True and os.path.isdir(tools_directory) == True:
