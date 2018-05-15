@@ -266,27 +266,27 @@ class ConfigTestCase(unittest.TestCase):
         # end
 
     def test_blfs_xml_filename_is_string(self):
-        """\_ check 'config.blfs_xml_filename' is string"""
+        """\_ check 'config.BLFS_XML_FILENAME' is string"""
 
-        self.assertIs(type(config.blfs_xml_filename), str)
+        self.assertIs(type(config.BLFS_XML_FILENAME), str)
         # end
 
     def test_configuration_xml_filename_is_string(self):
-        """\_ check 'config.configuration_xml_filename' is string"""
+        """\_ check 'config.CONFIGURATION_XML_FILENAME' is string"""
 
-        self.assertIs(type(config.configuration_xml_filename), str)
+        self.assertIs(type(config.CONFIGURATION_XML_FILENAME), str)
         # end
 
     def test_system_xml_filename_is_string(self):
-        """\_ check 'config.system_xml_filename' is string"""
+        """\_ check 'config.SYSTEM_XML_FILENAME' is string"""
 
-        self.assertIs(type(config.system_xml_filename), str)
+        self.assertIs(type(config.SYSTEM_XML_FILENAME), str)
         # end
 
     def test_toolchain_xml_filename_is_string(self):
-        """\_ check 'config.toolchain_xml_filename' is string"""
+        """\_ check 'config.TOOLCHAIN_XML_FILENAME' is string"""
 
-        self.assertIs(type(config.toolchain_xml_filename), str)
+        self.assertIs(type(config.TOOLCHAIN_XML_FILENAME), str)
         # end
 
     def test_continue_at_is_not_boolean(self):
