@@ -1,6 +1,9 @@
+"""
+downloader.py
 
+Download logic for both 'lfs' and 'blfs' books.
+"""
 import os
-import sys
 import urllib2
 import shutil
 
@@ -8,28 +11,40 @@ import config
 import tools
 import printer
 
+
 class Downloader(object):
+    """
+    Downloader class.
+
+    Implements logic for downloading XML and source tarballs required to build
+    both 'lfs' and 'blfs' books.
+    """
     def __init__(self, name):
         self.downloader_data = {
             "name": name,
             "lfs_svn_command": "svn co svn://svn.linuxfromscratch.org/LFS/tags/{v}/ lfs".format(
-                v = config.LFS_VERSION),
+                v=config.LFS_VERSION),
             "blfs_svn_command": "svn co svn://svn.linuxfromscratch.org/BLFS/tags/{v}/ blfs".format(
-                v = config.LFS_VERSION),
+                v=config.LFS_VERSION),
             "lfs_wget_link": "http://www.linuxfromscratch.org/lfs/view/{v}/wget-list".format(
-                v = config.LFS_VERSION),
+                v=config.LFS_VERSION),
             "lfsbuilder_src_directory": os.path.dirname(os.path.realpath(__file__)),
             "lfsbuilder_tmp_directory": os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                      "tmp"),
-            "lfsbuilder_sources_directory": os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                                         "tmp", "sources"),
+            "lfsbuilder_sources_directory": os.path.join(
+                os.path.dirname(os.path.realpath(__file__)),
+                "tmp", "sources"),
 
-            "download_wgetlist_command": "wget --input-file=wget-list --continue --directory-prefix={s}"
-
-            }
+        }
 
     def download_xml(self):
-        printer.info("About to download XML files for '{n}'".format(n=self.downloader_data["name"]))
+        """
+        Download XML files for the provided book 'name' under the 'tmp' directory.
+        """
+        msg = "About to download XML files for '{n}'"
+        msg = msg.format(n=self.downloader_data["name"])
+        printer.info(msg)
+
         os.chdir(self.downloader_data["lfsbuilder_tmp_directory"])
 
         # Delete destination folder if exists
@@ -46,11 +61,16 @@ class Downloader(object):
             tools.run_program_without_output(cmd)
 
     def download_source(self):
-
+        """
+        Download source code files.
+        """
         if self.downloader_data["name"] == "blfs":
             printer.error("Downloading sources for 'blfs' is not currently available")
 
-        printer.info("About to download source code for '{n}'".format(n=self.downloader_data["name"]))
+        msg = "About to download source code for '{n}'"
+        msg = msg.format(n=self.downloader_data["name"])
+        printer.info(msg)
+
         tools.create_directory(self.downloader_data["lfsbuilder_sources_directory"])
 
         os.chdir(self.downloader_data["lfsbuilder_sources_directory"])
@@ -68,9 +88,13 @@ class Downloader(object):
                 self.download_file_from_url(filename, url)
 
     def download_file_from_url(self, filename, url):
-        msg = "Downloading file '{f}' from '{u}'".format(f = filename,
-                                                         u = url)
-        printer.substepInfo(msg)
+        """
+        Download file 'filename' from the provided 'url'.
+        """
+        msg = "Downloading file '{f}' from '{u}'".format(f=filename,
+                                                         u=url)
+        printer.substep_info(msg)
+
         # .- open socket
         url_socket = urllib2.urlopen(url)
         # .- read from socket

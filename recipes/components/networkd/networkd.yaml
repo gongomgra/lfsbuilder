@@ -1,45 +1,45 @@
-
+---
 name: 'networkd'
 base_component: 'SystemConfigurationComponent'
 
 component_substitution_list: ['Address=192.168.0.2/24',
-                    'Address={eth0_ip}/{eth0_mask}',
-                    '{eth0_ip}',
-                    'config.ETH0_IP_ADDRESS',
-                    '{eth0_mask}',
-                    'config.ETH0_MASK',
+                              'Address={eth0_ip}/{eth0_mask}',
+                              '{eth0_ip}',
+                              'config.ETH0_IP_ADDRESS',
+                              '{eth0_mask}',
+                              'config.ETH0_MASK',
 
-                    'Gateway=192.168.0.1',
-                    'Gateway={eth0_gateway}',
-                    '{eth0_gateway}',
-                    'config.ETH0_GATEWAY_ADDRESS',
+                              'Gateway=192.168.0.1',
+                              'Gateway={eth0_gateway}',
+                              '{eth0_gateway}',
+                              'config.ETH0_GATEWAY_ADDRESS',
 
-                    'DNS=192.168.0.1',
-                    'DNS={eth0_dns}',
-                    '{eth0_dns}',
-                    'config.DNS_ADDRESS_1',
+                              'DNS=192.168.0.1',
+                              'DNS={eth0_dns}',
+                              '{eth0_dns}',
+                              'config.DNS_ADDRESS_1',
 
-                    '<replaceable>&lt;Your Domain Name&gt;</replaceable>',
-                    'config.DOMAIN_NAME',
+                              '<replaceable>&lt;Your Domain Name&gt;</replaceable>',
+                              'config.DOMAIN_NAME',
 
-                    '<replaceable>&lt;IP address of your primary nameserver&gt;</replaceable>',
-                    'config.DNS_ADDRESS_1',
+                              '<replaceable>&lt;IP address of your primary nameserver&gt;</replaceable>',
+                              'config.DNS_ADDRESS_1',
 
-                    '<replaceable>&lt;IP address of your secondary nameserver&gt;</replaceable>',
-                    'config.DNS_ADDRESS_2',
+                              '<replaceable>&lt;IP address of your secondary nameserver&gt;</replaceable>',
+                              'config.DNS_ADDRESS_2',
 
-                    '<replaceable>&lt;lfs&gt;</replaceable>',
-                    'config.HOSTNAME',
+                              '<replaceable>&lt;lfs&gt;</replaceable>',
+                              'config.HOSTNAME',
 
-                    '<replaceable>&lt;192.168.1.1&gt;</replaceable>',
-                    'config.ETH0_IP_ADDRESS',
+                              '<replaceable>&lt;192.168.1.1&gt;</replaceable>',
+                              'config.ETH0_IP_ADDRESS',
 
-                    '<replaceable>&lt;HOSTNAME.example.org&gt;</replaceable>',
-                    '{hostname}.example.com',
-                    '{hostname}',
-                    'config.HOSTNAME',
+                              '<replaceable>&lt;HOSTNAME.example.org&gt;</replaceable>',
+                              '{hostname}.example.com',
+                              '{hostname}',
+                              'config.HOSTNAME',
 
-                    '<replaceable\>\[alias1\] \[alias2 ...\]</replaceable>',
-                    '']
+                              '<replaceable\>\[alias1\] \[alias2 ...\]</replaceable>',
+                              '']
 
 disable_commands_list: ['<screen role=\"nodump\"><userinput>cat &gt; /etc/hosts &lt;&lt; \"EOF\"\n\# Begin /etc/hosts (no network card version)']

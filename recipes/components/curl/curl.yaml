@@ -1,4 +1,4 @@
-
+---
 name: 'curl'
 
 # 'curl' xml files run commands using logical conditions.
@@ -8,4 +8,4 @@ name: 'curl'
 # ends in that point: patch && configure && make --> 0 && configure && make
 # We enforce to return 'TRUE' to workaround it
 component_substitution_list: ['.patch &amp;&amp;',
-                    '.patch || true']
+                              '.patch || true']

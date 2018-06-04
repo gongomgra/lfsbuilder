@@ -1,4 +1,3 @@
-
+---
 name: 'systemd-custom'
 base_component: 'SystemConfigurationComponent'
-

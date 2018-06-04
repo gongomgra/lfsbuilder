@@ -1,4 +1,4 @@
-
+---
 name: 'collector'
 base_builder: 'InfrastructureComponentsBuilder'
 book: 'custom'

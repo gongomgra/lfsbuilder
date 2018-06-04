@@ -1,13 +1,13 @@
-
+---
 name: 'dhcpcd'
 
 bootscript_install_cmd: 'make install-service-dhcpcd'
 
 component_substitution_list: ['<replaceable>&lt;insert appropriate start options here&gt;</replaceable>',
-                    '',
+                              '',
 
-                    '<replaceable>&lt;insert additional stop options here&gt;</replaceable>',
-                    '']
+                              '<replaceable>&lt;insert additional stop options here&gt;</replaceable>',
+                              '']
 
 
 disable_commands_list:

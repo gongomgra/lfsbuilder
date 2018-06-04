@@ -1,3 +1,10 @@
+"""
+printer.py
+
+Shows message on the user's terminal.
+"""
+import sys
+import datetime
 
 # Color definitions
 HEADER = '\033[95m'
@@ -9,28 +16,54 @@ ENDCOLOR = '\033[0m'
 BOLD = '\033[1m'
 UNDERLINE = '\033[4m'
 
-def clockTime():
-    import datetime
+
+def timestamp():
+    """
+    Return formated timestamp.
+    """
     return datetime.datetime.now().strftime("%H:%M:%S")
 
+
 def info(text):
-    print BLUE + text + ENDCOLOR
-    import time
-    # time.sleep(5)
+    """
+    Print info message.
+    """
+    msg = "{c}{ts} {t} {ec}".format(c=BLUE,
+                                    ts=timestamp(),
+                                    t=text,
+                                    ec=ENDCOLOR)
+    print msg
+
 
 def warning(text):
-    print YELLOW + clockTime() + " " + text + ENDCOLOR
+    """
+    Print info message.
+    """
+    msg = "{c}{ts} {t} {ec}".format(c=YELLOW,
+                                    ts=timestamp(),
+                                    t=text,
+                                    ec=ENDCOLOR)
+    print msg
+
 
 def error(text):
-    print RED + clockTime() + " " + text + ENDCOLOR
-    import sys
+    """
+    Print info message.
+    """
+    msg = "{c}{ts} {t} {ec}".format(c=RED,
+                                    ts=timestamp(),
+                                    t=text,
+                                    ec=ENDCOLOR)
+    print msg
     sys.exit(1)
 
-def prettyPrint(element):
-    import pprint
-    pp = pprint.PrettyPrinter(indent=4)
-    pp.pprint(element)
 
-def substepInfo(text):
-    text = "\_ " + clockTime() + " " + text
-    info(text)
+def substep_info(text):
+    """
+    Print info message.
+    """
+    msg = "{c}.- {ts} {t} {ec}".format(c=BLUE,
+                                       ts=timestamp(),
+                                       t=text,
+                                       ec=ENDCOLOR)
+    print msg

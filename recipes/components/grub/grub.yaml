@@ -1,26 +1,26 @@
-
+---
 name: 'grub'
 
 component_substitution_list: ['<userinput>grub-install /dev/sda</userinput>',
-                    '<userinput>grub-install --no-floppy --force --root-directory={bd} /dev/{grpn}</userinput>',
-                    '{bd}',
-                    'config.BASE_DIRECTORY',
-                    '{grpn}',
-                    'config.GRUB_ROOT_PARTITION_NAME',
+                              '<userinput>grub-install --no-floppy --force --root-directory={bd} /dev/{grpn}</userinput>',
+                              '{bd}',
+                              'config.BASE_DIRECTORY',
+                              '{grpn}',
+                              'config.GRUB_ROOT_PARTITION_NAME',
 
-                    'cat &gt; /boot',
-                    'cat &gt; {bd}/boot',
-                    '{bd}',
-                    'config.BASE_DIRECTORY',
+                              'cat &gt; /boot',
+                              'cat &gt; {bd}/boot',
+                              '{bd}',
+                              'config.BASE_DIRECTORY',
 
-                    'set root=(hd0,2)',
-                    'set root=({grpnu})',
-                    '{grpnu}',
-                    'config.GRUB_ROOT_PARTITION_NUMBER',
+                              'set root=(hd0,2)',
+                              'set root=({grpnu})',
+                              '{grpnu}',
+                              'config.GRUB_ROOT_PARTITION_NUMBER',
 
-                    'root=/dev/sda2',
-                    'root=/dev/{rpn}',
-                    '{rpn}',
-                    'config.ROOT_PARTITION_NAME']
+                              'root=/dev/sda2',
+                              'root=/dev/{rpn}',
+                              '{rpn}',
+                              'config.ROOT_PARTITION_NAME']
 
 disable_commands_list: ['cd /tmp']

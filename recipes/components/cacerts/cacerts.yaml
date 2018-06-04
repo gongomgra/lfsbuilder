@@ -1,5 +1,4 @@
-
+---
 name: 'cacerts'
 type: 'blfs'
 base_component: 'SystemConfigurationComponent'
-

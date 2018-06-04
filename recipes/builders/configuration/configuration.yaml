@@ -1,4 +1,4 @@
-
+---
 name: 'configuration'
 show_name: 'Configuration Builder'
 build_into_chroot: true
@@ -6,10 +6,15 @@ env_PATH_value: '/bin:/usr/bin:/sbin:/usr/sbin'
 
 chapters_list: ['chapter07', 'chapter08', 'chapter09']
 
-excludes: ['introduction', 'udev', 'introductiond', 'getcounted', 'whatnow', 'reboot']
+excludes: ['introduction', 'udev', 'introductiond',
+           'getcounted', 'whatnow', 'reboot']
 
 sysv_components: ['bootscripts', 'network', 'usage', 'profile', 'symlinks']
 
-systemd_components: ['networkd', 'clock', 'consoled', 'locale', 'systemd-custom']
+systemd_components: ['networkd', 'clock', 'consoled',
+                     'locale', 'systemd-custom']
 
-components_to_build: ['bootscripts', 'networkd', 'symlinks', 'network', 'usage', 'profile', 'clock', 'consoled', 'locale', 'inputrc', 'etcshells', 'systemd-custom', 'fstab', 'kernel', 'grub', 'theend']
+components_to_build: ['bootscripts', 'networkd', 'symlinks', 'network',
+                      'usage', 'profile', 'clock', 'consoled',
+                      'locale', 'inputrc', 'etcshells',
+                      'systemd-custom', 'fstab', 'kernel', 'grub', 'theend']

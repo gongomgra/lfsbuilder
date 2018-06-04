@@ -1,7 +1,8 @@
-
+---
 name: 'umount'
 run_as_username: 'root'
 build_into_chroot: false
 base_component: 'SystemConfigurationComponent'
 
-umount_directories: ['dev/pts', 'dev', 'run', 'proc', 'sys', 'usr', 'home', 'sources']
+umount_directories: ['dev/pts', 'dev', 'run', 'proc',
+                     'sys', 'usr', 'home', 'sources']

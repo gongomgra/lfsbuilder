@@ -1,3 +1,9 @@
-
+---
 name: 'systemd'
 base_component: 'SystemConfigurationComponent'
+
+component_substitution_list: ["../bin/systemctl",
+                              "/bin/systemctl",
+
+                              "../lib/systemd/systemd",
+                              "/lib/systemd/systemd"]

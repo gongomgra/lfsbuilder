@@ -1,22 +1,30 @@
 #!/usr/bin/python
+"""
+lfsbuilder.py
+
+Main file for the LFSBuilder program.
+"""
 
 import os
 import sys
 import pwd
 import grp
-import argparse
 
 import builders
 import config
 import tools
 import printer
 import cli
-import actions
 import downloader
 
-class LFSBuilder(object):
 
-    def __init__ (self):
+class LFSBuilder(object):
+    """
+    LFSBuilder class.
+
+    Main LFSBuilder class.
+    """
+    def __init__(self):
         self.lfsbuilder_src_directory = os.path.dirname(os.path.realpath(__file__))
         self.temporal_folder = os.path.join(self.lfsbuilder_src_directory, "tmp")
         self.basic_parser = None
@@ -31,6 +39,9 @@ class LFSBuilder(object):
         # invoke method named as command
         self.basic_parser = self.cli.configure_basic_parser()
         self.all_args = self.basic_parser.parse_args()
+        self.build_args = None
+        self.download_args = None
+        self.xml_args = None
 
         # Set boolean configuration flags
         self.set_config_option(self.all_args)
@@ -47,6 +58,9 @@ class LFSBuilder(object):
         getattr(self, self.all_args.command[0])()
 
     def build(self):
+        """
+        'build' command.
+        """
         # 'build' command. It requires 'sudo' privileges to mount/umount directories
         # and run admin commands such as 'chroot', 'loosetup' and others.
         if os.getuid() != 0:
@@ -57,14 +71,14 @@ class LFSBuilder(object):
         self.build_parser = self.cli.configure_build_parser()
         self.build_args = self.build_parser.parse_args(self.all_args.command[1:])
 
-        # Set boolean configuration flags
+        # Set boolean configuration flags once arguments get actually parsed.
         self.set_config_option(self.build_args)
 
         # .- Check boot manager and meson builder combination
         if tools.is_element_present(self.build_args.builders_list, "system") is True and \
-           self.check_meson_builder_combination(m = config.INCLUDE_MESON_BUILDER,
-                                                sv = config.SYSV,
-                                                sd = config.SYSTEMD) is False:
+           tools.check_meson_builder_combination(m=config.INCLUDE_MESON_BUILDER,
+                                                 sv=config.SYSV,
+                                                 sd=config.SYSTEMD) is False:
             printer.error("You can not use that combination of 'boot_manager' and 'meson builder'")
 
         # Create and build 'builders_list'
@@ -87,8 +101,10 @@ class LFSBuilder(object):
                                             self.actual_owner_uid,
                                             self.actual_owner_gid)
 
-
     def download(self):
+        """
+        'download' command.
+        """
         # 'download' command
         # Parse command line arguments
         self.download_parser = self.cli.configure_download_parser()
@@ -117,12 +133,14 @@ class LFSBuilder(object):
             sys.exit(1)
 
     def parse(self):
-        # 'parse' command
+        """
+        'parse' command.
+        """
         # Parse command line arguments
         self.xml_parser = self.cli.configure_xml_parser()
         self.xml_args = self.xml_parser.parse_args(self.all_args.command[1:])
 
-        # Set boolean configuration flags
+        # Set boolean configuration flags once arguments get actually parsed.
         self.set_config_option(self.xml_args)
 
         # Set GENERATE_DATA_FILES to True to ensure they get created
@@ -137,9 +155,10 @@ class LFSBuilder(object):
             del bg
             del o
 
-
     def set_config_option(self, flags):
-
+        """
+        Configure 'config' module values from user inputs.
+        """
         # .- Set 'verbose'
         if "verbose" in flags and flags.verbose is True:
             setattr(config, "VERBOSE", True)
@@ -148,35 +167,35 @@ class LFSBuilder(object):
         if "no_generate_img_file" in flags and flags.no_generate_img_file is True:
             setattr(config, "GENERATE_IMG_FILE", False)
 
-        if "generate_img_file" in flags and flags.generate_img_file is True:
+        elif "generate_img_file" in flags and flags.generate_img_file is True:
             setattr(config, "GENERATE_IMG_FILE", True)
 
         # .- Set 'mount_img_file'
         if "no_mount_img_file" in flags and flags.no_mount_img_file is True:
             setattr(config, "MOUNT_IMG_FILE", False)
 
-        if "mount_img_file" in flags and flags.mount_img_file is True:
+        elif "mount_img_file" in flags and flags.mount_img_file is True:
             setattr(config, "MOUNT_IMG_FILE", True)
 
         # .- Set 'mount_sources_directory'
         if "no_mount_sources" in flags and flags.no_mount_sources is True:
             setattr(config, "MOUNT_SOURCES_DIRECTORY", False)
 
-        if "mount_sources" in flags and flags.mount_sources is True:
+        elif "mount_sources" in flags and flags.mount_sources is True:
             setattr(config, "MOUNT_SOURCES_DIRECTORY", True)
 
         # Set 'config.MOUNT_SYSTEM_BUILDER_DIRECTORIES'
         if "no_mount_system_directories" in flags and flags.no_mount_system_directories is True:
             setattr(config, "MOUNT_SYSTEM_BUILDER_DIRECTORIES", False)
 
-        if "mount_system_directories" in flags and flags.mount_system_directories is True:
+        elif "mount_system_directories" in flags and flags.mount_system_directories is True:
             setattr(config, "MOUNT_SYSTEM_BUILDER_DIRECTORIES", True)
 
         # .- Set 'generate-data-files'
         if "no_generate_data_files" in flags and flags.no_generate_data_files is True:
             setattr(config, "GENERATE_DATA_FILES", False)
 
-        if "generate_data_files" in flags and flags.generate_data_files is True:
+        elif "generate_data_files" in flags and flags.generate_data_files is True:
             setattr(config, "GENERATE_DATA_FILES", True)
 
         # .- Set 'sysv' and 'systemd'
@@ -207,24 +226,6 @@ class LFSBuilder(object):
         else:
             # Sanitize input from 'config.py'
             setattr(config, "INCLUDE_MESON_BUILDER", bool(config.INCLUDE_MESON_BUILDER))
-
-
-    def check_meson_builder_combination(self, m, sv, sd):
-        """
-        This function checks if provided 'boot manager' and 'meson builder' selected or not combination
-is valid by implementing solution for the below Karnaugh map
-
-  \ sv,sd
-m  \   00   01   11   10
-    +____________________+
-0   |  0  | 0  | 0  | 1  |
-    +-----+----+----+----+
-1   |  0  | 1  | 0  | 1  |
-    +-----+----+----+----+
-
-"""
-        return (m and not(sv) and sd) or (sv and not(sd))
-
 
 
 if __name__ == '__main__':

@@ -1,8 +1,11 @@
-## LFSBuilder configuration file
-# Most of the options present here are also available
-# via command line interface. Command line options take
-# precedence over these in this file.
+"""
+config.py
 
+LFSBuilder configuration file
+Most of the options present here are also available
+via command line interface. Command line options take
+precedence over these in this file.
+"""
 # Base directory for building LFS system
 BASE_DIRECTORY = "/mnt/lfs"
 
@@ -55,6 +58,7 @@ CUSTOM_COMPONENTS_TO_BUILD = False
 # 'systemd' for systemd
 SYSV = True
 SYSTEMD = False
+EXCLUDED_BOOT_MANAGER = None
 
 # Since version '8.2' of the Linux From Scratch book, it is required to build
 # 'python', 'ninja' and 'meson' components if you select the 'systemd' boot manager.
@@ -115,8 +119,8 @@ DISTRIBUTION_DESCRIPTION = "Linux From Scratch 8.0 from LFSBuilder"
 REMOVE_REBOOT_COMPONENT = True
 
 # Check whether we should mount host system '/proc', '/sys', '/dev' and '/run' directories or not
-# You should enable this option in case you are starting a build from 'configuration' or 'blfs' builders
-# Available as command line option
+# You should enable this option in case you are starting a build from 'configuration'
+# or 'blfs' builders. Available as command line option
 MOUNT_SYSTEM_BUILDER_DIRECTORIES = False
 
 # Verbose mode

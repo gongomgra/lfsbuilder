@@ -1,4 +1,4 @@
-
+---
 name: 'reboot'
 base_component: 'SystemConfigurationComponent'
 build_into_chroot: false

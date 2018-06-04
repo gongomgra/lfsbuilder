@@ -1,4 +1,4 @@
-
+---
 name: 'provider'
 base_builder: 'InfrastructureComponentsBuilder'
 build_into_chroot: false

@@ -20,10 +20,10 @@ def build(builder_data_dict, parent_function):
 
 def check_non_privileged_user():
     # Create the config.NON_PRIVILEGED_USERNAME does not exist
-    if tools.check_user_exists(config.NON_PRIVILEGED_USERNAME) == False:
+    if tools.check_user_exists(config.NON_PRIVILEGED_USERNAME) is False:
         msg = "User '{user}' expecified in the 'config.NON_PRIVILEGED_USERNAME' \
 variable doesn't exist"
-        msg = msg.format(user = config.NON_PRIVILEGED_USERNAME)
+        msg = msg.format(user=config.NON_PRIVILEGED_USERNAME)
         printer.error(msg)
 
         # Create this user and group
