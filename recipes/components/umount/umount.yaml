@@ -5,4 +5,4 @@ build_into_chroot: false
 base_component: 'SystemConfigurationComponent'
 
 umount_directories: ['dev/pts', 'dev', 'run', 'proc',
-                     'sys', 'usr', 'home', 'sources']
+                     'sys', 'usr', 'home', 'tools', 'sources']
