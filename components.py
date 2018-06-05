@@ -92,6 +92,12 @@ class ComponentGenerator(object):
             int(self.component_data_dict["build_into_chroot"])
         )
 
+        # Process 'component_substitution_list'
+        if self.component_data_dict["component_substitution_list"] is not None:
+            tools.process_component_substitution_list(
+                self.component_data_dict["component_substitution_list"]
+            )
+
         # Instanciate component object.
         # Select component type for instance
         # .- CompilableComponent
@@ -227,7 +233,9 @@ class BaseComponent(object):
 
         # Add component substitution list
         if self.component_data_dict["component_substitution_list"] is not None:
-            substitution_list.extend(self.component_data_dict["component_substitution_list"])
+            substitution_list.extend(
+                self.component_data_dict["component_substitution_list"]
+            )
 
         # Remove BASE_DIRECTORY if not building 'toolchain'
         if self.component_data_dict["build_into_chroot"] is True:

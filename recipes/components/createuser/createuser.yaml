@@ -1,0 +1,18 @@
+---
+name: 'createuser'
+book: 'custom'
+run_as_username: 'root'
+run_into_chroot: true
+base_component: 'SystemConfigurationComponent'
+
+# We generate 'config.NON_PRIVILEGED_USERNAME' by default
+post: |
+      useradd -m @@LFS_NON_PRIVILEGED_USERNAME@@
+      echo "@@LFS_NON_PRIVILEGED_USERNAME@@:{p}" | chpasswd
+
+component_substitution_list: ['@@LFS_NON_PRIVILEGED_USERNAME@@',
+                              'config.NON_PRIVILEGED_USERNAME',
+                              '{p}',
+                              'config.NON_PRIVILEGED_USERNAME_PASSWD']
+
+

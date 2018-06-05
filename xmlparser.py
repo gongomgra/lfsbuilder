@@ -231,7 +231,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
         # elements into the 'substitution_list'
         if "component_substitution_list" in component_recipe_data and \
            component_recipe_data["component_substitution_list"] is not None:
-            self.process_component_substitution_list(
+            tools.process_component_substitution_list(
                 component_recipe_data["component_substitution_list"]
             )
 
@@ -255,22 +255,6 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
 
         # Substitute
         tools.substitute_multiple_in_file(componentfile_path, substitution_list)
-
-    def process_component_substitution_list(self, substitution_list):
-        """
-        Process 'component_substitution_list' data to convert
-        'config.X_Y_Z' string to its 'config.py' file values
-        """
-        index = 0
-        attribute = None
-        for element in substitution_list:
-            if element.startswith("config.") is True:
-                attribute = element.split(".")[1]
-                attribute = getattr(config, attribute)
-                substitution_list[index] = attribute
-
-            # Update index
-            index += 1
 
     def generate_components_dict(self, components_filelist):
         """

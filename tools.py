@@ -808,6 +808,23 @@ def set_numeric_recursive_owner_and_group(directory, uid, gid=None):
             )
 
 
+def process_component_substitution_list(substitution_list):
+    """
+    Process 'component_substitution_list' data to convert
+    'config.X_Y_Z' string to its 'config.py' file values
+    """
+    index = 0
+    attribute = None
+    for element in substitution_list:
+        if element.startswith("config.") is True:
+            attribute = element.split(".")[1]
+            attribute = getattr(config, attribute)
+            substitution_list[index] = attribute
+
+        # Update index
+        index += 1
+
+
 def check_lfs_builders_tuple(t, s, c):
     """
     This function checks if provided 'lfs' book's builders combination

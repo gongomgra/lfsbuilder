@@ -27,8 +27,12 @@ SOURCES_ORIG_DIRECTORY = "@@LFSBUILDER_SRC_DIRECTORY@@/tmp/sources"
 # MAKEFLAGS environment variable
 MAKEFLAGS = "--jobs=4"
 
-# 'root' passwd to be set on the LFS system
+# 'root' password to be set on the LFS system
 ROOT_PASSWD = "toor"
+
+# password for the 'non_privileged_username' username to be set on the LFS system when
+# building 'createuser' component.
+NON_PRIVILEGED_USERNAME_PASSWD = "password"
 
 # Whether data files should be generated or not.
 # Build will fail in case they do not exists under the 'tmp' directory
@@ -51,6 +55,11 @@ IMG_SIZE = "10G"
 # Build components from book or not. If not,
 # you can define them in the builder recipe file
 # under the 'recipes/builders' directory.
+# You should set it to 'True' in case you add components not present in
+# any of the LFS or BLFS books' builders.
+# You can also overwrite the 'get_components_to_build_list()' method
+# instead. See 'functions.py' file in the 'recipes/builders/blfs' directory
+# for further reference.
 CUSTOM_COMPONENTS_TO_BUILD = False
 
 # Select boot manager
