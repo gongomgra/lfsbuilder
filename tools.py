@@ -794,6 +794,38 @@ def write_xmlfile(filename, text):
     write_file(filename, xml.toprettyxml())
 
 
+def is_mount(directory):
+    """
+    Check if 'directory' is mount or not. We use the Python built-in method 'os.path.ismount'
+    and also check '/proc/mounts' file because Python do not recognize a
+    directory as mounted in case the parent directory is not mounted too ('--bind' option).
+    https://bugs.python.org/issue29707
+    """
+    proc_mounts = "/proc/mounts"
+    result = False
+
+    # First check using Python's 'ismount()'. If not, try checking '/proc/mounts' instead.
+    if os.path.ismount(directory) is True:
+        result = True
+
+    elif os.path.exists(proc_mounts) is True:
+        # .- read 'proc_mounts' into list
+        data = read_file(proc_mounts).rstrip("\n").split("\n")
+
+        # .- get mount points on second column
+        mount_points = [line.split(" ")[1] for line in data]
+
+        # .- check if directory is in 'mount_points'
+        if directory in mount_points:
+            result = True
+
+    else:
+        # Default value is already 'False'
+        pass
+
+    return result
+
+
 def pretty_print(element):
     """
     Pretty print 'element'.
