@@ -360,7 +360,7 @@ def find_file(base_directory, pattern):
     Search for a file in the 'base_directory' that match 'pattern'.
     """
     result = []
-    for value in os.listdir(base_directory):
+    for value in sorted(os.listdir(base_directory)):
         if fnmatch.fnmatch(value, pattern):
             result.append(os.path.join(base_directory, value))
 
