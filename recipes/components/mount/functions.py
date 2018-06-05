@@ -17,7 +17,7 @@ def set_attributes(component_data_dict, parent_function):
 
     # Try to add mount commands for every directory
     for directory in sorted(component_data_dict["mount_commands"].keys()):
-        if os.path.ismount(os.path.join(config.BASE_DIRECTORY, directory)) is False:
+        if tools.is_mount(os.path.join(config.BASE_DIRECTORY, directory)) is False:
             tools.add_to_dictionary(component_data_dict,
                                     key="post",
                                     value=component_data_dict["mount_commands"][directory])

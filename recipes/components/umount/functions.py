@@ -14,12 +14,12 @@ def set_attributes(component_data_dict, parent_function):
 
     # Generate 'umount' commands from 'component_data_dict["umount_directories"]'
     for d in component_data_dict["umount_directories"]:
-        if os.path.ismount(os.path.join(config.BASE_DIRECTORY, d)):
+        if tools.is_mount(os.path.join(config.BASE_DIRECTORY, d)):
             cmd = "umount -v $LFS/{d}".format(d=d)
             tools.add_to_dictionary(component_data_dict, key="post", value=cmd)
 
     # Generate 'umount' command from 'config.BASE_DIRECTORY'
-    if os.path.ismount(config.BASE_DIRECTORY):
+    if tools.is_mount(config.BASE_DIRECTORY):
         cmd = "umount -v $LFS"
         tools.add_to_dictionary(component_data_dict, key="post", value=cmd)
 

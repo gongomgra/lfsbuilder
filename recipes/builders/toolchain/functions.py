@@ -40,7 +40,7 @@ variable doesn't exist"
 
 
 def check_mount_point():
-    if os.path.ismount(config.BASE_DIRECTORY) == True:
+    if tools.is_mount(config.BASE_DIRECTORY) is True:
         printer.info("Mount point check for '{d}' is ok".format(d=config.BASE_DIRECTORY))
     else:
         printer.error("Mount point check for '{d}' failed".format(d=config.BASE_DIRECTORY))
@@ -51,7 +51,7 @@ def check_tools_directory(tools_directory):
     create_symlink = True
 
     # .- Check if tools_directory exists or not
-    if os.path.exists(tools_directory) == True and os.path.isdir(tools_directory) == True:
+    if os.path.exists(tools_directory) is True and os.path.isdir(tools_directory) is True:
         printer.info("Tools directory '{d}' exists".format(d=tools_directory))
     else:
         printer.warning("Tools directory '{d}' doesn't exists. Creating it".format(d=tools_directory))
@@ -59,10 +59,10 @@ def check_tools_directory(tools_directory):
         printer.info("Tools directory '{d}' created".format(d=tools_directory))
 
     # .- Check the root directory symlink (/tools)
-    if os.path.exists(root_tools_directory) == True:
+    if os.path.exists(root_tools_directory) is True:
         printer.info("Symlink target '{d}' exists".format(d=root_tools_directory))
         # Is link?
-        if os.path.islink(root_tools_directory) == True and \
+        if os.path.islink(root_tools_directory) is True and \
            os.path.realpath(root_tools_directory) == os.path.realpath(tools_directory):
             msg = "Symlink target '{dest}' is properly set to '{orig}'"
             msg = msg.format(dest=root_tools_directory, orig=tools_directory)
