@@ -2,6 +2,15 @@
 name: 'networkd'
 base_component: 'SystemConfigurationComponent'
 
+# You can configure how the '/etc/resolv.conf' file
+# is configured for 'systemd'.
+# - 'static' method writes the file.
+# - 'symlink' method symlinks file from 'systemd'
+resolvconf_method: 'static'
+
+resolvconf_static_command: 'cat &gt; /etc/resolv.conf &lt;&lt; "EOF"'
+resolvconf_symlink_command: 'ln -sfv /run/systemd/resolve/resolv.conf /etc/resolv.conf'
+
 component_substitution_list: ['Address=192.168.0.2/24',
                               'Address={eth0_ip}/{eth0_mask}',
                               '{eth0_ip}',
