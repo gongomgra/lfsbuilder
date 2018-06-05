@@ -317,8 +317,15 @@ class BaseComponentsBuilder(BaseBuilder):
         Clean used workspace to build current builder.
         """
         # Remove 'setenv.sh' file
-        os.remove(os.path.join(self.builder_data_dict["setenv_directory"],
-                               self.builder_data_dict["setenv_filename"]))
+        filepath = (
+            os.path.join(
+                self.builder_data_dict["setenv_directory"],
+                self.builder_data_dict["setenv_filename"]
+            )
+        )
+
+        if os.path.exists(filepath):
+            os.remove(filepath)
 
 
 class InfrastructureComponentsBuilder(BaseComponentsBuilder):

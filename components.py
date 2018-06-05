@@ -534,7 +534,8 @@ class BaseCompilableComponent(BaseComponent):
         """
         BaseComponent.clean_workspace(self)
         # Remove extracted directory
-        shutil.rmtree(self.component_data_dict["extracted_directory"])
+        if os.path.exists(self.component_data_dict["extracted_directory"]):
+            shutil.rmtree(self.component_data_dict["extracted_directory"])
 
 
 class BaseSystemConfigurationComponent(BaseComponent):
@@ -566,7 +567,8 @@ class BaseSystemConfigurationComponent(BaseComponent):
         # Remove 'post.sh' file
         filepath = os.path.abspath(os.path.join(self.component_data_dict["build_directory_path"],
                                                 "post.sh"))
-        os.remove(filepath)
+        if os.path.exists(filepath):
+            os.remove(filepath)
 
 
 class CompilableComponent(BaseCompilableComponent):
