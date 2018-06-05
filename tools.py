@@ -615,8 +615,6 @@ def extract(filename, destination=None):
         msg = msg.format(f=filename)
         printer.error(msg)
 
-# ---
-
 
 def check_user_exists(username):
     """
@@ -628,6 +626,103 @@ def check_user_exists(username):
         result = True
     except KeyError:
         pass
+
+    return result
+
+
+def check_chroot_user_exists(username):
+    """
+    Check 'username' exists by parsing the '/etc/passwd' file.
+    """
+    etc_passwd = os.path.join(
+        config.BASE_DIRECTORY,
+        "etc",
+        "passwd"
+    )
+
+    result = False
+
+    if os.path.exists(etc_passwd) is True:
+        # .- read 'etc_passwd' into list
+        data = read_file(etc_passwd).rstrip("\n").split("\n")
+
+        # .- get usernames on first column
+        usernames = [line.split(":")[0] for line in data]
+
+        # .- check 'username' is in 'usernames'
+        if username in usernames:
+            result = True
+
+    else:
+        msg = """tools.check_chroot_user_exists(): passwd file '{f}' do not exists. \
+We can not check if user '{u}' exists or not."""
+        msg = msg.format(
+            f=etc_passwd,
+            u=username
+        )
+        printer.warning(msg)
+
+    return result
+
+
+def get_uid_gid_chroot_username(username):
+    """
+    Return 'UID' and 'GID' values for 'username' in chroot.
+    """
+    etc_passwd = os.path.join(
+        config.BASE_DIRECTORY,
+        "etc",
+        "passwd"
+    )
+
+    # Index for the 'UID' value in '/etc/passwd'
+    uid_index = 2
+
+    # Index for the 'GID' value in '/etc/passwd'
+    gid_index = 3
+
+    result = {
+        "uid": None,
+        "gid": None,
+    }
+
+    if os.path.exists(etc_passwd) is True:
+        # .- read 'etc_passwd' into list
+        data = read_file(etc_passwd).rstrip("\n").split("\n")
+
+        # .- get usernames on first column
+        usernames = [line.split(":")[0] for line in data]
+
+        # .- check 'username' is in 'usernames'
+        if username in usernames:
+            # .- get username index
+            index = usernames.index(username)
+
+            # .- get 'UID' and 'GID'
+            result = {
+                "uid": data[index].split(":")[uid_index],
+                "gid": data[index].split(":")[gid_index]
+            }
+
+        else:
+            # Username is not in the '/etc/passwd' file
+            msg = """tools.get_uid_gid_chroot_username(): username '{u}' do not exists \
+in '{f}' file. We can not get 'UID' and 'GID' for user '{u}'."""
+            msg = msg.format(
+                f=etc_passwd,
+                u=username
+            )
+            printer.warning(msg)
+
+    else:
+        # '/etc/passwd' file do not exists
+        msg = """tools.get_uid_gid_chroot_username(): passwd file '{f}' do not exists. \
+We can not get 'UID' and 'GID' for user '{u}'."""
+        msg = msg.format(
+            f=etc_passwd,
+            u=username
+        )
+        printer.warning(msg)
 
     return result
 
@@ -648,6 +743,21 @@ def set_owner_and_group(filename, username, groupname=None):
     os.chown(filename, owner_id, group_gid)
 
 
+def set_numeric_owner_and_group(filename, uid, gid=None):
+    """
+    Set 'uid' as owner and 'gid' as group attributes for 'filename'.
+    """
+    if gid is None:
+        gid = uid
+
+    # Ensure we are using integers
+    uid = int(uid)
+    gid = int(gid)
+
+    # Set owner and group
+    os.chown(filename, uid, gid)
+
+
 def set_recursive_owner_and_group(directory, username, groupname=None):
     """
     Set 'username' as owner and 'groupname' as group attributes recursively for everything
@@ -664,10 +774,38 @@ def set_recursive_owner_and_group(directory, username, groupname=None):
         # Join everything found into a single list and iterate
         file_list = dirs + files
         for f in file_list:
-            set_owner_and_group(os.path.join(root_dir, f),
-                                username,
-                                groupname)
-# ---
+            set_owner_and_group(
+                os.path.join(root_dir, f),
+                username,
+                groupname
+            )
+
+
+def set_numeric_recursive_owner_and_group(directory, uid, gid=None):
+    """
+    Set 'uid' as owner and 'gid' as group attributes recursively for everything
+    under 'directory'.
+    """
+    if gid is None:
+        gid = uid
+
+    # Ensure we are using integers
+    uid = int(uid)
+    gid = int(gid)
+
+    # Set permission for the top level directory
+    set_numeric_owner_and_group(directory, uid, gid)
+
+    # Set recursively for what is inside
+    for root_dir, dirs, files in os.walk(directory):
+        # Join everything found into a single list and iterate
+        file_list = dirs + files
+        for f in file_list:
+            set_numeric_owner_and_group(
+                os.path.join(root_dir, f),
+                uid,
+                gid
+            )
 
 
 def check_lfs_builders_tuple(t, s, c):
