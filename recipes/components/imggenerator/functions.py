@@ -17,9 +17,6 @@ fallocate -l @@LFS_IMG_SIZE@@ @@LFS_IMG_FILENAME@@
 
 echo "Running \'mkfs\' command. This may take a while..."
 mkfs -t @@LFS_FILESYSTEM_PARTITION_TYPE@@ @@LFS_IMG_FILENAME@@
-
-# Remove useless directory if found
-rm -rf $LFS/lost+found/
 """
     post_text = post_text.replace("@@LFS_IMG_FILENAME@@", config.IMG_FILENAME)
     post_text = post_text.replace("@@LFS_IMG_SIZE@@", config.IMG_SIZE)

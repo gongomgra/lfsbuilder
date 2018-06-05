@@ -21,6 +21,9 @@ losetup ${available_loop_device} @@LFS_IMG_FILENAME@@
 
 # Mount loop device to BASE_DIRECTORY
 mount -v ${available_loop_device} $LFS
+
+# Remove useless directory if found
+rm -rvf $LFS/lost+found/
 """
     post_text = post_text.replace("@@LFS_IMG_FILENAME@@", config.IMG_FILENAME)
 
