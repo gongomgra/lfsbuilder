@@ -13,3 +13,11 @@ component_substitution_list: ['<replaceable>&lt;insert appropriate start options
 disable_commands_list:
   - 'make install-dhcpcd'
   - 'systemctl'
+  - |-
+    cat &gt; /etc/sysconfig/ifconfig.eth0 &lt;&lt; "EOF"
+    ONBOOT="yes"
+    IFACE="eth0"
+    SERVICE="dhcpcd"
+    DHCP_START="-b -q -S ip_address=192.168.0.10/24 -S routers=192.168.0.1"
+    DHCP_STOP="-k"
+    EOF
