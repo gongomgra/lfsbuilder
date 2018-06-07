@@ -140,22 +140,27 @@ def modify_blfs_component_bootscript_install(cmd):
     """
     Modify bootscript installation steps for 'blfs' book components.
     """
+    # 'sysv' or 'systemd'
+    bootscripts_name = "bootscripts"
+    if config.SYSTEMD is True:
+        bootscripts_name = "systemd-units"
+
     # Include bootscript installation steps
     # using the provided 'cmd' as base line
     text = """
 # Install bootscript
-# 1. Extract 'blfs-bootscripts' tarball and 'cd' in
+# 1. Extract 'blfs-{bn}' tarball and 'cd' in
 cd @@LFS_SOURCES_DIRECTORY@@
-tar xf blfs-bootscripts-@@LFS_BLFS_BOOTSCRIPTS_VERSION@@.tar.*
-cd blfs-bootscripts-@@LFS_BLFS_BOOTSCRIPTS_VERSION@@
+tar xf blfs-{bn}-@@LFS_BLFS_BOOTSCRIPTS_VERSION@@.tar.*
+cd blfs-{bn}-@@LFS_BLFS_BOOTSCRIPTS_VERSION@@
 
 # 2. Install required service bootscript
 {c}
 
-# 3. Return to the 'sources' directory and remove the 'blfs-bootscripts' directory
+# 3. Return to the 'sources' directory and remove the 'blfs-{bn}' directory
 cd @@LFS_SOURCES_DIRECTORY@@
-rm -rf blfs-bootscripts-@@LFS_BLFS_BOOTSCRIPTS_VERSION@@
-""".format(c=cmd)
+rm -rf blfs-{bn}-@@LFS_BLFS_BOOTSCRIPTS_VERSION@@
+""".format(c=cmd, bn=bootscripts_name)
 
     return text
 
