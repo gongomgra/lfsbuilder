@@ -3,6 +3,7 @@ name: 'createuser'
 book: 'custom'
 run_as_username: 'root'
 run_into_chroot: true
+require_build_dir: false
 base_component: 'SystemConfigurationComponent'
 
 # We generate 'config.NON_PRIVILEGED_USERNAME' by default
