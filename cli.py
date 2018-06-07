@@ -43,6 +43,11 @@ class Cli(object):
                                        help="Output verbose messages",
                                        action="store_true")
 
+        # .- debug scripts
+        self.basic_parser.add_argument("--debug-scripts",
+                                       help="Debug scripts when running",
+                                       action="store_true")
+
         # .- base directory
         self.basic_parser.add_argument("--base-directory",
                                        help="Set base directory",

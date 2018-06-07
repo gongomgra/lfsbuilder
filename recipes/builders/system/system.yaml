@@ -3,7 +3,7 @@ name: 'system'
 show_name: 'System Builder'
 build_into_chroot: true
 env_PATH_value: '/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin'
-runscript_cmd: '/tools/bin/env -i /tools/bin/bash -x'
+runscript_cmd: '/tools/bin/env -i /tools/bin/bash'
 
 chapters_list: ['chapter06']
 

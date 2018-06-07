@@ -135,6 +135,10 @@ MOUNT_SYSTEM_BUILDER_DIRECTORIES = False
 # Verbose mode
 VERBOSE = True
 
+# Debug scripts. Adds '-x' parameter to the 'runscript_cmd' builder parameter.
+# Available as command line option.
+DEBUG_SCRIPTS = False
+
 # You can start building from a concrete component of the first builder provided.
 # Works only for 'lfs' or 'blfs' builders
 CONTINUE_AT = None

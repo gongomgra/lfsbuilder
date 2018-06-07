@@ -163,6 +163,10 @@ class LFSBuilder(object):
         if "verbose" in flags and flags.verbose is True:
             setattr(config, "VERBOSE", True)
 
+        # .- Set 'debug_scripts'
+        if "debug_scripts" in flags and flags.debug_scripts is True:
+            setattr(config, "DEBUG_SCRIPTS", True)
+
         # .- Set 'generate_img_file'
         if "no_generate_img_file" in flags and flags.no_generate_img_file is True:
             setattr(config, "GENERATE_IMG_FILE", False)

@@ -32,7 +32,7 @@ class BuilderGenerator(object):
             "setenv_filename": "setenv.sh",
             "setenv_template": "setenv.tpl",
             "book": "lfs",
-            "runscript_cmd": "env -i /bin/bash -x",
+            "runscript_cmd": "env -i /bin/bash",
             "base_module": "builders",
             "base_builder": "ComponentsBuilder",
             "sources_directory": os.path.join(config.BASE_DIRECTORY,
@@ -70,19 +70,36 @@ class BuilderGenerator(object):
         self.builder_data_dict = tools.join_dicts(self.builder_data_dict,
                                                   self.builder_recipe_data)
 
+        # Include '-x' parameter to the 'runscript_cmd'
+        # if 'config.DEBUG_SCRIPTS' is 'True'
+        if config.DEBUG_SCRIPTS is True:
+            value = "{c} -x".format(c=self.builder_data_dict["runscript_cmd"])
+            tools.add_to_dictionary(
+                self.builder_data_dict,
+                "runscript_cmd",
+                value,
+                concat=False
+            )
+
         # Instantiate a ComponentsBuilder by default
         self.class_fullname = "{m}.{t}".format(
             m=self.builder_data_dict["base_module"],
-            t=self.builder_data_dict["base_builder"])
+            t=self.builder_data_dict["base_builder"]
+        )
 
         # Instantiate a 'InfrastructureComponentsBuilder' if required
         if self.builder_data_dict["base_builder"].lower() == "componentsbuilder":
-            self.class_fullname = "{m}.{t}".format(m=self.builder_data_dict["base_module"],
-                                                   t="ComponentsBuilder")
+            self.class_fullname = "{m}.{t}".format(
+                m=self.builder_data_dict["base_module"],
+                t="ComponentsBuilder"
+            )
 
         elif self.builder_data_dict["base_builder"].lower() == "infrastructurecomponentsbuilder":
-            self.class_fullname = "{m}.{t}".format(m=self.builder_data_dict["base_module"],
-                                                   t="InfrastructureComponentsBuilder")
+            self.class_fullname = "{m}.{t}".format(
+                m=self.builder_data_dict["base_module"],
+                t="InfrastructureComponentsBuilder"
+            )
+
         else:
             text = "Unknown 'base_builder': '{b}'"
             text = text.format(b=self.builder_data_dict["base_builder"])
