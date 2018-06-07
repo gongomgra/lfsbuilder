@@ -56,10 +56,10 @@ IMG_SIZE = "10G"
 # you can define them in the builder recipe file
 # under the 'recipes/builders' directory.
 # You should set it to 'True' in case you add components not present in
-# any of the LFS or BLFS books' builders.
+# any of the LFS book builders.
 # You can also overwrite the 'get_components_to_build_list()' method
-# instead. See 'functions.py' file in the 'recipes/builders/blfs' directory
-# for further reference.
+# for the desired builder instead, temporarily set it to 'True',
+# call 'parent_function' and then restore original value.
 CUSTOM_COMPONENTS_TO_BUILD = False
 
 # Select boot manager

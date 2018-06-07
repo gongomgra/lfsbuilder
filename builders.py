@@ -107,7 +107,7 @@ class BaseBuilder(object):
 
         # Current books names and available builders.
         self.book_names = ["lfs", "blfs"]
-        self.book_builders = ["toolchain", "system", "configuration", "blfs"]
+        self.book_builders = ["toolchain", "system", "configuration"]
 
         # Get 'functions.py' if any
         self.extra_functions = tools.read_functions_file(self.builder_data_dict["name"],
