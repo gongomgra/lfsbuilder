@@ -257,6 +257,10 @@ def disable_commands(commands_list):
             aux_cmd = command.split(">")[1]
             cmd = "{d}{c}".format(d=disable_remap_attribute,
                                   c=aux_cmd)
+        elif command.find(userinput_xml_tag) != -1:
+            # XML tag was provided, maybe not in the first place.
+            # We substitute it entirely.
+            cmd = command.replace(userinput_xml_tag, disable_remap_attribute)
         else:
             # User didn't provide XML attribute for command,
             # so we add it and then we disable it.
