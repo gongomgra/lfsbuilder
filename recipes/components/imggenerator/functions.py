@@ -16,7 +16,7 @@ echo "Running \'dd\' command. This may take a while..."
 fallocate -l @@LFS_IMG_SIZE@@ @@LFS_IMG_FILENAME@@
 
 echo "Running \'mkfs\' command. This may take a while..."
-mkfs -t @@LFS_FILESYSTEM_PARTITION_TYPE@@ @@LFS_IMG_FILENAME@@
+mkfs -t @@LFS_FILESYSTEM_PARTITION_TYPE@@ -F @@LFS_IMG_FILENAME@@
 """
     post_text = post_text.replace("@@LFS_IMG_FILENAME@@", config.IMG_FILENAME)
     post_text = post_text.replace("@@LFS_IMG_SIZE@@", config.IMG_SIZE)
