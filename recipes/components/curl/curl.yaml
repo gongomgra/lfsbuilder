@@ -9,3 +9,6 @@ name: 'curl'
 # We enforce to return 'TRUE' to workaround it
 component_substitution_list: ['.patch &amp;&amp;',
                               '.patch || true']
+
+disable_commands_list:
+  - 'ln -sfv ld-2.[MINORVERSION].so.dbg /lib/ld-linux-x86-64.so.2'
