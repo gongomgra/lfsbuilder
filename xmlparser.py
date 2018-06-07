@@ -19,7 +19,7 @@ class ShowAllEntities(object):
     Process XML entities found while parsing book's XML files.
     """
     def __getitem__(self, key):
-        # key is the XML entity, we can do whatever you want with it here
+        # key is the XML entity, we can do whatever we want with it here
         return tools.generate_placeholder(key)
 
 
@@ -227,8 +227,9 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
         bash_removes_disabled = tools.disable_commands(bash_removes)
         substitution_list.extend(bash_removes_disabled)
 
-        # Get component data and include its 'substitution_list' and 'disable_commands'
-        # elements into the 'substitution_list'
+        # Get component data and include its 'substitution_list', 'disable_commands'
+        # and 'comment_out_list' elements into the 'substitution_list'.
+        # Configure service installation for 'blfs' components that implement it.
         if "component_substitution_list" in component_recipe_data and \
            component_recipe_data["component_substitution_list"] is not None:
             tools.process_component_substitution_list(
@@ -250,6 +251,20 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
             substitution_list.extend(
                 tools.comment_out(
                     component_recipe_data["comment_out_list"]
+                )
+            )
+
+        if "bootscript_install_cmd" in component_recipe_data and \
+           component_recipe_data["bootscript_install_cmd"] is not None:
+            # Add original command
+            substitution_list.append(
+                component_recipe_data["bootscript_install_cmd"]
+            )
+
+            # Generate installation command
+            substitution_list.append(
+                tools.modify_blfs_component_bootscript_install(
+                    component_recipe_data["bootscript_install_cmd"]
                 )
             )
 
