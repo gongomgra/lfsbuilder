@@ -1,8 +1,10 @@
 ---
 name: 'grub'
 
+# We use the 'grub-install' command that we have already built
+# in the 'system' builder.
 component_substitution_list: ['<userinput>grub-install /dev/sda</userinput>',
-                              '<userinput>grub-install --no-floppy --force --root-directory={bd} /dev/{grpn}</userinput>',
+                              '<userinput>{bd}/sbin/grub-install --no-floppy --force --root-directory={bd} /dev/{grpn}</userinput>',
                               '{bd}',
                               'config.BASE_DIRECTORY',
                               '{grpn}',
