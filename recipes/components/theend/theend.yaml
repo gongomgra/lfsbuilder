@@ -4,22 +4,37 @@ base_component: 'SystemConfigurationComponent'
 
 # 'theend' component creates '/etc/lsb-release' file that
 # we have to customize.
-component_substitution_list: ['DISTRIB_ID=\"Linux From Scratch\"',
-                              'DISTRIB_ID=\"{dn}\"',
+component_substitution_list: ['DISTRIB_ID="Linux From Scratch"',
+                              'DISTRIB_ID="{dn}"',
                               '{dn}',
                               'config.DISTRIBUTION_NAME',
 
-                              'DISTRIB_RELEASE=\"&version;\"',
-                              'DISTRIB_RELEASE=\"{dv}\"',
+                              'NAME="Linux From Scratch"',
+                              'NAME="{dn}"',
+                              '{dn}',
+                              'config.DISTRIBUTION_NAME',
+
+                              'PRETTY_NAME="Linux From Scratch &versiond;"',
+                              'PRETTY_NAME="{dn}"',
+                              '{dn}',
+                              'config.DISTRIBUTION_NAME',
+
+                              'DISTRIB_RELEASE="&version;"',
+                              'DISTRIB_RELEASE="{dv}"',
                               '{dv}',
                               'config.DISTRIBUTION_VERSION',
 
-                              'DISTRIB_CODENAME=\"&lt;your name here&gt;\"',
-                              'DISTRIB_CODENAME=\"{dn}\"',
+                              'DISTRIB_CODENAME="&lt;your name here&gt;"',
+                              'DISTRIB_CODENAME="{dn}"',
                               '{dn}',
                               'config.DISTRIBUTION_NAME',
 
-                              'DISTRIB_DESCRIPTION=\"Linux From Scratch\"',
-                              'DISTRIB_DESCRIPTION=\"{dd}\"',
+                              'VERSION_CODENAME="&lt;your name here&gt;"',
+                              'VERSION_CODENAME="{dn}"',
+                              '{dn}',
+                              'config.DISTRIBUTION_NAME',
+
+                              'DISTRIB_DESCRIPTION="Linux From Scratch"',
+                              'DISTRIB_DESCRIPTION="{dd}"',
                               '{dd}',
                               'config.DISTRIBUTION_DESCRIPTION']
