@@ -3,6 +3,9 @@ name: 'grub'
 
 # We use the 'grub-install' command that we have already built
 # in the 'system' builder.
+# We add the 'net.ifnames=0' parameter to use the traditional interfaces
+# naming convention: eth0, wlan0... With that, we ensure that our
+# networking configuration will work.
 component_substitution_list: ['<userinput>grub-install /dev/sda</userinput>',
                               '<userinput>{bd}/sbin/grub-install --no-floppy --force --root-directory={bd} /dev/{grpn}</userinput>',
                               '{bd}',
@@ -20,8 +23,8 @@ component_substitution_list: ['<userinput>grub-install /dev/sda</userinput>',
                               '{grpnu}',
                               'config.GRUB_ROOT_PARTITION_NUMBER',
 
-                              'root=/dev/sda2',
-                              'root=/dev/{rpn}',
+                              'root=/dev/sda2 ro',
+                              'root=/dev/{rpn} ro net.ifnames=0',
                               '{rpn}',
                               'config.ROOT_PARTITION_NAME']
 
