@@ -1,4 +1,5 @@
 ---
 name: 'revisedchroot'
+base_component: 'SystemConfigurationComponent'
 
 disable_commands_list: ['<screen role="nodump"><userinput>chroot "$LFS" /usr/bin/env -i']
