@@ -129,7 +129,7 @@ class LFSXmlParser(object):
                     line = saved_line + line
 
                 # Remove leading and trailing whitespaces in line if any
-                line = line.rstrip()
+                line = line.rstrip().lstrip()
 
                 # Check if 'line' is an ENTITY description line
                 if line.find("ENTITY") != -1:
@@ -463,6 +463,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
         Modify 'blfs' book's XML files attributes to be the same than 'lfs' book's.
         """
         substitution_list = ["-download-http", "-url",
+                             "-download", "-url",
                              "-md5sum", "-md5",
                              "<!--", "\n<!--"]
 
@@ -481,6 +482,15 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
             xmlfile_path = tools.find_file_recursive(self.book_basedir, filename)
             # Modify common values in BLFS XML files
             self.modify_blfs_xmlfile(xmlfile_path)
+
+            # If 'blfs', read XML file as if it was an entity one.
+            # We do it because 'blfs' XML files contains many entities definitions.
+            data_dict.update(
+                self.generate_entities_data_dict(
+                    list(xmlfile_path)
+                )
+            )
+
             # Add commands
             data_dict.update(self.generate_components_dict(xmlfile_path))
 
