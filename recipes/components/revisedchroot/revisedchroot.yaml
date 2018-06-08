@@ -1,0 +1,4 @@
+---
+name: 'revisedchroot'
+
+disable_commands_list: ['<screen role="nodump"><userinput>chroot "$LFS" /usr/bin/env -i']

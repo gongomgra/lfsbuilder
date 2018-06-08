@@ -189,7 +189,8 @@ class LFSXmlParser(object):
                 if(add is True and tools.is_empty_list(exclude) is False):
                     for e in exclude:
                         # Do not add it if match
-                        if component.find(e) != -1:
+                        e = "{e}.xml".format(e=e)
+                        if component == e:
                             add = False
 
                 # Add it

@@ -7,7 +7,7 @@ runscript_cmd: '/tools/bin/env -i /tools/bin/bash'
 
 chapters_list: ['chapter06']
 
-excludes: ['introduction', 'pkgmgt', 'chroot', 'aboutdebug', 'revisedchroot']
+excludes: ['introduction', 'pkgmgt', 'chroot', 'aboutdebug']
 
 meson_components: ['python', 'ninja', 'meson']
 
@@ -29,4 +29,4 @@ components_to_build: ['kernfs', 'creatingdirs', 'createfiles',
                       'grub', 'less', 'gzip', 'iproute2', 'kbd', 'libpipeline',
                       'make', 'patch', 'dbus', 'sysklogd', 'sysvinit', 'eudev',
                       'utillinux', 'mandb', 'tar', 'texinfo', 'vim',
-                      'strippingagain']
+                      'strippingagain', 'revisedchroot']
