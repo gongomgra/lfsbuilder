@@ -5,6 +5,10 @@ base_component: 'SystemConfigurationComponent'
 extra_download_urls: ['http://www.cacert.org/certs/root.crt',
                       'http://www.cacert.org/certs/class3.crt']
 
+# Substitute 'wget' commands with 'copy' because we want LFSBuilder
+# to work 'out of the box', for example in a isolated machine
+# which does not have Internet access but get the 'sources' directory
+# from another one in the same LAN.
 component_substitution_list: ['wget http://www.cacert.org/certs/root.crt',
                               'cp @@LFS_SOURCES_DIRECTORY@@/root.crt .',
 
