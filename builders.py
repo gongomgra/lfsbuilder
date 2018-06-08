@@ -124,7 +124,8 @@ class BaseBuilder(object):
 
         # Current books names and available builders.
         self.book_names = ["lfs", "blfs"]
-        self.book_builders = ["toolchain", "system", "configuration"]
+        self.lfs_book_builders = ["toolchain", "system", "configuration"]
+        self.disable_continue_at_builders = ["provider", "collector"]
 
         # Get 'functions.py' if any
         self.extra_functions = tools.read_functions_file(self.builder_data_dict["name"],
@@ -158,7 +159,7 @@ class BaseBuilder(object):
         Get 'components_to_build' list from book if necessary.
         """
         if config.CUSTOM_COMPONENTS_TO_BUILD is False and \
-           self.builder_data_dict["name"] in self.book_builders:
+           self.builder_data_dict["name"] in self.lfs_book_builders:
 
             # Get 'components_to_build' from book
             self.index_filename = "{n}_components_to_build.txt"
@@ -175,7 +176,7 @@ class BaseBuilder(object):
 
         # .- continue-at
         if config.CONTINUE_AT is not None and \
-           self.builder_data_dict["name"] in self.book_builders:
+           self.builder_data_dict["name"] not in self.disable_continue_at_builders:
             # .- Try to start from the 'continue-at' component
             self.continue_at()
 
