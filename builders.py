@@ -295,8 +295,15 @@ class BaseComponentsBuilder(BaseBuilder):
         self.generate_xml_components_data_dict()
 
         # Build componentsList
+        i = 1
         for component in self.builder_data_dict["components_to_build"]:
-            printer.info("[*] Building component '{c}'".format(c=component))
+            msg = "[{i}/{n}] Building component '{c}'"
+            msg = msg.format(
+                i=i,
+                n=len(self.builder_data_dict["components_to_build"]),
+                c=component
+            )
+            printer.info(msg)
 
             os.chdir(self.builder_data_dict["lfsbuilder_src_directory"])
 
@@ -317,6 +324,9 @@ class BaseComponentsBuilder(BaseBuilder):
 
             o.clean_workspace()
             del o
+
+            # Update index
+            i += 1
 
     def build(self):
         """
