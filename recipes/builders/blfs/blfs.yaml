@@ -11,4 +11,4 @@ chapters_list: ['archive', 'general', 'gnome', 'images', 'kde',
 
 excludes: ['appendices', 'book','introduction', 'stylesheets', 'templates']
 
-components_to_build: ['createuser', 'openssh', 'wget', 'curl', 'dhcpcd']
+components_to_build: ['createuser', 'openssh', 'make-ca', 'wget', 'curl', 'dhcpcd']

@@ -2,3 +2,7 @@
 name: 'cacerts'
 type: 'blfs'
 base_component: 'SystemConfigurationComponent'
+extra_download_urls: ['http://www.cacert.org/certs/root.crt']
+
+component_substitution_list: ['wget http://www.cacert.org/certs/root.crt',
+                              'cp @@LFS_SOURCES_DIRECTORY@@/root.crt .']
