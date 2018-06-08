@@ -164,6 +164,10 @@ class Downloader(object):
         urls_list = []
         aux_urls_list = []
 
+        # We will substitute entities values twice to ensure composed placeholders
+        # get substituted
+        substitution_rounds = 2
+
         builders_list = self.lfs_builders
         if self.downloader_data["name"] == "blfs":
             builders_list = self.blfs_builders
@@ -216,13 +220,20 @@ class Downloader(object):
                        component_recipe_data["extra_download_urls"] is not None:
                         # add to 'aux_urls_list' if not present already
                         for url in component_recipe_data["extra_download_urls"]:
+                            # .- process_entities in url
+                            url = xmlp.process_entities(url)
                             if url not in aux_urls_list:
                                 # .- substitute entities
-                                for entity_key in entities_data.keys():
-                                    url = url.replace(
-                                        tools.generate_placeholder(entity_key),
-                                        entities_data[entity_key]
-                                    )
+                                i = 0
+                                while i < substitution_rounds:
+                                    for entity_key in entities_data.keys():
+                                        url = url.replace(
+                                            tools.generate_placeholder(entity_key),
+                                            entities_data[entity_key]
+                                        )
+                                    # .- update index
+                                    i += 1
+
                                 # .- add 'url' to 'aux_urls_list'
                                 aux_urls_list.append(url)
 
@@ -242,11 +253,18 @@ class Downloader(object):
                        components_data_dict[key] not in aux_urls_list:
                         # .- substitute entities
                         url = components_data_dict[key]
-                        for entity_key in entities_data.keys():
-                            url = url.replace(
-                                tools.generate_placeholder(entity_key),
-                                entities_data[entity_key]
-                            )
+                        # .- process_entities in url
+                        url = xmlp.process_entities(url)
+                        i = 1
+                        while i < substitution_rounds:
+                            for entity_key in entities_data.keys():
+                                url = url.replace(
+                                    tools.generate_placeholder(entity_key),
+                                    entities_data[entity_key]
+                                )
+                            # .- update index
+                            i += 1
+
                         # .- add to 'aux_urls_list'
                         aux_urls_list.append(url)
 
