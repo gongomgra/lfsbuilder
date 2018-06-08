@@ -9,6 +9,7 @@ import shutil
 
 import config
 import tools
+import xmlparser
 import printer
 
 
@@ -41,7 +42,7 @@ class Downloader(object):
         """
         Download XML files for the provided book 'name' under the 'tmp' directory.
         """
-        msg = "About to download XML files for '{n}'"
+        msg = "Download XML files for '{n}'"
         msg = msg.format(n=self.downloader_data["name"])
         printer.info(msg)
 
@@ -64,15 +65,28 @@ class Downloader(object):
         """
         Download source code files.
         """
-        if self.downloader_data["name"] == "blfs":
-            printer.error("Downloading sources for 'blfs' is not currently available")
-
-        msg = "About to download source code for '{n}'"
+        msg = "Download source code for '{n}'"
         msg = msg.format(n=self.downloader_data["name"])
         printer.info(msg)
 
+        # Create 'sources' directory
         tools.create_directory(self.downloader_data["lfsbuilder_sources_directory"])
 
+        # Download for selected builder
+        if self.downloader_data["name"] == "lfs":
+            self.download_lfs_sources()
+        elif self.downloader_data["name"] == "blfs":
+            self.download_blfs_sources()
+        else:
+            msg = "Downloading sources for '{b}' is not currently available"
+            msg = msg.format(b=self.downloader_data["name"])
+            printer.error(msg)
+
+    def download_lfs_sources(self):
+        """
+        Download sources for 'lfs'.
+        """
+        # Move into 'sources' directory
         os.chdir(self.downloader_data["lfsbuilder_sources_directory"])
 
         # Download the 'wget-list' file
@@ -86,6 +100,77 @@ class Downloader(object):
             if url:
                 filename = url.split("/")[-1]
                 self.download_file_from_url(filename, url)
+
+    def download_blfs_sources(self):
+        """
+        Download sources for 'blfs'.
+        """
+        urls_list = []
+
+        # .- read 'blfs' command file to retrieve components url
+        components_filename = getattr(config, "BLFS_XML_FILENAME")
+        components_filepath = os.path.join(
+            self.downloader_data["lfsbuilder_tmp_directory"],
+            components_filename
+        )
+
+        # .- ask user to parse book in case the 'BLFS_XML_FILENAME'
+        # do not exists
+        if os.path.exists(components_filepath) is False:
+            msg = """Downloading sources for 'blfs' book requires to parse book first.
+         Please, run 'parse' command first."""
+            printer.error(msg)
+
+        xmlp = xmlparser.LFSXmlParser({"name": "blfs", "book": "blfs"})
+        components_data = xmlp.generate_dict_from_xmlfile(components_filepath)
+
+        # .- get builder recipe data to retrieve 'components_to_build' list
+        builder_recipe_data = tools.read_recipe_file(
+            self.downloader_data["name"],
+            directory="builders"
+        )
+
+        # .- read entities in case we need to substitute in any URL
+        entities_data = xmlp.generate_entities_data_dict()
+
+        # .- always download 'blfs-bootscripts', which includes both
+        # 'blfs-bootscripts' for 'sysvinit' and
+        # 'blfs-systemd-units' for 'systemd' tarballs
+        # to be able to install services at build time.
+        tools.remove_all_and_add_element(
+            builder_recipe_data["components_to_build"],
+            "blfs-bootscripts"
+        )
+
+        # .- generate url list with the 'component-url' from 'components_data'
+        # and the 'extra_download_urls' from every component recipe.
+        for component in builder_recipe_data["components_to_build"]:
+            # .- update 'components_data' with 'componet' recipe
+            component_recipe_data = tools.read_recipe_file(component)
+            components_data = tools.join_dicts(components_data, component_recipe_data)
+
+            # .- retrieve 'component-url' value if present
+            key = "{c}_url".format(c=component)
+            if key in components_data and components_data[key] is not None:
+                urls_list.append(components_data[key])
+
+            # .- add 'extra_download_urls' if present in 'component_recipe_data'
+            if "extra_download_urls" in component_recipe_data:
+                urls_list.extend(component_recipe_data["extra_download_urls"])
+
+        # Move into 'sources' directory
+        os.chdir(self.downloader_data["lfsbuilder_sources_directory"])
+
+        # .- download files in 'urls_list'
+        for url in urls_list:
+            # Try to subsitute entities on URL
+            for key in entities_data.keys():
+                url = url.replace(
+                    tools.generate_placeholder(key),
+                    entities_data[key]
+                )
+            filename = url.split("/")[-1]
+            self.download_file_from_url(filename, url)
 
     def download_file_from_url(self, filename, url):
         """

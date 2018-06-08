@@ -1,0 +1,7 @@
+---
+name: 'blfs-bootscripts'
+
+# Links to download BLFS bootscripts' tarballs
+blfs-bootscripts_url: '@@LFS_SOURCES_ANDUIN_HTTP@@/blfs-bootscripts/blfs-bootscripts-@@LFS_BLFS_BOOTSCRIPTS_VERSION@@.tar.xz'
+
+extra_download_urls: ['@@LFS_DOWNLOADS_ROOT@@/blfs-systemd-units-@@LFS_SYSTEMD_UNITS_VERSION@@.tar.bz2']
