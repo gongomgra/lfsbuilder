@@ -14,7 +14,7 @@ class DownloaderTestCase(unittest.TestCase):
     """
 
     def setUp(self):
-        self.mock = downloader.Downloader("blfs")
+        self.mock = downloader.Downloader("fake")
         # end
 
     def tearDown(self):
@@ -30,14 +30,18 @@ class DownloaderTestCase(unittest.TestCase):
 
         return context_manager
 
-    def test_blfs_error_download_source(self):
+    def test_error_download_source_for_fake_builder(self):
         """
         .- check we can not download source tarballs for 'blfs' book
         """
         context_manager = self.generate_system_exit_context_manager(
-            self.mock.download_source)
+            self.mock.download_source
+        )
         # We check returned value is 1 (on error)
-        self.assertEqual(context_manager.exception.code, 1)
+        self.assertEqual(
+            context_manager.exception.code,
+            1
+        )
 
 
 if __name__ == '__main__':
