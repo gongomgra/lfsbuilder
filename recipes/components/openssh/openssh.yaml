@@ -22,3 +22,5 @@ component_substitution_list: ['.patch &amp;&amp;',
 
 disable_commands_list: ['ssh-keygen',
                         "sed 's@d/login@d/sshd@g' /etc/pam.d/'"]
+
+extra_download_urls: ['&patch-root;/openssh-&openssh-version;-openssl-1.1.0-1.patch']
