@@ -1,6 +1,5 @@
 ---
 name: 'systemd'
-base_component: 'SystemConfigurationComponent'
 
 component_substitution_list: ["../bin/systemctl",
                               "/bin/systemctl",
