@@ -83,14 +83,64 @@ class ComponentGenerator(object):
         # Cast 'require_build_dir' from string to bool
         # bool(int 1) = True
         # bool(int 0) = False
-        if "require_build_dir" in self.component_data_dict:
-            self.component_data_dict["require_build_dir"] = bool(
-                int(self.component_data_dict["require_build_dir"]))
+        if "require_build_dir" in self.component_data_dict and \
+           self.component_data_dict["require_build_dir"] is not None:
+            # Update value
+            tools.add_to_dictionary(
+                self.component_data_dict,
+                "require_build_dir",
+                bool(int(self.component_data_dict["require_build_dir"])),
+                concat=False
+            )
+
+        elif "require_build_dir" in self.component_data_dict and \
+             self.component_data_dict["require_build_dir"] is None:
+            # Set 'require_build_dir' to 'False'
+            tools.add_to_dictionary(
+                self.component_data_dict,
+                "require_build_dir",
+                False,
+                concat=False
+            )
+
+        else:
+            # Set 'require_build_dir' to 'False'
+            tools.add_to_dictionary(
+                self.component_data_dict,
+                "require_build_dir",
+                False,
+                concat=False
+            )
 
         # Ensure 'run_into_chroot' is a boolean value
-        self.component_data_dict["build_into_chroot"] = bool(
-            int(self.component_data_dict["build_into_chroot"])
-        )
+        if "build_into_chroot" in self.component_data_dict and \
+           self.component_data_dict["build_into_chroot"] is not None:
+            # Update value
+            tools.add_to_dictionary(
+                self.component_data_dict,
+                "build_into_chroot",
+                bool(int(self.component_data_dict["build_into_chroot"])),
+                concat=False
+            )
+
+        elif "build_into_chroot" in self.component_data_dict and \
+             self.component_data_dict["build_into_chroot"] is None:
+            # Set 'build_into_chroot' to 'False'
+            tools.add_to_dictionary(
+                self.component_data_dict,
+                "build_into_chroot",
+                False,
+                concat=False
+            )
+
+        else:
+            # Set 'build_into_chroot' to 'False'
+            tools.add_to_dictionary(
+                self.component_data_dict,
+                "build_into_chroot",
+                False,
+                concat=False
+            )
 
         # Process 'component_substitution_list'
         if self.component_data_dict["component_substitution_list"] is not None:
