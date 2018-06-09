@@ -10,25 +10,6 @@ def set_attributes(component_data_dict, parent_function):
     # Call parent_function
     parent_function()
 
-    # Command to generate img
-    post_text = """echo "Mounting '@@LFS_IMG_FILENAME@@' image. This may take a while..."
-
-# Get available loop device
-available_loop_device=$(losetup -f)
-
-# Mount image file to this loop device
-losetup ${available_loop_device} @@LFS_IMG_FILENAME@@
-
-# Mount loop device to BASE_DIRECTORY
-mount -v ${available_loop_device} $LFS
-
-# Remove useless directory if found
-rm -rvf $LFS/lost+found/
-"""
-    post_text = post_text.replace("@@LFS_IMG_FILENAME@@", config.IMG_FILENAME)
-
-    tools.add_to_dictionary(component_data_dict, "post", post_text, concat=False)
-
     # Run component from the 'lfsbuilder_tmp_directory'
     tools.add_to_dictionary(component_data_dict,
                             key="build_directory_path",
