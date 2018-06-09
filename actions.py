@@ -127,13 +127,26 @@ class ModifyBuildersList(argparse.Action):
         is_configuration_present = tools.is_element_present(self.builders_list,
                                                             "configuration")
 
-        has_toolchain_min_index = self.builders_index_dict["toolchain"] == min(
-            [
-                self.builders_index_dict["toolchain"],
-                self.builders_index_dict["system"],
-                self.builders_index_dict["configuration"]
-            ]
+        # Discard index values for builders not present, because it will always be
+        # the minimun index instead.
+        present_indexes_list = list(
+            filter(
+                lambda x: x >= 0,
+                [self.builders_index_dict[key] for key in self.builders_index_dict.keys()]
+            )
         )
+
+        # Only check for min if there is any builder present.
+        # Set 'true' in other case
+        if tools.is_empty_list(present_indexes_list) is True:
+            has_toolchain_min_index = True
+        else:
+            has_toolchain_min_index = (
+                self.builders_index_dict["toolchain"] == min(
+                    present_indexes_list
+                )
+            )
+
         # Would be equal only in case both are not present
         is_system_before_configuration = (
             self.builders_index_dict["system"] <= self.builders_index_dict["configuration"]
