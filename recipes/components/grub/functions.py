@@ -17,14 +17,15 @@ def set_attributes(component_data_dict, parent_function):
 
         # Set 'config.GRUB_ROOT_PARTITION_NAME' with stored value in the 'tmp/loop_device.txt'
         # file if present.
-        loop_devices = os.path.join(
+        loop_device = os.path.join(
             component_data_dict["lfsbuilder_tmp_directory"],
-            "loop_devices.txt"
+            "loop_device.txt"
         )
 
-        if os.path.exists(loop_devices) is True:
-            setattr(
-                config,
-                "GRUB_ROOT_PARTITION_NAME",
-                tools.read_file(loop_devices)
+        if os.path.exists(loop_device) is True:
+            component_data_dict["components_substitution_list"].extend(
+                [
+                    config.GRUB_ROOT_PARTITION_NAME,
+                    tools.read_file(loop_device)
+                ]
             )
