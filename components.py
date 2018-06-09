@@ -275,6 +275,9 @@ class BaseComponent(object):
                              "@@LFS_BASE_DIRECTORY@@",
                              config.BASE_DIRECTORY,
 
+                             "@@LFS_VERSION@@",
+                             config.LFS_VERSION,
+
                              "&amp;",
                              "&",
 

@@ -307,6 +307,24 @@ class ConfigTestCase(unittest.TestCase):
         """
         self.assertIs(type(config.VERBOSE), bool)
 
+    def test_save_toolchain_is_boolean(self):
+        """
+        .- check 'config.SAVE_TOOLCHAIN' is boolean
+        """
+        self.assertIs(type(config.SAVE_TOOLCHAIN), bool)
+
+    def test_save_toolchain_filename_is_string(self):
+        """
+        .- check 'config.SAVE_TOOLCHAIN_FILENAME' is string
+        """
+        self.assertIs(type(config.SAVE_TOOLCHAIN_FILENAME), str)
+
+    def test_delete_tools_is_boolean(self):
+        """
+        .- check 'config.DELETE_TOOLS' is boolean
+        """
+        self.assertIs(type(config.DELETE_TOOLS), bool)
+
 
 if __name__ == '__main__':
     unittest.main()

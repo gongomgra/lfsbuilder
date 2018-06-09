@@ -160,6 +160,22 @@ class Cli(object):
         self.build_parser.add_argument("--continue-at",
                                        action=actions.SetConfigOption)
 
+        # .- save toolchain
+        group_save_toolchain = self.build_parser.add_mutually_exclusive_group()
+        group_save_toolchain.add_argument("--save-toolchain",
+                                          action="store_true")
+
+        group_save_toolchain.add_argument("--no-save-toolchain",
+                                          action="store_true")
+
+        # .- delete tools
+        group_delete_tools = self.build_parser.add_mutually_exclusive_group()
+        group_delete_tools.add_argument("--delete-tools",
+                                        action="store_true")
+
+        group_delete_tools.add_argument("--no-delete-tools",
+                                        action="store_true")
+
         # Return configured parser
         return self.build_parser
 

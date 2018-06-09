@@ -5,8 +5,7 @@ build_into_chroot: false
 env_PATH_value: '/tools/bin:/bin:/usr/bin'
 chapters_list: ['chapter05']
 
-excludes: ['introduction', 'toolchaintechnotes',
-           'generalinstructions', 'changingowner']
+excludes: ['introduction', 'toolchaintechnotes', 'generalinstructions']
 
 components_to_build: ['binutils', 'gcc', 'linuxapiheaders', 'glibc',
                       'libstdcplusplus', 'binutils2', 'gcc2', 'tcl', 'expect',
@@ -14,4 +13,4 @@ components_to_build: ['binutils', 'gcc', 'linuxapiheaders', 'glibc',
                       'coreutils', 'diffutils', 'file', 'findutils', 'gawk',
                       'gettext', 'grep', 'gzip', 'm4', 'make', 'patch',
                       'perl', 'sed', 'tar', 'texinfo', 'utillinux', 'xz',
-                      'stripping']
+                      'stripping', 'changingowner']

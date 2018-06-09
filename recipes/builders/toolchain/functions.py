@@ -122,8 +122,9 @@ def give_permission_build_dir():
     # Set owner for entries in the 'directory_list'
     for d in directory_list:
         d = os.path.join(config.BASE_DIRECTORY, d)
-        tools.set_owner_and_group(d, config.NON_PRIVILEGED_USERNAME)
-        msg = "Setting {user} as owner of the {directory} directory"
-        msg = msg.format(user = config.NON_PRIVILEGED_USERNAME,
-                         directory = d)
-        printer.info(msg)
+        if os.path.exists(d) is True:
+            tools.set_owner_and_group(d, config.NON_PRIVILEGED_USERNAME)
+            msg = "Setting {user} as owner of the {directory} directory"
+            msg = msg.format(user = config.NON_PRIVILEGED_USERNAME,
+                             directory = d)
+            printer.info(msg)

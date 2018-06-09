@@ -146,7 +146,7 @@ class LFSBuilder(object):
         # Set boolean configuration flags once arguments get actually parsed.
         self.set_config_option(self.xml_args)
 
-        # Set GENERATE_DATA_FILES to True to ensure they get created
+        # Set 'GENERATE_DATA_FILES' to True to ensure they get created
         setattr(config, "GENERATE_DATA_FILES", True)
 
         # Generate command file for 'builders_list'
@@ -228,11 +228,35 @@ class LFSBuilder(object):
         # .- Set 'include meson builder'
         if "include_meson_builder" in flags and flags.include_meson_builder is True:
             setattr(config, "INCLUDE_MESON_BUILDER", True)
+
         elif "no_include_meson_builder" in flags and flags.no_include_meson_builder is True:
             setattr(config, "INCLUDE_MESON_BUILDER", False)
+
         else:
             # Sanitize input from 'config.py'
             setattr(config, "INCLUDE_MESON_BUILDER", bool(config.INCLUDE_MESON_BUILDER))
+
+        # .- Set 'save toolchain'
+        if "save_toolchain" in flags and flags.save_toolchain is True:
+            setattr(config, "SAVE_TOOLCHAIN", True)
+
+        elif "no_save_toolchain" in flags and flags.no_save_toolchain is True:
+            setattr(config, "SAVE_TOOLCHAIN", False)
+
+        else:
+            # Sanitize input from 'config.py'
+            setattr(config, "SAVE_TOOLCHAIN", bool(config.SAVE_TOOLCHAIN))
+
+        # .- Set 'delete tools'
+        if "delete_tools" in flags and flags.delete_tools is True:
+            setattr(config, "DELETE_TOOLS", True)
+
+        elif "no_delete_tools" in flags and flags.no_delete_tools is True:
+            setattr(config, "DELETE_TOOLS", False)
+
+        else:
+            # Sanitize input from 'config.py'
+            setattr(config, "DELETE_TOOLS", bool(config.DELETE_TOOLS))
 
 
 if __name__ == '__main__':

@@ -75,6 +75,17 @@ EXCLUDED_BOOT_MANAGER = None
 # this option.
 INCLUDE_MESON_BUILDER = False
 
+# Select whether you want to save the 'tools' directory after the
+# 'toolchain' builder. Option available as command line argument.
+# Output filename will be '{SAVE_TOOLCHAIN_FILENAME}-{date}.tar.gz'
+# where '{date}' is of format 'ddmmyy'
+SAVE_TOOLCHAIN = False
+SAVE_TOOLCHAIN_FILENAME = 'lfsbuilder-toolchain-@@LFS_VERSION@@'
+
+# Indicate if you want to delete the 'tools' directory after the
+# 'system' builder. Option available as command line argument.
+DELETE_TOOLS = False
+
 # Timezone to be used. You can use the 'tzselect' command to get
 # your own value
 TIMEZONE = "Europe/Madrid"
