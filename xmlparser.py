@@ -255,6 +255,11 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
                 )
             )
 
+        # Generate bootscript installation command
+        # Use 'bootscript_install_cmd' for 'sysvinit' and by default.
+        # Use 'bootscript_install_cmd_systemd' for 'systemd.
+        # Always substitute over 'bootscript_install_cmd' because 'systemd'
+        # command is not parsed.
         if "bootscript_install_cmd" in component_recipe_data and \
            component_recipe_data["bootscript_install_cmd"] is not None:
             # Add original command
@@ -262,7 +267,19 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
                 component_recipe_data["bootscript_install_cmd"]
             )
 
-            # Generate installation command
+            # Subsitute with 'bootscript_install_cmd_systemd' if necessary
+            if "bootscript_install_cmd_systemd" in component_recipe_data and \
+               component_recipe_data["bootscript_install_cmd_systemd"] is not None and \
+               config.SYSTEMD is True:
+                # Install the 'systemd' command instead
+                tools.add_to_dictionary(
+                    component_recipe_data,
+                    "bootscript_install_cmd",
+                    component_recipe_data["bootscript_install_cmd_systemd"],
+                    concat=False
+                )
+
+            # Generate bootscript installation command
             substitution_list.append(
                 tools.modify_blfs_component_bootscript_install(
                     component_recipe_data["bootscript_install_cmd"]

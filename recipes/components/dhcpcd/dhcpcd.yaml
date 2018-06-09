@@ -1,7 +1,11 @@
 ---
 name: 'dhcpcd'
 
+# Bootscripts installation commands for 'sysvinit' and 'systemd.
+# Will use 'bootscript_install_cmd' for both if
+# 'bootscript_install_cmd_systemd' not present.
 bootscript_install_cmd: 'make install-service-dhcpcd'
+bootscript_install_cmd_systemd: 'make install-dhcpcd'
 
 component_substitution_list: ['<replaceable>&lt;insert appropriate start options here&gt;</replaceable>',
                               '',
