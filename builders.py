@@ -169,10 +169,21 @@ class BaseBuilder(object):
                 self.index_filename
             )
             # Update dictionary entry
-            tools.add_to_dictionary(self.builder_data_dict,
-                                    "components_to_build",
-                                    tools.list_from_file(self.index_filename_path),
-                                    concat=False)
+            tools.add_to_dictionary(
+                self.builder_data_dict,
+                "components_to_build",
+                tools.list_from_file(self.index_filename_path),
+                concat=False
+            )
+
+        # Set 'components_to_buil' to empty list if 'None'
+        if self.builder_data_dict["components_to_build"] is None:
+            tools.add_to_dictionary(
+                self.builder_data_dict,
+                "components_to_build",
+                [],
+                concat=False
+            )
 
         # .- continue-at
         if config.CONTINUE_AT is not None and \
