@@ -14,3 +14,17 @@ def set_attributes(component_data_dict, parent_function):
         # Build this component from outside the chroot
         tools.add_to_dictionary(component_data_dict, key="build_into_chroot", value=False, concat=False)
         tools.add_to_dictionary(component_data_dict, key="run_as_username", value="root", concat=False)
+
+        # Set 'config.GRUB_ROOT_PARTITION_NAME' with stored value in the 'tmp/loop_device.txt'
+        # file if present.
+        loop_devices = os.path.join(
+            component_data_dict["lfsbuilder_tmp_directory"],
+            "loop_devices.txt"
+        )
+
+        if os.path.exists(loop_devices) is True:
+            setattr(
+                config,
+                "GRUB_ROOT_PARTITION_NAME",
+                tools.read_file(loop_devices)
+            )
