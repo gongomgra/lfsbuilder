@@ -45,6 +45,7 @@ def check_mount_point():
     else:
         printer.error("Mount point check for '{d}' failed".format(d=config.BASE_DIRECTORY))
 
+
 def check_tools_directory(tools_directory):
     root_tools_directory = os.path.abspath(os.path.join("/", "tools"))
     root_tools_directory_bck = os.path.abspath(os.path.join("/", "tools.bck"))
@@ -54,31 +55,48 @@ def check_tools_directory(tools_directory):
     if os.path.exists(tools_directory) is True and os.path.isdir(tools_directory) is True:
         printer.info("Tools directory '{d}' exists".format(d=tools_directory))
     else:
-        printer.warning("Tools directory '{d}' doesn't exists. Creating it".format(d=tools_directory))
+        msg = "Tools directory '{d}' doesn't exists. Creating it"
+        msg = msg.format(d=tools_directory)
+        printer.warning(msg)
         os.mkdir(tools_directory)
         printer.info("Tools directory '{d}' created".format(d=tools_directory))
 
     # .- Check the root directory symlink (/tools)
     if os.path.exists(root_tools_directory) is True:
         printer.info("Symlink target '{d}' exists".format(d=root_tools_directory))
-        # Is link?
-        if os.path.islink(root_tools_directory) is True and \
-           os.path.realpath(root_tools_directory) == os.path.realpath(tools_directory):
+        if os.path.exists(root_tools_directory_bck) is True:
+            msg = "Deleting backup directory '{d}'"
+            msg = msg.format(d=root_tools_directory_bck)
+            printer.warning(msg)
+            if os.path.islink(root_tools_directory_bck) is True:
+                os.unlink(root_tools_directory_bck)
+            elif os.path.isdir(root_tools_directory_bck) is True:
+                shutil.rmtree(root_tools_directory_bck)
+
+        # Backup
+        msg = "Backing up previous tools directory '{d}' into '{b}'"
+        msg = msg.format(d=root_tools_directory, b=root_tools_directory_bck)
+        printer.info(msg)
+        os.rename(root_tools_directory, root_tools_directory_bck)
+        create_symlink = True
+
+    # Is link?
+    if os.path.islink(root_tools_directory) is True:
+        # Symlink ok?
+        if os.path.realpath(root_tools_directory) == os.path.realpath(tools_directory):
             msg = "Symlink target '{dest}' is properly set to '{orig}'"
             msg = msg.format(dest=root_tools_directory, orig=tools_directory)
             printer.info(msg)
             create_symlink = False
-
         else:
-            if os.path.exists(root_tools_directory_bck) is True:
-                msg = "Deleting backup directory '{d}'"
-                msg = msg.format(dest=root_tools_directory_bck)
-                printer.warning(msg)
-                shutil.rmtree(root_tools_directory_bck)
-            # Backup
-            msg = "Backing up previous tools directory '{d}' into '{b}'"
-            msg = msg.format(d=root_tools_directory, b=root_tools_directory_bck)
-            printer.info(msg)
+            msg = "Symlink target '{dest}' is not set to '{orig}'. \
+                    Backing up previous symlink '{dest}' to '{back}'"
+            msg = msg.format(
+                dest=root_tools_directory,
+                orig=tools_directory,
+                back=root_tools_directory_bck
+            )
+            printer.warning(msg)
             os.rename(root_tools_directory, root_tools_directory_bck)
             create_symlink = True
 
