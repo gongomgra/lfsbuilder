@@ -81,6 +81,9 @@ class LFSBuilder(object):
                                                  sd=config.SYSTEMD) is False:
             printer.error("You can not use that combination of 'boot_manager' and 'meson builder'")
 
+        # Create 'config.BASE_DIRECTORY' if necessary
+        tools.create_directory(config.BASE_DIRECTORY)
+
         # Create and build 'builders_list'
         for builder in self.build_args.builders_list:
             os.chdir(self.lfsbuilder_src_directory)
