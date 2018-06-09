@@ -39,14 +39,20 @@ class ModifyBuildersList(argparse.Action):
         # 'collectors' builders
 
         # .- Remove 'provider' if present and ensure it is placed
-        # at the beginning of the 'self.builders_list'
-        tools.remove_all_and_add_element(self.builders_list,
-                                         "provider",
-                                         index=0)
+        # at the beginning of the 'self.builders_list' but only iff
+        # 'self.builder_list' is not compound by 'collector' builder
+        # alone.
+        if self.builders_list != ["collector"]:
+            tools.remove_all_and_add_element(self.builders_list,
+                                             "provider",
+                                             index=0)
 
         # .- Remove 'collector' if present and ensure it is placed
-        # at the end of the 'self.builders_list'
-        tools.remove_all_and_add_element(self.builders_list, "collector")
+        # at the end of the 'self.builders_list' but only iff
+        # 'self.builder_list' is not compound by 'provider' builder
+        # alone.
+        if self.builders_list != ["provider"]:
+            tools.remove_all_and_add_element(self.builders_list, "collector")
 
         # Substitute 'lfs' name for its builders component
         tools.substitute_in_list(self.builders_list,
