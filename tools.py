@@ -428,6 +428,14 @@ def create_directory(directory_path):
         os.mkdir(directory_path)
 
 
+def create_directory_recursive(directory_path):
+    """
+    Create directory and its parents if it does not exist.
+    """
+    if (os.path.exists(directory_path)) is False:
+        os.makedirs(directory_path)
+
+
 def demote_user(user_id, user_gid):
     """
     Demote current user by the one identified with 'user_id' and 'user_gid' so

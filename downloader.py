@@ -72,8 +72,9 @@ class Downloader(object):
         msg = msg.format(n=self.downloader_data["name"])
         printer.info(msg)
 
-        # Create 'sources' directory
-        tools.create_directory(self.downloader_data["lfsbuilder_sources_directory"])
+        # Create 'sources' directory recursively so the method can be call
+        # directly from unittest file 'tests/test_downloader.py'
+        tools.create_directory_recursive(self.downloader_data["lfsbuilder_sources_directory"])
 
         # Download for selected builder
         if self.downloader_data["name"] == "lfs":
