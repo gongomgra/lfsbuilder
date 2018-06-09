@@ -23,7 +23,7 @@ def set_attributes(component_data_dict, parent_function):
         )
 
         if os.path.exists(loop_device) is True:
-            component_data_dict["components_substitution_list"].extend(
+            component_data_dict["component_substitution_list"].extend(
                 [
                     config.GRUB_ROOT_PARTITION_NAME,
                     tools.read_file(loop_device)
