@@ -235,6 +235,9 @@ class BaseComponent(object):
         Substitute common '@@LFS_' placeholders in the provided script by 'file_path'.
         Fails if there is any placeholder pending.
         """
+        # Run substitution twice to ensure composed placeholders get susbstitute
+        substitution_rounds = 2
+
         # Substitute in buildscript by default
         if file_path is None:
             file_path = self.component_data_dict["buildscript_path"]
@@ -262,6 +265,9 @@ class BaseComponent(object):
 
                              "@@LFSBUILDER_SRC_DIRECTORY@@",
                              self.component_data_dict["lfsbuilder_src_directory"],
+
+                             "@@LFSBUILDER_TMP_DIRECTORY@@",
+                             self.component_data_dict["lfsbuilder_tmp_directory"],
 
                              "@@LFS_SOURCES_DIRECTORY@@",
                              self.component_data_dict["sources_directory"],
@@ -292,7 +298,11 @@ class BaseComponent(object):
             substitution_list.extend([config.BASE_DIRECTORY, ""])
 
         # Substitute
-        tools.substitute_multiple_in_file(file_path, substitution_list)
+        i = 0
+        while i < substitution_rounds:
+            tools.substitute_multiple_in_file(file_path, substitution_list)
+            # update loop index
+            i += 1
 
         # Check there are not any pending placeholder
         text = tools.read_file(file_path)
