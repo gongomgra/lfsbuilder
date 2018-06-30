@@ -6,12 +6,18 @@ name: 'grub'
 # We add the 'net.ifnames=0' parameter to use the traditional interfaces
 # naming convention: eth0, wlan0... With that, we ensure that our
 # networking configuration will work.
-component_substitution_list: ['<userinput>grub-install /dev/sda</userinput>',
+component_substitution_list: ['<userinput>grub</userinput>',
+                              '<userinput>grub-install /dev/sda</userinput>',
+
+                              '<userinput>grub-install /dev/sda</userinput>',
                               '<userinput>{bd}/sbin/grub-install --no-floppy --force --root-directory={bd} /dev/{grpn}</userinput>',
                               '{bd}',
                               'config.BASE_DIRECTORY',
                               '{grpn}',
                               'config.GRUB_ROOT_PARTITION_NAME',
+
+                              'cat &gt;&gt; /boot',
+                              'cat &gt;&gt; {bd}/boot',
 
                               'cat &gt; /boot',
                               'cat &gt; {bd}/boot',
@@ -28,4 +34,10 @@ component_substitution_list: ['<userinput>grub-install /dev/sda</userinput>',
                               '{rpn}',
                               'config.ROOT_PARTITION_NAME']
 
-disable_commands_list: ['cd /tmp']
+# Old LFS versions implements differents commands
+disable_commands_list: ['cd /tmp',
+                        'dd if=/boot/grub/stage1',
+                        'root (hd0',
+                        'setup (hd0)',
+                        'quit',
+                        'mkdir -v /etc/grub']
