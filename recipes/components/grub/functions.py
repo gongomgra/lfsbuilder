@@ -26,6 +26,6 @@ def set_attributes(component_data_dict, parent_function):
             component_data_dict["component_substitution_list"].extend(
                 [
                     config.GRUB_ROOT_PARTITION_NAME,
-                    tools.read_file(loop_device)
+                    tools.read_file(loop_device).replace("/dev/", "")
                 ]
             )
