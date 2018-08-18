@@ -82,6 +82,7 @@ class Cli(object):
         # the end of the 'argv' values into a list
         self.basic_parser.add_argument("command",
                                        help="Subcommand to run",
+                                       choices=['build', 'download', 'parse'],
                                        nargs=argparse.REMAINDER)
 
         # Return configured parser
