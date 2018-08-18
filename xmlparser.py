@@ -217,6 +217,8 @@ class LFSXmlParser(object):
 
         #  Remove commands that try to run a bash console interactively
         bash_removes = ["exec /bin/bash --login +h",
+                        "exec /tools/bin/bash",
+                        "logout",
                         "exec /tools/bin/bash --login +h",
                         """chroot $LFS /tools/bin/env -i            \
 HOME=/root TERM=$TERM PS1='\u:\w\$ ' \
