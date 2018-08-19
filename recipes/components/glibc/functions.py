@@ -19,8 +19,9 @@ def set_attributes(component_data_dict, parent_function):
 
 
         # Run 'previous' steps into 'compile.sh' file for 'system' builder.
-        # It sets the 'GCC_INCDIR' variable that is required for 'configure' step
-        if component_data_dict["builder_name"] == "system":
+        # Starting on version 8.2 it sets the 'GCC_INCDIR' variable
+        # which is required for 'configure' step
+        if component_data_dict["builder_name"] == "system" and float(config.LFS_VERSION) >= 8.2:
             configure_cmd = """{p}
 {c}""".format(p=component_data_dict["previous"], c=component_data_dict["configure"])
 
