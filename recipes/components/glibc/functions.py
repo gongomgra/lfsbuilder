@@ -26,3 +26,6 @@ def set_attributes(component_data_dict, parent_function):
 {c}""".format(p=component_data_dict["previous"], c=component_data_dict["configure"])
 
             tools.add_to_dictionary(component_data_dict, "configure", configure_cmd, concat=False)
+
+            # Set 'previous' to None so it is not executed twice
+            tools.add_to_dictionary(component_data_dict, "previous", None, concat=False)
