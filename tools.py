@@ -492,8 +492,10 @@ def run_program_with_output(program_to_run, username=None):
         p = run_program_as_user(program_to_run, username)
 
     for line in iter(p.stdout.readline, b''):
+        # Convert bytes to string
+        line = line.decode('utf-8')
         # Remove any 'newline' character if present
-        print line.rstrip('\n')
+        print(line.rstrip('\n'))
 
     # Wait for the running command to finish
     p.wait()
@@ -526,6 +528,7 @@ def run_program_without_output(program_to_run, username=None):
     # Continue printing in console
     sys.stdout = old_target
 
+    # Wait for the running command to finish
     p.wait()
     if p.returncode != 0:
         msg = "Command '{pr}' failed to run. Return code: '{r}'"

@@ -4,7 +4,7 @@ downloader.py
 Download logic for both 'lfs' and 'blfs' books.
 """
 import os
-import urllib2
+import urllib.request
 import shutil
 
 import config
@@ -151,9 +151,9 @@ class Downloader(object):
         printer.substep_info(msg)
 
         # .- open socket
-        url_socket = urllib2.urlopen(url)
+        url_socket = urllib.request.urlopen(url)
         # .- read from socket
-        tools.write_file(filename, url_socket.read())
+        tools.write_file(filename, url_socket.read(), mode="wb")
         # .- close socket
         url_socket.close()
 

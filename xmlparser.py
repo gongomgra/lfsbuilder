@@ -3,7 +3,8 @@ xmlparser.py
 
 Parse XML files to get book's command and components data.
 """
-import xml.etree.ElementTree as ET
+# import xml.etree.ElementTree as ET
+import lxml.etree as ET
 import os
 import re as regexp
 
@@ -220,7 +221,7 @@ class LFSXmlParser(object):
                         "exec /tools/bin/bash",
                         "logout",
                         "exec /tools/bin/bash --login +h",
-                        """chroot $LFS /tools/bin/env -i            \
+                        r"""chroot $LFS /tools/bin/env -i            \
 HOME=/root TERM=$TERM PS1='\u:\w\$ ' \
 PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
 /tools/bin/bash --login""",
@@ -321,11 +322,8 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
                 self.modify_xmlfile(component_recipe_data, componentfile_path)
 
             # Create XML parser on every iteration
-            parser = ET.XMLParser()
-            parser.parser.UseForeignDTD(True)
-            parser.entity = ShowAllEntities()
-            etree = ET.ElementTree()
-            xml_tree = etree.parse(componentfile_path, parser=parser)
+            parser = ET.XMLParser(load_dtd=True, dtd_validation=False)
+            xml_tree = ET.parse(componentfile_path, parser=parser)
 
             # Save components list to file
             tools.add_text_to_file(self.save_index_file, component_name)
@@ -550,13 +548,10 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin   \
         Read XML command file and parse it into a Python dictionary.
         """
         data_dict = {}
-        parser = ET.XMLParser()
-        parser.parser.UseForeignDTD(True)
-        parser.entity = ShowAllEntities()
-        etree = ET.ElementTree()
+        parser = ET.XMLParser(load_dtd=True, dtd_validation=False)
         # Read commands from 'temporal_folder'
         filename = os.path.abspath(os.path.join(self.temporal_folder, filename))
-        xml_tree = etree.parse(filename, parser=parser)
+        xml_tree = ET.parse(filename, parser=parser)
 
         # Iterate over 'component' nodes to extract data
         for node in xml_tree.iter('component'):

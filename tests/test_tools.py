@@ -311,19 +311,19 @@ class ToolsTestCase(unittest.TestCase):
         i = 0
         j = 1
 
-        print "\n| t - s - c - m - l | v "
-        print "+-------------------+---"
+        print("\n| t - s - c - m - l | v ")
+        print("+-------------------+---")
         for t, s, c, m, la in bits:
-            print "| {t} | {s} | {c} | {m} | {la} | {v} ".format(t=t,
+            print("| {t} | {s} | {c} | {m} | {la} | {v} ".format(t=t,
                                                                  s=s,
                                                                  c=c,
                                                                  m=m,
                                                                  la=la,
-                                                                 v=output[i])
+                                                                 v=output[i]))
             self.assertEqual(tools.check_lfs_builders_order(t, s, c, m, la),
                              bool(output[i]))
             if j == 4:
-                print "+-------------------+---"
+                print("+-------------------+---")
                 j = 0
 
             i += 1

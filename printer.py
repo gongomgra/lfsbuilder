@@ -32,7 +32,7 @@ def info(text):
                                     ts=timestamp(),
                                     t=text,
                                     ec=ENDCOLOR)
-    print msg
+    print(msg)
 
 
 def warning(text):
@@ -43,7 +43,7 @@ def warning(text):
                                     ts=timestamp(),
                                     t=text,
                                     ec=ENDCOLOR)
-    print msg
+    print(msg)
 
 
 def error(text):
@@ -54,7 +54,7 @@ def error(text):
                                     ts=timestamp(),
                                     t=text,
                                     ec=ENDCOLOR)
-    print msg
+    print(msg)
     sys.exit(1)
 
 
@@ -66,4 +66,4 @@ def substep_info(text):
                                        ts=timestamp(),
                                        t=text,
                                        ec=ENDCOLOR)
-    print msg
+    print(msg)

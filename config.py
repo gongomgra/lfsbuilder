@@ -15,7 +15,7 @@ NON_PRIVILEGED_USERNAME = "lfs"
 
 # Linux From Scratch version you want to built.
 # Should be a string
-LFS_VERSION = "8.2"
+LFS_VERSION = "8.3"
 
 # Choose if you want to mount the sources directory or not
 # Also, configure the path from where it will be mounted.
@@ -131,8 +131,8 @@ HOSTNAME = "lfs"
 
 # Configure distribution values your output system
 DISTRIBUTION_NAME = "Linux From Scratch"
-DISTRIBUTION_VERSION = "8.0 LFSBuilder"
-DISTRIBUTION_DESCRIPTION = "Linux From Scratch 8.0 from LFSBuilder"
+DISTRIBUTION_VERSION = "@@LFS_VERSION@@ LFSBuilder"
+DISTRIBUTION_DESCRIPTION = "Linux From Scratch @@LFS_VERSION@@ from LFSBuilder"
 
 # This parameter should always be 'True' because the 'collector' builder
 # handle its job instead.
