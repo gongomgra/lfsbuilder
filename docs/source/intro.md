@@ -10,6 +10,6 @@ The extra customization layer is defined in what I called a _recipe_, a little e
 
 LFSBuilder scope is not restricted to the Linux from Scratch project and can also be used to build your own components.
 
-LFSBuilder development started during the summer of 2016 as part of my Telecommunications Engineering degree's thesis. It was qualified in September of 2018, and from June 2019 is publicly available. The original thesis PDF document is available, in Spanish only, at the [Universidad de Sevilla e-REdING website](http://bibing.us.es/proyectos/buscar/gonzalo+gomez+gracia/en/todo/and//en/todo/limitado_a/todos/entre/1970/y/2019///1).
+LFSBuilder development started during the summer of 2016 as part of my Telecommunications Engineering degree's thesis. It was qualified in September of 2018, and from June 2019 is publicly available. The original thesis PDF document is available, in Spanish only, at the [Universidad de Sevilla idUS website](https://idus.us.es/xmlui/handle/11441/85015) and the [Universidad de Sevilla e-REdING website](http://bibing.us.es/proyectos/buscar/gonzalo+gomez+gracia/en/todo/and//en/todo/limitado_a/todos/entre/1970/y/2019///1).
 
 This is a project in constant development and licensed under the [AGPL3 (GNU AFFERO GENERAL PUBLIC LICENSE)](https://www.gnu.org/licenses/agpl-3.0.en.html) Open Source license.
