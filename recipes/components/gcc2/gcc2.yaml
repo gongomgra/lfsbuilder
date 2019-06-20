@@ -1,6 +1,7 @@
 ---
 name: 'gcc2'
 package_name: 'gcc'
+make_options: '--jobs=1'
 
 # 'gcc-pass2' includes a compilation test that we will remap to 'check'
 # to avoid it to be included in '_previous' step
