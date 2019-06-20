@@ -1,7 +1,7 @@
 ---
 name: 'kernel'
 package_name: 'linux'
-kernel_config_filename: 'kernel_config_version_4_15_3_arch_x86_64'
+kernel_config_filename: 'kernel_config_version_4_20_12_arch_x86_64'
 
 disable_commands_list: ['make menuconfig',
                         'mount --bind /boot /mnt/lfs/boot']

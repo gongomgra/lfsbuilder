@@ -18,7 +18,7 @@ NON_PRIVILEGED_USERNAME = "lfs"
 
 # Linux From Scratch version you want to built.
 # Should be a string
-LFS_VERSION = "8.3"
+LFS_VERSION = "8.4"
 
 # Choose if you want to mount the sources directory or not
 # Also, configure the path from where it will be mounted.
