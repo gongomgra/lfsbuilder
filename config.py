@@ -6,6 +6,9 @@ Most of the options present here are also available
 via command line interface. Command line options take
 precedence over these in this file.
 """
+# LFSBuilder version
+__version__ = "0.1.0"
+
 # Base directory for building LFS system
 BASE_DIRECTORY = "/mnt/lfs"
 
