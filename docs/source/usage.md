@@ -81,7 +81,7 @@ python3 -B lfsbuilder.py download --source blfs
 
 > <div class="warning-quote"> NOTE: it is required to download book's XML files before downloading the source code packages. </div>
 
-You may find issues trying to download sources for the BLFS book. This is a known issue and will be fixed in a future release. Please manually download packages in that case..
+You may find issues trying to download sources for the BLFS book. This is a known issue and will be fixed in a future release. Please manually download packages in that case.
 
 ### Parsing XML files
 
