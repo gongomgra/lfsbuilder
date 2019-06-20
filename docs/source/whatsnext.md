@@ -11,6 +11,6 @@ The LFSBuilder tool is a work in progress with lot of pending improvements and f
 * Implement a timer class.
 * Include builders and recipes for desktop environments.
 * Improve documentation.
-* Improve unit tests.
+* More unit tests.
 * Manage components dependencies.
 
