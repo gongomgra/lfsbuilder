@@ -1,8 +1,9 @@
 ---
 name: 'glibc'
-make_options: '--jobs=1'
 
 component_substitution_list: ['<replaceable>&lt;xxx&gt;</replaceable>',
-                              'config.TIMEZONE']
+                              'config.TIMEZONE',
+                              '<userinput remap="make">make</userinput>',
+                              '<userinput remap="make">make --jobs=1</userinput>']
 
 disable_commands_list: ['tzselect']
