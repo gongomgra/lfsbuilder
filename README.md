@@ -19,3 +19,9 @@ This is a project in constant development and licensed under the [AGPL3 (GNU AFF
 # Documentation
 
 You can visit the project documentation at [http://gongomgra.github.io/lfsbuilder/](http://gongomgra.github.io/lfsbuilder/)
+
+# Contact info
+
+Do not hesitate to send me an email if you want to share your opinion about the LFSBuilder tool or in case you have any other question.
+
+My email address is: `gngmgr [at] gmail [dot] com`
