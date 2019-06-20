@@ -1,0 +1,16 @@
+
+div.warning-quote {
+  background-color: #edf2bc;
+  border-width: 5px;
+  border-style: none none none solid;
+  border-color: #000000;
+  padding: 10px;
+}
+
+div.famous-quote {
+  background-color: #d0d0d0;
+  border-width: 5px;
+  border-style: none none none none;
+  border-color: #000000;
+  padding: 10px;
+}
