@@ -23,6 +23,7 @@ Contents:
    recipes
    license
    whatsnext
+   contact
 
 .. Indices and tables
 
