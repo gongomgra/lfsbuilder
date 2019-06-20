@@ -1,0 +1,161 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Basic structure &#8212; LFSBuilder  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Configuration" href="configuration.html" />
+    <link rel="prev" title="Usage" href="usage.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">LFSBuilder</a></h1>
+
+
+
+<p class="blurb">An automatic tool to build Linux from Scratch based distributions, or your own!</p>
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">LFSBuilder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Basic structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes.html">Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="whatsnext.html">What’s next</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="usage.html" title="previous chapter">Usage</a></li>
+      <li>Next: <a href="configuration.html" title="next chapter">Configuration</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="basic-structure">
+<h1>Basic structure<a class="headerlink" href="#basic-structure" title="Permalink to this headline">¶</a></h1>
+<p>The basic structure of the LFSBuilder tool is shown in the diagram below</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>lfsbuilder/
+├── actions.py
+├── builders.py
+├── cli.py
+├── components.py
+├── config.py
+├── downloader.py
+├── lfsbuilder.py
+├── printer.py
+├── prueba.py
+├── recipes/
+│   ├── builders/
+│   └── components/
+├── requirements.txt
+├── templates/
+│   ├── script.tpl
+│   └── setenv.tpl
+├── tests/
+│   ├── __init__.py
+│   ├── test_actions.py
+│   ├── test_config.py
+│   ├── test_downloader.py
+│   ├── test_tools.py
+│   └── test_xmlparser.py
+├── tools.py
+└── xmlparser.py
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">lfsbuilder</span></code> main directory contains the source code files and the main configuration file. The source code files are listed below:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">actions.py</span></code>: custom actions for the different command line arguments.</li>
+<li><code class="docutils literal notranslate"><span class="pre">builders.py</span></code>: logic to build a components list.</li>
+<li><code class="docutils literal notranslate"><span class="pre">cli.py</span></code>: command line interface. Uses Python <code class="docutils literal notranslate"><span class="pre">argparse</span></code> native library.</li>
+<li><code class="docutils literal notranslate"><span class="pre">components.py</span></code>: required logic for building a component, whether it requires compilation or not.</li>
+<li><code class="docutils literal notranslate"><span class="pre">config.py</span></code>: main configuration file. Several of the options are available as cli options.</li>
+<li><code class="docutils literal notranslate"><span class="pre">downloader.py</span></code>: takes care of downloading books’ XML files and source code of components.</li>
+<li><code class="docutils literal notranslate"><span class="pre">lfsbuilder.py</span></code>: main file of the tool. User interacts with it.</li>
+<li><code class="docutils literal notranslate"><span class="pre">printer.py</span></code>: defines different functions for printing messages.</li>
+<li><code class="docutils literal notranslate"><span class="pre">tools.py</span></code>: implements multiple functions that are used during the build process as read/write files, doing subsitutions in files, execute programs, etc.</li>
+<li><code class="docutils literal notranslate"><span class="pre">xmlparser.py</span></code>: logic to read books’ XML files and write each constructor’s commands file.</li>
+</ul>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019, Gonzalo Gómez Gracia.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/structure.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

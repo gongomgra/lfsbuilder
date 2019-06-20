@@ -1,5 +1,0 @@
----
-name: 'clock'
-base_component: 'SystemConfigurationComponent'
-
-disable_commands_list: ['timedatectl', 'systemctl disable systemd-timesyncd']

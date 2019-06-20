@@ -1,8 +1,0 @@
----
-name: 'glibc'
-make_options: '--jobs=1'
-
-component_substitution_list: ['<replaceable>&lt;xxx&gt;</replaceable>',
-                              'config.TIMEZONE']
-
-disable_commands_list: ['tzselect']

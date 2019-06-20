@@ -1,0 +1,7 @@
+# FAQ
+
+#### What is LFSBuilder?
+...
+#### Does it have any license?
+...
+

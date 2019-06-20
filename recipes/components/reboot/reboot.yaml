@@ -1,8 +1,0 @@
----
-name: 'reboot'
-base_component: 'SystemConfigurationComponent'
-build_into_chroot: false
-run_as_username: 'root'
-
-disable_commands_list: ['logout',
-                        'shutdown -r now']

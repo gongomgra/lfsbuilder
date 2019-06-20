@@ -1,8 +1,0 @@
----
-name: 'changingowner'
-base_component: 'SystemConfigurationComponent'
-run_as_username: 'root'
-
-backup_tools_cmd: |-
-                  echo "Backing up toolchain into '{df}' file. This may take a while..."
-                  tar --directory=@@LFS_BASE_DIRECTORY@@ -czf {df} tools/

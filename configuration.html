@@ -1,0 +1,186 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Configuration &#8212; LFSBuilder  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Recipes" href="recipes.html" />
+    <link rel="prev" title="Basic structure" href="structure.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">LFSBuilder</a></h1>
+
+
+
+<p class="blurb">An automatic tool to build Linux from Scratch based distributions, or your own!</p>
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">LFSBuilder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structure.html">Basic structure</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes.html">Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="whatsnext.html">What’s next</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="structure.html" title="previous chapter">Basic structure</a></li>
+      <li>Next: <a href="recipes.html" title="next chapter">Recipes</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p>The file <code class="docutils literal notranslate"><span class="pre">config.py</span></code> is the main configuration file for the LFSBuilder tool. It allows you to configure the behaviour of the LFSBuilder tool. Several of the configuration parameters are present as command line arguments.</p>
+<p>You can check if the <code class="docutils literal notranslate"><span class="pre">config.py</span></code> file is correct by running a</p>
+<p>You can find below a list of the available options with a brief description of them.</p>
+<ul class="simple">
+<li><strong>BASE_DIRECTORY</strong>: base directory to build the Linux from Scratch system.</li>
+<li><strong>NON_PRIVILEGED_USERNAME</strong>: name of the unprivileged user that will build <code class="docutils literal notranslate"><span class="pre">toolchain</span></code> components. It is also used to create a new user in the final system if you build the Beyond Linux from Scratch’s <code class="docutils literal notranslate"><span class="pre">createuser</span></code> component.</li>
+<li><strong>LFS_VERSION</strong>: version of the book to build.</li>
+<li><strong>MOUNT_SOURCES_DIRECTORY</strong>: whether you want to mount the <code class="docutils literal notranslate"><span class="pre">sources</span></code> directory into the chroot or not.</li>
+<li><strong>SOURCES_ORIG_DIRECTORY</strong>: path to the <code class="docutils literal notranslate"><span class="pre">sources</span></code> directory to be mount into the chroot. You can use a relative path to the LFSBuilder source code directory using the special string<code class="docutils literal notranslate"><span class="pre">&#64;&#64;LFSBUILDER\_SRC\_DIRECTORY&#64;&#64;</span></code>.</li>
+<li><strong>MAKEFLAGS</strong>: defines the <code class="docutils literal notranslate"><span class="pre">MAKEFLAGS</span></code> environment variable to define <code class="docutils literal notranslate"><span class="pre">make</span></code> options.</li>
+<li><strong>ROOT_PASSWD</strong>: password for the <code class="docutils literal notranslate"><span class="pre">root</span></code> user in the final system.</li>
+<li><strong>NON_PRIVILEGED_USERNAME_PASSWD</strong>: password of the <code class="docutils literal notranslate"><span class="pre">NON\_PRIVILEGED\_USERNAME</span></code> in the final system created with the <code class="docutils literal notranslate"><span class="pre">createuser</span></code> component.</li>
+<li><strong>GENERATE_DATA_FILES</strong>: indicates if the XML parser has to generate the builder’s XML files or not. Boolean parameter.</li>
+</ul>
+<blockquote>
+<div><div class="warning-quote"> NOTE: the build process will fail if these files don't exist.</div></blockquote>
+<ul class="simple">
+<li><strong>RESTORE_XML_BACKUPS</strong>: restore or not original XML files after the parse process. Boolean parameter.</li>
+<li><strong>GENERATE_IMG_FILE</strong>: generate or not a <code class="docutils literal notranslate"><span class="pre">.img</span></code> file to build the final system on it or not. Boolean parameter.</li>
+<li><strong>MOUNT_IMG_FILE</strong>: mount or not the <code class="docutils literal notranslate"><span class="pre">.img</span></code> file. Boolean parameter.</li>
+<li><strong>IMG_FILENAME</strong>: path to the <code class="docutils literal notranslate"><span class="pre">.img</span></code> file that will be mounted as <code class="docutils literal notranslate"><span class="pre">BASE\_DIRECTORY</span></code>. You can use a relative path to the LFSBuilder source code directory using the special string<code class="docutils literal notranslate"><span class="pre">&#64;&#64;LFSBUILDER\_SRC\_DIRECTORY&#64;&#64;</span></code>.</li>
+<li><strong>IMG_SIZE</strong>: size of the <code class="docutils literal notranslate"><span class="pre">.img</span></code> file. A value of around 10 gigabytes is recommended. Units: <code class="docutils literal notranslate"><span class="pre">M</span></code> for megabytes and <code class="docutils literal notranslate"><span class="pre">G</span></code> for gigabytes.</li>
+<li><strong>CUSTOM_COMPONENTS_TO_BUILD</strong>: choose if components from the Linux from Scratch book are built in the book’s order or not. The customized order is defined by the <code class="docutils literal notranslate"><span class="pre">components\_to\_build</span></code> property of the builder YAML file. Boolean parameter.</li>
+<li><strong>SYSV</strong>: use the SysVinit init system. Boolean parameter.</li>
+<li><strong>SYSTEMD</strong>: use the Systemd init system. Boolean parameter.</li>
+<li><strong>INCLUDE_MESON_BUILDER</strong>: from Linux from Scratch 8.2, it is mandatory to build the <code class="docutils literal notranslate"><span class="pre">python</span></code>, <code class="docutils literal notranslate"><span class="pre">ninja</span></code> and <code class="docutils literal notranslate"><span class="pre">meson</span></code> components when using Systemd. The tool will fail if this option is not set. Boolean parameter.</li>
+<li><strong>SAVE_TOOLCHAIN</strong>: choose if the toolchain created will be saved as a <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> file or not. Boolean parameter.</li>
+<li><strong>SAVE_TOOLCHAIN_FILENAME</strong>: name for the <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> file containing the toolchain. If the value is of the form <code class="docutils literal notranslate"><span class="pre">lfsbuilder-toolchain-&#64;&#64;LFS\_VERSION&#64;&#64;</span></code>, then the compressed file name is:</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>lfsbuilder-toolchain-${lfs_version}-${date}.tar.gz}
+</pre></div>
+</div>
+<ul class="simple">
+<li><strong>DELETE_TOOLS</strong>: to delete or not the <code class="docutils literal notranslate"><span class="pre">/tool</span></code> directory after building the <code class="docutils literal notranslate"><span class="pre">system</span></code> builder. Boolean parameter.</li>
+<li><strong>TIMEZONE</strong>: timezone to set in the final system. You can use the <code class="docutils literal notranslate"><span class="pre">tzselect</span></code> command to choose the one of your preference.</li>
+<li><strong>PAPER_SIZE</strong>: value to configure the <code class="docutils literal notranslate"><span class="pre">groff</span></code> component. Values are: <code class="docutils literal notranslate"><span class="pre">letter</span></code> and <code class="docutils literal notranslate"><span class="pre">A4</span></code>.</li>
+<li><strong>KEYMAP</strong>: keyboard language.</li>
+<li><strong>CONSOLE_FONT</strong>: system console font.</li>
+<li><strong>LANG</strong>: language of the final system. Using <code class="docutils literal notranslate"><span class="pre">UTF-8</span></code> encoding is recommended.</li>
+<li><strong>LOCALE</strong>: value for the rest of the language configuration variables.</li>
+<li><strong>CHARMAP</strong>: default encoding for the system characters. Using <code class="docutils literal notranslate"><span class="pre">UTF-8</span></code> encoding is recommended.</li>
+<li><strong>ROOT_PARTITION_NAME</strong>: name of the disk device containing the root partition of the final system. It configures some <code class="docutils literal notranslate"><span class="pre">grub</span></code> options.</li>
+<li><strong>ROOT_PARTITION_NUMBER</strong>: partition number of the root system partition. Used for configuring <code class="docutils literal notranslate"><span class="pre">grub</span></code>.</li>
+<li><strong>GRUB_ROOT_PARTITION_NAME</strong>: name of the device to install <code class="docutils literal notranslate"><span class="pre">grub</span></code>.</li>
+<li><strong>GRUB_ROOT_PARTITION_NUMBER</strong>: disk device name and partition number in which <code class="docutils literal notranslate"><span class="pre">grub</span></code> will look for the <code class="docutils literal notranslate"><span class="pre">kernel</span></code> to boot.</li>
+<li><strong>FILESYSTEM_PARTITION_TYPE</strong>: filesystem type of the disk in which the final system will be installed.</li>
+<li><strong>SWAP_PARTITION_NAME</strong>: name and number of the swap partition that will be set in the <code class="docutils literal notranslate"><span class="pre">/etc/fstab</span></code> file.</li>
+<li><strong>ETH0_IP_ADDRESS</strong>: IP address for the <code class="docutils literal notranslate"><span class="pre">eth0</span></code> network interface.</li>
+<li><strong>ETH0_GATEWAY_ADDRESS</strong>: IP address of the gateway for the <code class="docutils literal notranslate"><span class="pre">eth0</span></code> network interface.</li>
+</ul>
+<p>TODO</p>
+<ul class="simple">
+<li><strong>ETH0_BROADCAST_ADDRESS</strong>: Dirección IP de difusión para la interfaz de red \textconsole{eth0}.</li>
+<li><strong>ETH0_MASK</strong>: Máscara de red para la interfaz \textconsole{eth0}.</li>
+<li><strong>DOMAIN_NAME</strong>: Nombre de dominio a utilizar para la configuración de red.</li>
+<li><strong>DNS_ADDRESS_1</strong>:</li>
+<li><strong>DNS_ADDRESS_2</strong>: Direcciones IP usadas por el protocolo de descubrimiento dinámico de dominios de red \textit{DNS}.</li>
+<li><strong>HOSTNAME</strong>: Nombre del equipo del sistema operativo construido.</li>
+<li><strong>DISTRIBUTION_NAME</strong>: Nombre de la distribución construida.</li>
+<li><strong>DISTRIBUTION_VERSION</strong>: Versión de la distribución construida.</li>
+<li><strong>DISTRIBUTION_DESCRIPTION</strong>: Descripción de la distribución construida.</li>
+<li><strong>REMOVE_REBOOT_COMPONENT</strong>: Opción binaria. Este parámetro desactiva la ejecución del componente \componente{reboot} del libro \textit{Linux from Scratch}. Su valor debe ser siempre \textconsole{True} porque el constructor \textconsole{collector} realiza su función de forma más adecuada.</li>
+<li><strong>MOUNT_SYSTEM_BUILDER_DIRECTORIES</strong>: Opción binaria que decide si los directorios del sistema deben montarse en el directorio base de construcción antes de iniciar el proceso o no.</li>
+<li><strong>VERBOSE</strong>: Opción binaria que muestra mayor cantidad de información al usuario.</li>
+<li><strong>DEBUG_SCRIPTS</strong>: Muestra los comandos que componen un \textit{script} a medida que se ejecutan. Opción binaria.</li>
+<li><strong>CONTINUE_AT</strong>: Esta opción permite iniciar la construcción de un determinado constructor por un determinado componente. Sólo es válido para los constructores \textconsole{toolchain}, \textconsole{system}, \textconsole{configuration} y \textconsole{blfs}.</li>
+</ul>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019, Gonzalo Gómez Gracia.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/configuration.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

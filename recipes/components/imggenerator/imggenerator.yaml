@@ -1,4 +1,0 @@
----
-name: 'imggenerator'
-run_as_username: 'root'
-base_component: 'SystemConfigurationComponent'

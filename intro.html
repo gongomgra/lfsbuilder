@@ -1,0 +1,126 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>LFSBuilder &#8212; LFSBuilder  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="Welcome to LFSBuilder’s documentation!" href="index.html" />
+
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">LFSBuilder</a></h1>
+
+
+
+<p class="blurb">An automatic tool to build Linux from Scratch based distributions, or your own!</p>
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">LFSBuilder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structure.html">Basic structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes.html">Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="whatsnext.html">What’s next</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to LFSBuilder’s documentation!</a></li>
+      <li>Next: <a href="installation.html" title="next chapter">Installation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+
+
+          <div class="body" role="main">
+
+  <div class="section" id="lfsbuilder">
+<h1>LFSBuilder<a class="headerlink" href="#lfsbuilder" title="Permalink to this headline">¶</a></h1>
+<p>The <em><a class="reference external" href="http://www.linuxfromscratch.org/">Linux from Scratch</a></em> project provides a step-by-step instructions for building your own customized Linux-based distribution from source code. Apart from the learning experience and because this is a long repetitive process, the <em>Linux from Scratch</em> project developers provide users with an automation tool called <em><a class="reference external" href="http://www.linuxfromscratch.org/alfs/">jhalfs</a></em>.</p>
+<p>LFSBuilder is a Python program that has the same purpose, to automatically build a Linux from Scratch system. It also can be used with the <em><a class="reference external" href="http://www.linuxfromscratch.org/blfs/">Beyond Linux from Scratch</a></em> book. This tool is designed under the <em><a class="reference external" href="https://en.wikipedia.org/wiki/Object-oriented_programming">Object Oriented Programming</a></em> paradigm to simplify the code structure and also implements an extra customizable layer on top of the core functionality of the tool. This extra layer allows users to build an operating system that fits the requirements of multiple use cases.</p>
+<p>The main elements of LFSBuilder are two: builders and components. A <code class="docutils literal notranslate"><span class="pre">builder</span></code> is an object capable of building one or more <code class="docutils literal notranslate"><span class="pre">components</span></code> and represents, in concept, any of the main chapters of the <em>Linux from Scratch</em> and <em>Beyond Linux from Scratch</em> books. It is also possible to define your own builders so you can do specific tasks or build your own components. A <code class="docutils literal notranslate"><span class="pre">component</span></code> represents a real element that interacts with the final system, either to add a new component (e.g. <code class="docutils literal notranslate"><span class="pre">gcc</span></code>, <code class="docutils literal notranslate"><span class="pre">curl</span></code>, <code class="docutils literal notranslate"><span class="pre">bash</span></code> or <code class="docutils literal notranslate"><span class="pre">ssh</span></code>) or to accomplish other tasks (e.g. mount the required system directories or generate the <code class="docutils literal notranslate"><span class="pre">.img</span></code> file in which the system will be built into by default).</p>
+<p>The extra customization layer is defined in what I called a <em>recipe</em>, a little element that allows you to define any of the main elements and to customize its actions by overwriting some core functions if necessary. More info about the recipes system can be found in its own section.</p>
+<p>LFSBuilder scope is not restricted to the Linux from Scratch project and can also be used to build your own components.</p>
+<p>LFSBuilder development started during the summer of 2016 as part of my Telecommunications Engineering degree’s thesis. It was qualified in September of 2018, and from June 2019 is publicly available. The original thesis PDF document is available, in Spanish only, at the <a class="reference external" href="https://idus.us.es/xmlui/handle/11441/85015">Universidad de Sevilla idUS website</a> and the <a class="reference external" href="http://bibing.us.es/proyectos/buscar/gonzalo+gomez+gracia/en/todo/and//en/todo/limitado_a/todos/entre/1970/y/2019///1">Universidad de Sevilla e-REdING website</a>.</p>
+<p>This is a project in constant development and licensed under the <a class="reference external" href="https://www.gnu.org/licenses/agpl-3.0.en.html">AGPL3 (GNU AFFERO GENERAL PUBLIC LICENSE)</a> Open Source license.</p>
+</div>
+
+
+          </div>
+
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019, Gonzalo Gómez Gracia.
+
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+
+      |
+      <a href="_sources/intro.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+
+
+
+  </body>
+</html>

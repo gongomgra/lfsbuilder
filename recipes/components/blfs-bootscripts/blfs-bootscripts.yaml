@@ -1,7 +1,0 @@
----
-name: 'blfs-bootscripts'
-
-# Links to download BLFS bootscripts' tarballs
-blfs-bootscripts_url: '&sources-anduin-http;/blfs-bootscripts/blfs-bootscripts-&blfs-bootscripts-version;.tar.xz'
-
-extra_download_urls: ['&downloads-root;/blfs-systemd-units-&systemd-units-version;.tar.bz2']

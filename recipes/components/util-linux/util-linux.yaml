@@ -1,3 +1,0 @@
----
-name: 'util-linux'
-disable_commands_list: ["bash tests/run.sh --srcdir=$PWD --builddir=$PWD"]
