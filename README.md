@@ -20,7 +20,7 @@ This is a project in constant development and licensed under the [AGPL3 (GNU AFF
 
 # Documentation
 
-You can visit the project documentation at [http://gongomgra.github.io/lfsbuilder/](https://gongomgra.github.io/lfsbuilder/)
+You can visit the project documentation at [https://gongomgra.github.io/lfsbuilder/](https://gongomgra.github.io/lfsbuilder/)
 
 # Contact info
 
