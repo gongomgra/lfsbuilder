@@ -49,7 +49,8 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="recipes.html">Recipes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="whatsnext.html">What’s next</a></li>
+<li class="toctree-l1"><a class="reference internal" href="whatsnext.html">What’s next?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact info</a></li>
 </ul>
 
 <div class="relations">
@@ -143,20 +144,19 @@
 </ul>
 <p>TODO</p>
 <ul class="simple">
-<li><strong>ETH0_BROADCAST_ADDRESS</strong>: Dirección IP de difusión para la interfaz de red \textconsole{eth0}.</li>
-<li><strong>ETH0_MASK</strong>: Máscara de red para la interfaz \textconsole{eth0}.</li>
-<li><strong>DOMAIN_NAME</strong>: Nombre de dominio a utilizar para la configuración de red.</li>
-<li><strong>DNS_ADDRESS_1</strong>:</li>
-<li><strong>DNS_ADDRESS_2</strong>: Direcciones IP usadas por el protocolo de descubrimiento dinámico de dominios de red \textit{DNS}.</li>
-<li><strong>HOSTNAME</strong>: Nombre del equipo del sistema operativo construido.</li>
-<li><strong>DISTRIBUTION_NAME</strong>: Nombre de la distribución construida.</li>
-<li><strong>DISTRIBUTION_VERSION</strong>: Versión de la distribución construida.</li>
-<li><strong>DISTRIBUTION_DESCRIPTION</strong>: Descripción de la distribución construida.</li>
-<li><strong>REMOVE_REBOOT_COMPONENT</strong>: Opción binaria. Este parámetro desactiva la ejecución del componente \componente{reboot} del libro \textit{Linux from Scratch}. Su valor debe ser siempre \textconsole{True} porque el constructor \textconsole{collector} realiza su función de forma más adecuada.</li>
-<li><strong>MOUNT_SYSTEM_BUILDER_DIRECTORIES</strong>: Opción binaria que decide si los directorios del sistema deben montarse en el directorio base de construcción antes de iniciar el proceso o no.</li>
-<li><strong>VERBOSE</strong>: Opción binaria que muestra mayor cantidad de información al usuario.</li>
-<li><strong>DEBUG_SCRIPTS</strong>: Muestra los comandos que componen un \textit{script} a medida que se ejecutan. Opción binaria.</li>
-<li><strong>CONTINUE_AT</strong>: Esta opción permite iniciar la construcción de un determinado constructor por un determinado componente. Sólo es válido para los constructores \textconsole{toolchain}, \textconsole{system}, \textconsole{configuration} y \textconsole{blfs}.</li>
+<li><strong>ETH0_BROADCAST_ADDRESS</strong>: broadcast IP address for the network interface <code class="docutils literal notranslate"><span class="pre">eth0</span></code>.</li>
+<li><strong>ETH0_MASK</strong>: mask for the network interface <code class="docutils literal notranslate"><span class="pre">eth0</span></code>.</li>
+<li><strong>DOMAIN_NAME</strong>: domain name for the network configuration.</li>
+<li><strong>DNS_ADDRESS_1</strong> and <strong>DNS_ADDRESS_2</strong>: IP address for the DNS protocol server.</li>
+<li><strong>HOSTNAME</strong>: domain name for the built system.</li>
+<li><strong>DISTRIBUTION_NAME</strong>: name of the built distribution.</li>
+<li><strong>DISTRIBUTION_VERSION</strong>: distribution version number.</li>
+<li><strong>DISTRIBUTION_DESCRIPTION</strong>: distribution description.</li>
+<li><strong>REMOVE_REBOOT_COMPONENT</strong>: enables/disables building the <code class="docutils literal notranslate"><span class="pre">reboot</span></code> component of the Linux from Scratch book. It is recommended to always set it to <code class="docutils literal notranslate"><span class="pre">True</span></code>. The <code class="docutils literal notranslate"><span class="pre">collector</span></code> builder implements its functionality in a more adequate way. Boolean option.</li>
+<li><strong>MOUNT_SYSTEM_BUILDER_DIRECTORIES</strong>: whether you want to mount the host system build directories (proc, sys, etc.) into the build chroot or not. Boolean option.</li>
+<li><strong>VERBOSE</strong>: prints verbose information. Boolean option.</li>
+<li><strong>DEBUG_SCRIPTS</strong>: shows the commands included in a build script while running them. Boolean option.</li>
+<li><strong>CONTINUE_AT</strong>: allows you to start the build process from a specifc component. It is only available for the <code class="docutils literal notranslate"><span class="pre">toolchain</span></code>, <code class="docutils literal notranslate"><span class="pre">system</span></code>, <code class="docutils literal notranslate"><span class="pre">configuration</span></code> and <code class="docutils literal notranslate"><span class="pre">blfs</span></code> builders.</li>
 </ul>
 </div>
 
