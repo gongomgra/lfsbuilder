@@ -47,9 +47,6 @@ lfsbuilder-toolchain-${lfs_version}-${date}.tar.gz}
 * **SWAP\_PARTITION\_NAME**: name and number of the swap partition that will be set in the `/etc/fstab` file.
 * **ETH0\_IP\_ADDRESS**: IP address for the `eth0` network interface.
 * **ETH0\_GATEWAY\_ADDRESS**: IP address of the gateway for the `eth0` network interface.
-
-TODO
-
 * **ETH0\_BROADCAST\_ADDRESS**: broadcast IP address for the network interface `eth0`.
 * **ETH0\_MASK**: mask for the network interface `eth0`.
 * **DOMAIN\_NAME**: domain name for the network configuration.
