@@ -50,17 +50,16 @@ lfsbuilder-toolchain-${lfs_version}-${date}.tar.gz}
 
 TODO
 
-* **ETH0\_BROADCAST\_ADDRESS**: Dirección IP de difusión para la interfaz de red \textconsole{eth0}.
-* **ETH0\_MASK**: Máscara de red para la interfaz \textconsole{eth0}.
-* **DOMAIN\_NAME**: Nombre de dominio a utilizar para la configuración de red.
-* **DNS\_ADDRESS\_1**:
-* **DNS\_ADDRESS\_2**: Direcciones IP usadas por el protocolo de descubrimiento dinámico de dominios de red \textit{DNS}.
-* **HOSTNAME**: Nombre del equipo del sistema operativo construido.
-* **DISTRIBUTION\_NAME**: Nombre de la distribución construida.
-* **DISTRIBUTION\_VERSION**: Versión de la distribución construida.
-* **DISTRIBUTION\_DESCRIPTION**: Descripción de la distribución construida.
-* **REMOVE\_REBOOT\_COMPONENT**: Opción binaria. Este parámetro desactiva la ejecución del componente \componente{reboot} del libro \textit{Linux from Scratch}. Su valor debe ser siempre \textconsole{True} porque el constructor \textconsole{collector} realiza su función de forma más adecuada.
-* **MOUNT\_SYSTEM\_BUILDER\_DIRECTORIES**: Opción binaria que decide si los directorios del sistema deben montarse en el directorio base de construcción antes de iniciar el proceso o no.
-* **VERBOSE**: Opción binaria que muestra mayor cantidad de información al usuario.
-* **DEBUG\_SCRIPTS**: Muestra los comandos que componen un \textit{script} a medida que se ejecutan. Opción binaria.
-* **CONTINUE\_AT**: Esta opción permite iniciar la construcción de un determinado constructor por un determinado componente. Sólo es válido para los constructores \textconsole{toolchain}, \textconsole{system}, \textconsole{configuration} y \textconsole{blfs}.
+* **ETH0\_BROADCAST\_ADDRESS**: broadcast IP address for the network interface `eth0`.
+* **ETH0\_MASK**: mask for the network interface `eth0`.
+* **DOMAIN\_NAME**: domain name for the network configuration.
+* **DNS\_ADDRESS\_1** and **DNS\_ADDRESS\_2**: IP address for the DNS protocol server.
+* **HOSTNAME**: domain name for the built system.
+* **DISTRIBUTION\_NAME**: name of the built distribution.
+* **DISTRIBUTION\_VERSION**: distribution version number.
+* **DISTRIBUTION\_DESCRIPTION**: distribution description.
+* **REMOVE\_REBOOT\_COMPONENT**: enables/disables building the `reboot` component of the Linux from Scratch book. It is recommended to always set it to `True`. The `collector` builder implements its functionality in a more adequate way. Boolean option.
+* **MOUNT\_SYSTEM\_BUILDER\_DIRECTORIES**: whether you want to mount the host system build directories (proc, sys, etc.) into the build chroot or not. Boolean option.
+* **VERBOSE**: prints verbose information. Boolean option.
+* **DEBUG\_SCRIPTS**: shows the commands included in a build script while running them. Boolean option.
+* **CONTINUE\_AT**: allows you to start the build process from a specifc component. It is only available for the `toolchain`, `system`, `configuration` and `blfs` builders.
