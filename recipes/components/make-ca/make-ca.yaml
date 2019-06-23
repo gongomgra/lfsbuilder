@@ -14,3 +14,7 @@ component_substitution_list: ['wget http://www.cacert.org/certs/root.crt',
 
                               'wget http://www.cacert.org/certs/class3.crt',
                               'cp @@LFS_SOURCES_DIRECTORY@@/class3.crt .']
+
+# Run 'make all' in previous steps so we ensure the man files exist
+# during post steps.
+previous: 'make all'
