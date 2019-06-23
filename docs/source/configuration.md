@@ -29,7 +29,7 @@ You can find below a list of the available options with a brief description of t
 * **SAVE\_TOOLCHAIN**: choose if the toolchain created will be saved as a `.tar.gz` file or not. Boolean parameter.
 * **SAVE\_TOOLCHAIN\_FILENAME**: name for the `.tar.gz` file containing the toolchain. If the value is of the form `lfsbuilder-toolchain-@@LFS\_VERSION@@`, then the compressed file name is:
 ```
-lfsbuilder-toolchain-${lfs_version}-${date}.tar.gz}
+lfsbuilder-toolchain-${lfs_version}-${date}.tar.gz
 ```
 * **DELETE\_TOOLS**: to delete or not the `/tool` directory after building the `system` builder. Boolean parameter.
 * **TIMEZONE**: timezone to set in the final system. You can use the `tzselect` command to choose the one of your preference.
